@@ -11,6 +11,7 @@
         "nitropack/nitropackcloud-sdk": "^0.53.0"
     },
     "type": "magento2-module",
+    "keywords": ["magento2", "extension", "nitropack", "performance", "speed", "cwv", "cloud", "cache", "ecommerce", "cdn"],
     "version": "2.1.0",
     "license": "MIT",
     "autoload": {
