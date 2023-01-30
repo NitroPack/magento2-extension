@@ -9,9 +9,6 @@
 
 use \Magento\Framework\Component\ComponentRegistrar;
 
-//require_once(__DIR__ . '/NitroPackSDK/autoload.php');
-
-define('NITROPACK_INSTALL_DIR', __DIR__);
 
 ComponentRegistrar::register(
 	ComponentRegistrar::MODULE,
