@@ -1,0 +1,19 @@
+<?php
+if ($block->checkNitroHeaderCacheIsMiss() && $block->getEnabled()): ?>
+
+    <input type="hidden" name="nitropack_route" id="nitropack_route" value="<?= $block->getRoute() ?>"/>
+    <input type="hidden" name="nitropack_currentUrl" id="nitropack_currentUrl" value="<?= $block->getCurrentUrl() ?>"/>
+    <input type="hidden" name="nitropack_storeCode" id="nitropack_storeCode" value="<?= $block->getStoreCode() ?>"/>
+    <input type="hidden" name="nitropack_storeCode" id="nitropack_siteId" value="<?= $block->getSiteId() ?>"/>
+    <input type="hidden" name="nitropack_storeCode" id="nitropack_siteSecret" value="<?= $block->getSiteSecret() ?>"/>
+
+    <script type="text/x-magento-init">
+    {
+        "*": {
+            "NitroPack_NitroPack/js/ready":{}
+        }
+    }
+
+    </script>
+<?php
+endif; ?>

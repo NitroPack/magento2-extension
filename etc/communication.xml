@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Communication/etc/communication.xsd">
+    <topic name="nitropack.cache.queue.topic" request="string">
+        <handler name="processorAddToQueue" type="NitroPack\NitroPack\Model\Queue\Consumer" method="process" />
+    </topic>
+</config>

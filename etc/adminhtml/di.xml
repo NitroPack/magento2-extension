@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Tagging service responsible for keeping track of tags encountered during page rendering -->
+    <preference for="NitroPack\NitroPack\Api\TaggingServiceInterface" type="NitroPack\NitroPack\Api\TaggingService"/>
+    <type name="NitroPack\NitroPack\Api\TaggingService" shared="true">
+        <arguments>
+            <argument name="nitro" xsi:type="object" shared="true">NitroPack\NitroPack\Api\NitroServiceInterface
+            </argument>
+            <argument name="doNotPush" xsi:type="boolean">true</argument>
+        </arguments>
+    </type>
+
+    <preference for="NitroPack\NitroPack\Api\CacheWarmupInterface" type="NitroPack\NitroPack\Api\CacheWarmup"/>
+    <type name="NitroPack\NitroPack\Api\TaggingService" shared="true">
+        <arguments>
+            <argument name="nitro" xsi:type="object" shared="true">NitroPack\NitroPack\Api\NitroServiceInterface
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Backend\Block\Widget\Grid\Massaction">
+        <plugin name="confirmation_box_cache_page" type="NitroPack\NitroPack\Plugin\Block\MassactionConfirmationBox"/>
+    </type>
+    <type name="Magento\Framework\Notification\MessageList">
+        <arguments>
+            <argument name="messages" xsi:type="array">
+                <item name="AdminNitroPackCacheMessages" xsi:type="string">
+                    NitroPack\NitroPack\Model\Admin\Alert\Messages
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Backend\Controller\Adminhtml\Cache\MassEnable">
+        <plugin name="mass_enable_cache_checker"
+                type="NitroPack\NitroPack\Plugin\CacheState\CacheStateMassEnableAfter"/>
+    </type>
+    <type name="Magento\Backend\Controller\Adminhtml\Cache\MassDisable">
+        <plugin name="mass_enable_cache_checker"
+                type="NitroPack\NitroPack\Plugin\CacheState\CacheStateMassEnableAfter"/>
+    </type>
+    <!--- Add NitroPack as Full Page Cache -->
+    <preference for="\Magento\PageCache\Model\System\Config\Source\Application"
+                type="NitroPack\NitroPack\Model\System\Config\Source\Application"/>
+    <type name="Magento\PageCache\Model\Config">
+        <plugin name="varnish_config_after_cache_checker"
+                type="NitroPack\NitroPack\Plugin\PageCache\Config\VarnishConfigAfter"/>
+    </type>
+
+    <type name="Magento\Config\Model\Config">
+        <plugin name="admin_system_config_save_plugin" type="NitroPack\NitroPack\Plugin\Config\AdminConfigAfterCheck"/>
+    </type>
+</config>

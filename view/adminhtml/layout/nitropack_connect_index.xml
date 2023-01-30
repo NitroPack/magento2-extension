@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+	<head>
+		<title>
+			Connect to NitroPack
+		</title>
+		<css src="NitroPack_NitroPack::css/admin.css"/>
+		<css src="NitroPack_NitroPack::css/connect.css"/>
+		<css src="NitroPack_NitroPack::css/font-awesome.min.css"/>
+		<css src="NitroPack_NitroPack::css/nitro_bootstrap.css"/>
+	</head>
+	<body>
+		<referenceContainer name="page.main.actions">
+            <block class="Magento\Backend\Block\Store\Switcher" name="store_switcher"  template="NitroPack_NitroPack::store/switcher.phtml">
+                <action method="setUseConfirm">
+                    <argument name="params" xsi:type="string">0</argument>
+                </action>
+                <arguments>
+                    <argument name="switch_store_groups" xsi:type="string">1</argument>
+                    <argument name="switch_store_views" xsi:type="string">0</argument>
+                </arguments>
+            </block>
+		</referenceContainer>
+		<referenceContainer name="content">
+			<block class="NitroPack\NitroPack\Block\ConnectBlock" template="NitroPack_NitroPack::connect.phtml"/>
+		</referenceContainer>
+	</body>
+</page>

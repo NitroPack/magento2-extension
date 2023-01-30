@@ -1,0 +1,25 @@
+<div class="support-widget">
+    <!-- zendesk widget -->
+    <script type="text/javascript">
+        require(['jquery'], function (jQuery) {
+
+            jQuery(document).ready(function () {
+                window.zESettings = {
+                    webWidget: {
+                        position: {horizontal: 'right', vertical: 'bottom'},
+                        offset: {
+                            horizontal: '24px',
+                            mobile: {
+                                horizontal: '24px'
+                            }
+                        }
+                    }
+                };
+                zE('webWidget', 'setLocale', 'en-US');
+
+            });
+        });
+    </script>
+    <script id="ze-snippet"
+            src="https://static.zdassets.com/ekr/snippet.js?key=6ba5e4cd-1924-45ee-b2fa-39317be2c2aa"></script>
+</div>

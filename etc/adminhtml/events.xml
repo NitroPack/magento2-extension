@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <!-- Product management events -->
+    <event name="catalog_product_save_commit_after">
+        <observer name="nitropack_cache_product_save" instance="NitroPack\NitroPack\Observer\CacheClear\ProductObserver"
+                  shared="true"/>
+    </event>
+    <event name="catalog_product_delete_commit_after">
+        <observer name="nitropack_cache_product_delete"
+                  instance="NitroPack\NitroPack\Observer\CacheClear\ProductObserver" shared="true"/>
+    </event>
+    <!-- Category management events -->
+    <event name="catalog_category_save_commit_after">
+        <observer name="nitropack_cache_category_save"
+                  instance="NitroPack\NitroPack\Observer\CacheClear\CategoryObserver" shared="true"/>
+    </event>
+    <event name="catalog_category_delete_commit_after">
+        <observer name="nitropack_cache_category_delete"
+                  instance="NitroPack\NitroPack\Observer\CacheClear\CategoryObserver" shared="true"/>
+    </event>
+    <event name="catalog_category_change_products">
+        <observer name="nitropack_cache_category_change_products"
+                  instance="NitroPack\NitroPack\Observer\CacheClear\CategoryObserver" shared="true"/>
+    </event>
+    <event name="category_move">
+        <observer name="nitropack_cache_category_move"
+                  instance="NitroPack\NitroPack\Observer\CacheClear\CategoryObserver" shared="true"/>
+    </event>
+    <!-- Attribute management events -->
+    <event name="catalog_entity_attribute_save_commit_after">
+        <observer name="nitropack_cache_attribute_save"
+                  instance="NitroPack\NitroPack\Observer\CacheClear\AttributeObserver" shared="true"/>
+    </event>
+    <event name="catalog_entity_attribute_delete_commit_after">
+        <observer name="nitropack_cache_attribute_delete"
+                  instance="NitroPack\NitroPack\Observer\CacheClear\AttributeObserver" shared="true"/>
+    </event>
+    <event name="eav_entity_attribute_set_save_commit_after">
+        <observer name="nitropack_cache_attribute_set_save"
+                  instance="NitroPack\NitroPack\Observer\CacheClear\AttributeSetObserver" shared="true"/>
+    </event>
+    <event name="eav_entity_attribute_set_delete_commit_after">
+        <observer name="nitropack_cache_attribute_set_delete"
+                  instance="NitroPack\NitroPack\Observer\CacheClear\AttributeSetObserver" shared="true"/>
+    </event>
+    <!-- Page, block and widget management events -->
+    <event name="cms_page_save_commit_after">
+        <observer name="nitropack_cache_page_save" instance="NitroPack\NitroPack\Observer\CacheClear\PageObserver"
+                  shared="true"/>
+    </event>
+    <event name="cms_page_delete_commit_after">
+        <observer name="nitropack_cache_page_delete" instance="NitroPack\NitroPack\Observer\CacheClear\PageObserver"
+                  shared="true"/>
+    </event>
+    <event name="cms_block_save_commit_after">
+        <observer name="nitropack_cache_block_save" instance="NitroPack\NitroPack\Observer\CacheClear\BlockObserver"
+                  shared="true"/>
+    </event>
+    <event name="cms_block_delete_commit_after">
+        <observer name="nitropack_cache_block_delete" instance="NitroPack\NitroPack\Observer\CacheClear\BlockObserver"
+                  shared="true"/>
+    </event>
+    <event name="widget_widget_instance_save_commit_after">
+        <observer name="nitropack_cache_widget_save" instance="NitroPack\NitroPack\Observer\CacheClear\WidgetObserver"
+                  shared="true"/>
+    </event>
+    <event name="widget_widget_instance_delete_commit_after">
+        <observer name="nitropack_cache_widget_delete" instance="NitroPack\NitroPack\Observer\CacheClear\WidgetObserver"
+                  shared="true"/>
+    </event>
+    <!-- Review related events -->
+    <event name="review_save_commit_after">
+        <observer name="nitropack_cache_review_save" instance="NitroPack\NitroPack\Observer\CacheClear\ReviewObserver"
+                  shared="true"/>
+    </event>
+    <event name="review_delete_commit_after">
+        <observer name="nitropack_cache_review_delete" instance="NitroPack\NitroPack\Observer\CacheClear\ReviewObserver"
+                  shared="true"/>
+    </event>
+    <event name="nitropack_cache_event_after">
+        <observer name="nitropack_cache_event_after" instance="NitroPack\NitroPack\Observer\NitroPackCacheChecker"/>
+    </event>
+    <event name="catalog_product_import_bunch_save_after">
+        <observer name="nitropack_module_catalog_product_import_bunch_save_after"
+                  instance="NitroPack\NitroPack\Observer\Import\CatalogProductImportBunchSaveAfter"/>
+    </event>
+    <!-- Cache Flush from admin events -->
+    <event name="adminhtml_cache_flush_system">
+        <observer name="admin_cache_flush" instance="NitroPack\NitroPack\Observer\FullPageCache\Clear"/>
+    </event>
+    <!-- Cache Flush from cmd events -->
+    <event name="adminhtml_cache_flush_all">
+        <observer name="admin_cache_flush_all" instance="NitroPack\NitroPack\Observer\FullPageCache\Clear"/>
+    </event>
+    <event name="nitropack_cache_flush_after">
+        <observer name="nitropack_cache_flush_after" instance="NitroPack\NitroPack\Observer\NitroPackCacheFlush"/>
+    </event>
+    <!-- Cache Flush from cmd events -->
+    <event name="admin_system_config_changed_section_system">
+        <observer name="admin_system_config_changed_section_system"
+                  instance="NitroPack\NitroPack\Observer\ConfigFullPageChange"/>
+    </event>
+
+    <event name="admin_system_config_changed_section_web">
+        <observer name="admin_system_config_changed_section_web"
+                  instance="NitroPack\NitroPack\Observer\ConfigWebChange"/>
+    </event>
+
+</config>

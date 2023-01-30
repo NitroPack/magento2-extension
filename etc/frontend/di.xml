@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="NitroPack\NitroPack\Api\NitroService" shared="true"></type>
+
+    <!-- Check for local cache at the earliest possible time -->
+    <type name="Magento\Framework\App\FrontControllerInterface">
+        <plugin name="nitropack_before_front_dispatch_intercept"
+                type="NitroPack\NitroPack\Plugin\CacheDelivery\LocalCachePlugin" sortOrder="9999" disabled="false"/>
+    </type>
+    <!-- Check for remote cache / schedule for optimization once the request has been routed so we know the layout and page type -->
+    <type name="Magento\UrlRewrite\Controller\Router">
+        <plugin name="nitropack_urlrewrite_router_intercept"
+                type="NitroPack\NitroPack\Plugin\CacheDelivery\RemoteCachePlugin" sortOrder="9999" disabled="false"/>
+    </type>
+    <type name="Magento\Framework\App\Router\Base">
+        <plugin name="nitropack_standard_router_intercept"
+                type="NitroPack\NitroPack\Plugin\CacheDelivery\RemoteCachePlugin" sortOrder="9999" disabled="false"/>
+    </type>
+    <type name="Magento\Cms\Controller\Router">
+        <plugin name="nitropack_cms_router_intercept" type="NitroPack\NitroPack\Plugin\CacheDelivery\RemoteCachePlugin"
+                sortOrder="9999" disabled="false"/>
+    </type>
+    <type name="Magento\Framework\App\Router\DefaultRouter">
+        <plugin name="nitropack_default_router_intercept"
+                type="NitroPack\NitroPack\Plugin\CacheDelivery\RemoteCachePlugin" sortOrder="9999" disabled="false"/>
+    </type>
+    <!-- Handle validation of webhook requests -->
+    <type name="Magento\Framework\App\Request\CsrfValidator">
+        <plugin name="nitropack_webhook_csrf_override" type="NitroPack\NitroPack\Plugin\WebhookValidationPlugin"/>
+    </type>
+    <type name="Magento\Store\Model\StoreSwitcher">
+        <plugin name="store_switcher_remove" type="NitroPack\NitroPack\Plugin\RemoveGetParam\StoreSwitcher" />
+    </type>
+</config>

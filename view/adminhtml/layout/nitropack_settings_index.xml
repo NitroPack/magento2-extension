@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+	<head>
+		<title>
+			NitroPack Settings
+		</title>
+		<css src="NitroPack_NitroPack::css/admin.css"/>
+		<css src="NitroPack_NitroPack::css/settings.css"/>
+		<css src="NitroPack_NitroPack::css/font-awesome.min.css"/>
+		<css src="NitroPack_NitroPack::css/nitro_bootstrap.css"/>
+		<link src="NitroPack_NitroPack::js/nitro_embed.js"/>
+		<link src="NitroPack_NitroPack::js/nitro_notifications.js"/>
+		<link src="NitroPack_NitroPack::js/nitro_cache_warmup.js"/>
+	</head>
+	<body>
+		<referenceContainer name="page.main.actions">
+            <block class="Magento\Backend\Block\Store\Switcher" name="store_switcher"  template="NitroPack_NitroPack::store/switcher.phtml">
+                <action method="setUseConfirm">
+                    <argument name="params" xsi:type="string">0</argument>
+                </action>
+                <arguments>
+                    <argument name="switch_store_groups" xsi:type="string">1</argument>
+                    <argument name="switch_store_views" xsi:type="string">0</argument>
+                </arguments>
+            </block>
+		</referenceContainer>
+		<referenceContainer name="content">
+			<block class="NitroPack\NitroPack\Block\SettingsBlock" template="NitroPack_NitroPack::settings.phtml"/>
+		</referenceContainer>
+		<referenceContainer name="page.messages">
+        <block class="Magento\Framework\View\Element\Messages" name="messages" as="messages"/>
+ 		</referenceContainer>
+        <referenceContainer name="legal">
+            <block class="Magento\Framework\View\Element\Template" name="support_block" as="support" template="NitroPack_NitroPack::help.phtml"/>
+        </referenceContainer>
+	</body>
+</page>

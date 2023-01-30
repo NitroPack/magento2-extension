@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Main NitroPack service providing access to the settings and SDK instance -->
+    <preference for="NitroPack\NitroPack\Api\NitroServiceInterface" type="NitroPack\NitroPack\Api\NitroService"/>
+    <type name="NitroPack\NitroPack\Api\NitroService" shared="true"></type>
+    <!-- Tagging service responsible for generating tag names and keeping track of tags encountered during page rendering -->
+    <preference for="NitroPack\NitroPack\Api\TaggingServiceInterface" type="NitroPack\NitroPack\Api\TaggingService"/>
+    <type name="NitroPack\NitroPack\Api\TaggingService" shared="true">
+        <arguments>
+            <argument name="nitro" xsi:type="object" shared="true">NitroPack\NitroPack\Api\NitroServiceInterface
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Framework\App\Cache\Manager">
+        <plugin name="after_cache_checker" type="NitroPack\NitroPack\Plugin\CacheState\CacheStateAfter"/>
+    </type>
+
+    <type name="Magento\Framework\App\Cache\Manager">
+        <plugin name="after_cache_checker" type="NitroPack\NitroPack\Plugin\CacheState\CacheStateAfter"/>
+    </type>
+</config>

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <title>
+            NitroPack Settings
+        </title>
+        <css src="NitroPack_NitroPack::css/admin.css"/>
+        <css src="NitroPack_NitroPack::css/connect.css"/>
+        <css src="NitroPack_NitroPack::css/font-awesome.min.css"/>
+        <css src="NitroPack_NitroPack::css/nitro_bootstrap.css"/>
+    </head>
+    <body>
+
+        <referenceContainer name="content">
+            <block class="NitroPack\NitroPack\Block\SupportBlock" template="NitroPack_NitroPack::support.phtml"/>
+        </referenceContainer>
+    </body>
+</page>

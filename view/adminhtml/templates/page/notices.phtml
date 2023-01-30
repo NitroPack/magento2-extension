@@ -1,0 +1,32 @@
+<?php
+
+$InvalidationHelper = $this->helper('NitroPack\NitroPack\Helper\InvalidationHelper');
+if (!$InvalidationHelper->checkInvalidationAndPurgeProcess() && !$InvalidationHelper->checkCronJobIsSetup()) {
+    //Disable
+    $InvalidationHelper->makeConnectionsDisableAndEnable(false);
+    ?>
+    <div class="messages">
+        <div class="message message-warning message-demo-mode">
+            NitroPack is disabled due to incompatible CRON settings preventing cache invalidation/purge.Please enable CRON job.
+        </div>
+    </div>
+
+    <?php
+} else {
+    //Enabled
+    $InvalidationHelper->makeConnectionsDisableAndEnable(true);
+} ?>
+<?php
+if ($InvalidationHelper->checkNotificationLegacyDisconnect()): ?>
+    <div class="messages">
+        <div class="message message-warning message-demo-mode">
+            Thank you for updating NitroPack! This Store needs to be reconnected to a website in your <a
+                href="https://nitropack.io/user/login">NitroPack account</a>.
+            <a href="<?= $InvalidationHelper->backUrlRedirectToConnect(
+                $InvalidationHelper->checkNotificationLegacyDisconnect()
+            ) ?>">Connect</a> and follow the instructions.
+        </div>
+    </div>
+<?php
+endif; ?>
+

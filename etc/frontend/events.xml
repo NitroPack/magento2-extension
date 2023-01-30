@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="catalog_product_load_after">
+        <observer name="nitropack_tag_product" instance="NitroPack\NitroPack\Observer\CacheTag\ProductObserver"
+                  shared="true"/>
+    </event>
+    <event name="catalog_product_collection_load_after">
+        <observer name="nitropack_tag_product_collection"
+                  instance="NitroPack\NitroPack\Observer\CacheTag\ProductObserver" shared="true"/>
+    </event>
+    <event name="catalog_category_load_after">
+        <observer name="nitropack_tag_category" instance="NitroPack\NitroPack\Observer\CacheTag\CategoryObserver"
+                  shared="true"/>
+    </event>
+    <event name="catalog_category_collection_load_after">
+        <observer name="nitropack_tag_category_collection"
+                  instance="NitroPack\NitroPack\Observer\CacheTag\CategoryObserver" shared="true"/>
+    </event>
+    <event name="cms_block_load_after">
+        <observer name="nitropack_tag_block" instance="NitroPack\NitroPack\Observer\CacheTag\BlockObserver"
+                  shared="true"/>
+    </event>
+    <event name="cms_page_load_after">
+        <observer name="nitropack_tag_page_load" instance="NitroPack\NitroPack\Observer\CacheTag\PageObserver"
+                  shared="true"/>
+    </event>
+    <event name="cms_page_render">
+        <observer name="nitropack_tag_page_render" instance="NitroPack\NitroPack\Observer\CacheTag\PageObserver"
+                  shared="true"/>
+    </event>
+
+</config>
