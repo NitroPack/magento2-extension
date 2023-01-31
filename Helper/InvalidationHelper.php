@@ -202,5 +202,16 @@ class InvalidationHelper extends AbstractHelper
     {
         return $this->_backendUrl->getUrl('NitroPack/connect/index', ['group' => $id]);
     }
-
+    public function checkHavePreviouslyConnected()
+    {
+        $rootPath = $this->directoryList->getPath('var') . DIRECTORY_SEPARATOR;
+        if ($this->fileDriver->isDirectory($rootPath) && $this->fileDriver->isWritable($rootPath)) {
+            $paths = $this->fileDriver->readDirectory($rootPath);
+            $checkHaveConnectedFile = preg_grep('/nitro_settings_(\w+)/', $paths);
+            if (count($checkHaveConnectedFile) > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

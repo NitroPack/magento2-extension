@@ -29,6 +29,10 @@ class Messages implements MessageInterface
      * */
     protected $nitroPackConfigHelper;
     /**
+     * @var \NitroPack\NitroPack\Helper\InvalidationHelper
+     * */
+    protected $invalidationHelper;
+    /**
      * @var ScopeConfigInterface
      * */
     protected $_scopeConfig;
@@ -41,6 +45,7 @@ class Messages implements MessageInterface
         Collection $adminSessionInfoCollection,
         UrlInterface $backendUrl,
         \NitroPack\NitroPack\Helper\NitroPackConfigHelper $nitroPackConfigHelper,
+        \NitroPack\NitroPack\Helper\InvalidationHelper $invalidationHelper,
         \NitroPack\NitroPack\Model\NitroPackNotification\Notifications $notifications,
         ScopeConfigInterface $_scopeConfig,
         Session $authSession
@@ -48,6 +53,7 @@ class Messages implements MessageInterface
         $this->authSession = $authSession;
         $this->backendUrl = $backendUrl;
         $this->nitroPackConfigHelper = $nitroPackConfigHelper;
+        $this->invalidationHelper = $invalidationHelper;
         $this->_scopeConfig = $_scopeConfig;
         $this->notifications = $notifications;
         $this->adminSessionInfoCollection = $adminSessionInfoCollection;
@@ -97,6 +103,7 @@ class Messages implements MessageInterface
 
     public function isDisplayed()
     {
+        if($this->invalidationHelper->checkHavePreviouslyConnected()){
         if (!$this->nitroPackConfigHelper->getFullPageCacheValue(
             ) || !empty($this->nitroPackConfigHelper->getDisabledCaches())) {
             if (!$this->nitroPackConfigHelper->getFullPageCacheValue(
@@ -111,6 +118,7 @@ class Messages implements MessageInterface
             }
         } else {
             return count($this->notifications->get('system')) > 0 ? true : false;
+        }
         }
         return false;
     }

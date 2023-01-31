@@ -1,6 +1,7 @@
 <?php
 
 $InvalidationHelper = $this->helper('NitroPack\NitroPack\Helper\InvalidationHelper');
+if($InvalidationHelper->checkHavePreviouslyConnected()){
 if (!$InvalidationHelper->checkInvalidationAndPurgeProcess() && !$InvalidationHelper->checkCronJobIsSetup()) {
     //Disable
     $InvalidationHelper->makeConnectionsDisableAndEnable(false);
@@ -28,5 +29,7 @@ if ($InvalidationHelper->checkNotificationLegacyDisconnect()): ?>
         </div>
     </div>
 <?php
-endif; ?>
+endif;
+}
+?>
 

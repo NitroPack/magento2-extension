@@ -85,6 +85,8 @@ class NitroPackConfigHelper extends AbstractHelper
         return $caches;
     }
 
+
+
     public function getFullPageCacheValue()
     {
         return !is_null(
