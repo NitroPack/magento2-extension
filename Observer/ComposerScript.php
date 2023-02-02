@@ -19,6 +19,11 @@ class ComposerScript
 
 
     public static function preInstall(Event $event) {
+        $writer = new \Zend_Log_Writer_Stream(BP . '/var/log/composer.log');
+        $logger = new \Zend_Log();
+        $logger->addWriter($writer);
+        $logger->info("HELLO");
+        echo "SHAHZAIB";
         // provides access to the current ComposerIOConsoleIO
         // stream for terminal input/output
         $io = $event->getIO();
