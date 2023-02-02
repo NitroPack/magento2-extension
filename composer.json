@@ -5,7 +5,18 @@
         "nitropack/nitropackcloud-sdk": "^0.53.0"
     },
     "type": "magento2-module",
-    "keywords": ["magento2", "extension", "nitropack", "performance", "speed", "cwv", "cloud", "cache", "ecommerce", "cdn"],
+    "keywords": [
+        "magento2",
+        "extension",
+        "nitropack",
+        "performance",
+        "speed",
+        "cwv",
+        "cloud",
+        "cache",
+        "ecommerce",
+        "cdn"
+    ],
     "version": "2.1.0",
     "license": "MIT",
     "autoload": {
@@ -17,13 +28,20 @@
         }
     },
     "scripts": {
-        "properties": {
-            "pre-package-uninstall": [
-                "NitroPack\\NitroPack\\Observer\\ComposerScript::composerUninstall"
-            ],
-            "pre-package-install": [
-                "NitroPack\\NitroPack\\Observer\\ComposerScript::preInstall"
-            ]
-        }
+        "install-cmd": [
+            "NitroPack\\NitroPack\\Observer\\ComposerScript::preInstall"
+        ],
+        "post-install-cmd": [
+            "@install-cmd"
+        ],
+        "post-update-cmd": [
+            "@install-cmd"
+        ],
+        "uninstall-cmd": [
+            "NitroPack\\NitroPack\\Observer\\ComposerScript::composerUninstall"
+        ],
+        "pre-package-uninstall": [
+            "@uninstall-cmd"
+        ]
     }
 }
