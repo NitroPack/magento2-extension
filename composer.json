@@ -17,7 +17,13 @@
         }
     },
     "scripts": {
-        "pre-package-uninstall": ["NitroPack\\NitroPack\\Observer\\ComposerScript::composerUninstall"],
-        "pre-package-install": ["NitroPack\\NitroPack\\Observer\\ComposerScript::preInstall"]
+        "properties": {
+            "pre-package-uninstall": [
+                "NitroPack\\NitroPack\\Observer\\ComposerScript::composerUninstall"
+            ],
+            "pre-package-install": [
+                "NitroPack\\NitroPack\\Observer\\ComposerScript::preInstall"
+            ]
+        }
     }
 }
