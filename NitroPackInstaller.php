@@ -1,4 +1,5 @@
 <?php
+
 namespace NitroPack\NitroPack;
 
 use Composer\Installer\InstallerInterface;
@@ -17,6 +18,7 @@ class NitroPackInstaller extends LibraryInstaller implements InstallerInterface
         \Composer\Installer\BinaryInstaller $binaryInstaller = null,
         \Magento\Framework\ObjectManagerInterface $objectManager
     ) {
+        $this->objectManager = $objectManager;
         parent::__construct($io, $composer, $type, $filesystem, $binaryInstaller);
     }
 
