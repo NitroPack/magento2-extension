@@ -1,15 +1,22 @@
 <?php
 
-namespace NitroPack\NitroPack\Observer;
+namespace NitroPack\NitroPack;
 
-use Composer\Installer\PackageEvent;
-use Composer\Script\Event;
+use Composer\Composer;
+use Composer\EventDispatcher\EventSubscriberInterface;
+use Composer\IO\IOInterface;
+use Composer\Plugin\PluginEvents;
+
+use Composer\Plugin\PluginInterface;
+use Composer\Plugin\PrePoolCreateEvent;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 
-class ComposerScript
+
+class ComposerUninstall implements PluginInterface
 {
-    public static function composerUninstall(PackageEvent $event)
+
+    public function uninstall(Composer $composer, IOInterface $io)
     {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $trigger = $objectManager->create(\NitroPack\NitroPack\Model\NitroPackEvent\Trigger::class);
@@ -35,5 +42,14 @@ class ComposerScript
         $helper = $objectManager->create(\NitroPack\NitroPack\Model\NitroPackEvent\Trigger::class);
         $helper->purgeVarnish();
 
+    }
+
+    public function deactivate(Composer $composer, IOInterface $io)
+    {
+        // TODO: Implement deactivate() method.
+    }
+    public function activate(Composer $composer, IOInterface $io)
+    {
+        // TODO: Implement activate() method.
     }
 }
