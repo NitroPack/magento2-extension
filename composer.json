@@ -38,6 +38,12 @@
         ]
     },
     "extra": {
-        "class": "NitroPack\\NitroPack\\ComposerUninstall"
+        "class": "NitroPack\\NitroPack\\ComposerUninstall",
+        "class-name": "My\Package\ClassName",
+        "class-arguments": [
+            "arg1",
+            "arg2",
+            "arg3"
+        ]
     }
 }
