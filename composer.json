@@ -38,6 +38,6 @@
         ]
     },
     "extra": {
-        "class": "NitroPack\\NitroPack\\MyEventSubscriber"
+        "class": "NitroPack\\NitroPack\\ComposerUninstall"
     }
 }
