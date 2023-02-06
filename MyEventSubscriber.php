@@ -17,8 +17,8 @@ class MyEventSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            'pre-package-uninstall'=> ['onPrePoolCreate', 1000],
-            PluginEvents::PRE_POOL_CREATE => ['onPrePoolCreate', 1000],
+            'pre-package-uninstall'=> ['onPrePoolCreate', 1000]
+
         ];
     }
 
