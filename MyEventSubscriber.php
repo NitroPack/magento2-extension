@@ -2,29 +2,30 @@
 
 namespace NitroPack\NitroPack;
 
+use Composer\Composer;
 use Composer\EventDispatcher\EventSubscriberInterface;
+use Composer\IO\IOInterface;
 use Composer\Plugin\PluginEvents;
 
+use Composer\Plugin\PluginInterface;
 use Composer\Plugin\PrePoolCreateEvent;
 
 
-class MyEventSubscriber implements EventSubscriberInterface
+class MyEventSubscriber implements PluginInterface
 {
 
-    protected $composer;
-    protected $io;
-
-    public static function getSubscribedEvents()
+    public function uninstall(Composer $composer, IOInterface $io)
     {
-        return [
-            'pre-package-uninstall'=> ['onPrePoolCreate', 1000]
-
-        ];
+        die("HELO");
+        // TODO: Implement uninstall() method.
     }
-
-    public function onPrePoolCreate(\Composer\Plugin\PluginEvents $event)
+    public function activate(Composer $composer, IOInterface $io)
     {
-        die("HELLO");
+        // TODO: Implement activate() method.
+    }
+    public function deactivate(Composer $composer, IOInterface $io)
+    {
+        // TODO: Implement deactivate() method.
     }
 
 
