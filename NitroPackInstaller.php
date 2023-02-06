@@ -1,4 +1,5 @@
 <?php
+namespace NitroPack\NitroPack;
 
 use Composer\Installer\InstallerInterface;
 use Composer\Installer\LibraryInstaller;
