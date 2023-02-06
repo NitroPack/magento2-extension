@@ -2,6 +2,11 @@
     "name": "nitropack/magento2-extension",
     "description": "The official NitroPack extension for Magento 2.3 and Magento 2.4.",
     "require": {
+        "composer-plugin-api": "^2.0",
+        "nitropack/nitropackcloud-sdk": "^0.53.0"
+    },
+    "require-dev": {
+        "composer/composer": "^2.0",
         "nitropack/nitropackcloud-sdk": "^0.53.0"
     },
     "type": "magento2-module",
@@ -28,20 +33,11 @@
         }
     },
     "scripts": {
-        "install-cmd": [
-            "NitroPack\\NitroPack\\Observer\\ComposerScript::preInstall"
-        ],
-        "post-install-cmd": [
-            "@install-cmd"
-        ],
-        "post-update-cmd": [
-            "@install-cmd"
-        ],
-        "uninstall-cmd": [
-            "NitroPack\\NitroPack\\Observer\\ComposerScript::composerUninstall"
-        ],
         "pre-package-uninstall": [
-            "@uninstall-cmd"
+            "NitroPack\\NitroPack\\Observer\\ComposerScript::composerUninstall"
         ]
+    },
+    "extra": {
+        "class": "MyEventSubscriber"
     }
 }
