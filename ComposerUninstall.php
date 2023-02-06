@@ -24,8 +24,8 @@ class ComposerUninstall implements PluginInterface
 
     public function activate(Composer $composer, IOInterface $io)
     {
-        $installer = new \NitroPack\NitroPack\NitroPackInstaller($io, $composer, 'library',null,null,\Magento\Framework\ObjectManagerInterface::class);
-        $composer->getInstallationManager()->addInstaller($installer);
+//        $installer = new \NitroPack\NitroPack\NitroPackInstaller($io, $composer, 'library',null,null,\Magento\Framework\ObjectManagerInterface::class);
+//        $composer->getInstallationManager()->addInstaller($installer);
     }
 
 
