@@ -38,6 +38,6 @@
         ]
     },
     "extra": {
-        "class": "MyEventSubscriber"
+        "class": "NitroPack\\NitroPack\\MyEventSubscriber"
     }
 }
