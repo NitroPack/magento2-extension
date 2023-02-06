@@ -22,7 +22,7 @@ class MyEventSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function onPrePoolCreate(PrePoolCreateEvent $event)
+    public function onPrePoolCreate(\Composer\Plugin\PluginEvents $event)
     {
         die("HELLO");
     }
