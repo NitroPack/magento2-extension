@@ -2,9 +2,14 @@
     "name": "nitropack/magento2-extension",
     "description": "The official NitroPack extension for Magento 2.3 and Magento 2.4.",
     "require": {
+        "composer-plugin-api": "^2.0",
         "nitropack/nitropackcloud-sdk": "^0.53.0"
     },
-    "type": "magento2-module",
+    "require-dev": {
+        "composer/composer": "^2.0",
+        "nitropack/nitropackcloud-sdk": "^0.53.0"
+    },
+    "type": "composer-plugin",
     "keywords": [
         "magento2",
         "extension",
@@ -26,5 +31,9 @@
         "psr-4": {
             "NitroPack\\NitroPack\\": ""
         }
+    },
+    "extra": {
+        "class": "NitroPack\\NitroPack\\ComposerUninstall"
+
     }
 }
