@@ -30,17 +30,35 @@ class Uninstall implements UninstallInterface
      * @var VarnishHelper
      * */
     protected $varnishHelper;
+    /**
+     * @var \Magento\Framework\Filesystem\DriverInterface
+     * */
+    protected $fileDriver;
+    /**
+     * @var \NitroPack\NitroPack\Helper\ApiHelper
+     * */
+    protected $apiHelper;
+    /**
+     * @var \Magento\Store\Api\GroupRepositoryInterface
+     * */
+    protected $storeGroupRepo;
 
     public function __construct(
         \NitroPack\NitroPack\Model\NitroPackEvent\Trigger $trigger,
+        \Magento\Framework\Filesystem\DriverInterface $fileDriver,
         WriterInterface $configWriter,
         VarnishHelper $varnishHelper,
+        \NitroPack\NitroPack\Helper\ApiHelper $apiHelper,
+        \Magento\Store\Api\GroupRepositoryInterface $storeGroupRepo,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
     ) {
         $this->trigger = $trigger;
+        $this->fileDriver = $fileDriver;
+        $this->apiHelper = $apiHelper;
         $this->configWriter = $configWriter;
         $this->varnishHelper = $varnishHelper;
         $this->scopeConfig = $scopeConfig;
+        $this->storeGroupRepo = $storeGroupRepo;
     }
 
     public function uninstall(
@@ -48,6 +66,12 @@ class Uninstall implements UninstallInterface
         ModuleContextInterface $context
     ) {
         $setup->startSetup();
+        //TRIGGER AN EVENT OF DISCONNECTION
+        $this->trigger->hitEvent('disconnect', false);
+        $storeGroup = $this->storeGroupRepo->getList();
+        foreach ($storeGroup as $storesData) {
+            $this->disconnection($storesData->getCode());
+        }
         //TRIGGER AN EVENT OF UNINSTALL
         $this->trigger->hitEvent('uninstall', false);
         if ($this->scopeConfig->getValue('system/full_page_cache/varnish_enable')) {
@@ -55,6 +79,7 @@ class Uninstall implements UninstallInterface
         } else {
             $this->setData('system/full_page_cache/caching_application', \Magento\PageCache\Model\Config::BUILT_IN);
         }
+
         $this->varnishHelper->purgeVarnish();
         $setup->endSetup();
     }
@@ -92,4 +117,11 @@ class Uninstall implements UninstallInterface
         $helper->purgeVarnish();
     }
 
+    function disconnection($storeGroupCode)
+    {
+        $settingsFilename = $this->apiHelper->getSettingsFilename($storeGroupCode);
+        if ($this->fileDriver->isExists($settingsFilename) && $this->fileDriver->isWritable($settingsFilename)) {
+            unlink($settingsFilename);
+        }
+    }
 }
