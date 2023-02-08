@@ -8,6 +8,7 @@ use Magento\Backend\Model\UrlInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\RequestInterface;
+
 use NitroPack\NitroPack\Api\NitroServiceInterface;
 
 class ConnectBlock extends Template
@@ -28,15 +29,7 @@ class ConnectBlock extends Template
      * @var Store
      * */
     protected $store;
-    /**
-     * @param  Context $context
-     * @param  NitroServiceInterface $nitro
-     * @param  UrlInterface $backendUrl
-     * @param  StoreManagerInterface $storeManager
-     * @param  RequestInterface $request
-     * @param  Store $store,
-     * @param  array $data
-     * */
+
     public function __construct(
         Context $context, // required as part of the Magento\Backend\Block\Template constructor
         NitroServiceInterface $nitro, // dependency injection'ed

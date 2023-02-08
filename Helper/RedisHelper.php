@@ -14,10 +14,7 @@ class RedisHelper
      * @var \Magento\Framework\App\DeploymentConfig
      * */
     protected $deploymentConfig;
-    /**
-     * @param  \Magento\Framework\App\DeploymentConfig $deploymentConfig
-     * @param RedisConnectionValidator $redisValidator
-     * */
+
     public function __construct(
         \Magento\Framework\App\DeploymentConfig $deploymentConfig,
         RedisConnectionValidator $redisValidator

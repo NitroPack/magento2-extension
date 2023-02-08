@@ -3,10 +3,12 @@
 namespace NitroPack\NitroPack\Helper;
 
 use Magento\Framework\App\Area;
-
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Filesystem\DirectoryList;
+use Magento\Setup\Validator\RedisConnectionValidator;
 use Magento\Store\Model\StoreManagerInterface;
 use NitroPack\HttpClient\HttpClient;
 use NitroPack\NitroPack\Api\NitroService;
@@ -16,8 +18,18 @@ use Psr\Log\LoggerInterface;
 class ApiHelper extends AbstractHelper
 
 {
-
-
+    /**
+     * @var RequestInterface
+     */
+    private $request;
+    /**
+     * @var ScopeConfigInterface
+     * */
+    private $_scopeConfig;
+    /**
+     * @var \Magento\Framework\App\DeploymentConfig
+     */
+    private $deploymentConfig;
     /**
      * @var \Magento\Framework\App\State
      */
@@ -38,6 +50,10 @@ class ApiHelper extends AbstractHelper
     protected $serializer;
 
     /**
+     * @var RedisConnectionValidator
+     */
+    private $redisValidator;
+    /**
      * @var \Magento\Framework\App\ProductMetadataInterface
      * */
     private $productMetaData;
@@ -46,15 +62,6 @@ class ApiHelper extends AbstractHelper
      * */
     private $logger;
 
-    /**
-     * @param Context $context
-     * @param \Magento\Framework\App\State $state
-     * @param DirectoryList $directoryList
-     * @param \Magento\Framework\Filesystem\Driver\File $fileDriver
-     * @param \Magento\Framework\Serialize\SerializerInterface $serializer
-     * @param LoggerInterface $logger
-     * @param \Magento\Framework\App\ProductMetadataInterface $productMetaData
-     * */
     public function __construct(
         Context $context,
         \Magento\Framework\App\State $state,

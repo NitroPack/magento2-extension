@@ -1,14 +1,11 @@
 <?php
-
 namespace NitroPack\NitroPack\Controller\Webhook;
 
-class Config extends WebhookController
-{
+class Config extends WebhookController {
 
-    public function execute()
-    {
-        $this->nitro->fetchConfig();
-        return $this->textResponse('ok');
-    }
+	public function execute() {
+		$this->nitro->fetchConfig();
+		return $this->textResponse('ok');
+	}
 
 }

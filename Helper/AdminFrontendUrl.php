@@ -23,12 +23,6 @@ class AdminFrontendUrl extends AbstractHelper
      * */
     protected $store;
 
-    /**
-     * @param Context $context
-     * @param StoreManagerInterface $storeManager
-     * @param Url $urlHelper
-     * @param Store $store
-     * */
     public function __construct(Context $context, StoreManagerInterface $storeManager, Url $urlHelper, Store $store)
     {
         parent::__construct($context);

@@ -10,20 +10,11 @@ use NitroPack\NitroPack\Api\NitroServiceInterface;
 
 class Disconnect extends StoreAwareAction
 {
-    /**
-     * @var JsonFactory
-     * */
     protected $resultJsonFactory;
+    protected $store;
 
-    protected $storeGroup;
-    /**
-     * @var NitroServiceInterface
-     * */
     protected $nitro;
-    /**
-     * @param Context $context
-     * @param NitroServiceInterface $nitro
-     * */
+
     public function __construct(
         Context $context,
         NitroServiceInterface $nitro
@@ -43,6 +34,7 @@ class Disconnect extends StoreAwareAction
             $this->nitro->getApi()->unsetWebhook("config");
             $this->nitro->getApi()->unsetWebhook("cache_clear");
             $this->nitro->getApi()->unsetWebhook("cache_ready");
+
             $eventUrl = $this->nitro->integrationUrl('extensionEvent');
             $eventSent = $this->nitro->nitroEvent('disconnect', $eventUrl, $this->storeGroup);
             $this->nitro->purgeLocalCache(true);

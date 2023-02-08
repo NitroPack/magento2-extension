@@ -10,6 +10,7 @@ use Magento\Framework\ObjectManagerInterface;
 use NitroPack\NitroPack\Helper\RedisHelper;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Customer\Model\Session;
+use Magento\Checkout\Model\Cart;
 use Psr\Log\LoggerInterface;
 use \NitroPack\SDK\Api\Varnish as NitroPackVarnish;
 use \NitroPack\SDK\NitroPack;
@@ -29,8 +30,8 @@ class NitroService implements NitroServiceInterface
     const FULL_PAGE_CACHE_NITROPACK_VALUE = 3;
     public const XML_VARNISH_PAGECACHE_ACCESS_LIST = 'system/full_page_cache/varnish_nitro/access_list';
     public const XML_VARNISH_PAGECACHE_BACKEND_HOST = 'system/full_page_cache/varnish_nitro/backend_host';
-
     protected static $pageRoutes = array(
+        // (full action name) => 'settingName'
         'cms_index_index' => 'home',
         'catalog_product_view' => 'product',
         'catalog_category_view' => 'category',
@@ -47,6 +48,7 @@ class NitroService implements NitroServiceInterface
     protected $sdk = null;
     protected $loadedStoreCode = null;
     protected $varnish = null;
+
     /**
      * @var StoreManagerInterface
      * */
@@ -105,20 +107,6 @@ class NitroService implements NitroServiceInterface
      * */
     protected $store;
 
-    /**
-     * @param ObjectManagerInterface $objectManager
-     * @param State $appState
-     * @param DirectoryList $directoryList
-     * @param \Magento\Framework\Filesystem\Driver\File $fileDriver
-     * @param \Magento\Framework\Serialize\SerializerInterface $serializer
-     * @param LoggerInterface $logger
-     * @param \Magento\Framework\App\DeploymentConfig $deploymentConfig
-     * @param RedisHelper $redisHelper
-     * @param ScopeConfigInterface $_scopeConfig
-     * @param UrlInterface $urlBuilder
-     * @param \Magento\Store\Model\Store $store
-     * @param RequestInterface $request
-     * */
     public function __construct(
         ObjectManagerInterface $objectManager,
         State $appState,
@@ -587,6 +575,21 @@ class NitroService implements NitroServiceInterface
         return new NitroPack($this->settings->siteId, $this->settings->siteSecret, null, $url, $cachePath);
     }
 
+    private function getUrl()
+    {
+        return $this->getScheme() . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    }
+
+    private function getScheme()
+    {
+        return $this->isSecure() ? 'https://' : 'http://';
+    }
+
+    private function isSecure()
+    {
+        return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443;
+    }
+
     public function nitroEvent($event, $integrationUrl, $storeGroup = null, $additional_meta_data = null)
     {
         try {
@@ -634,9 +637,33 @@ class NitroService implements NitroServiceInterface
         return new NitroPackVarnish($this->settings->siteId, $this->settings->siteSecret);
     }
 
+    public function getCacheUrl()
+    {
+        $configuredHosts = $this->deploymentConfig->get(ConfigOptionsListConstants::CONFIG_PATH_CACHE_HOSTS);
+
+        if (is_array($configuredHosts)) {
+            foreach ($configuredHosts as $host) {
+                $port = isset($host['port']) ? $host['port'] : '80';
+                $servers[] = $host['host'] . ':' . $port;
+            }
+        } elseif ($this->request->getHttpHost()) {
+            $servers[] = $this->request->getHttpHost() . ':80';
+        } else {
+            $servers[] = $this->urlBuilder->getUrl('*', ['_nosid' => true]);
+        }
+        return $servers;
+    }
+
+
+    public function purgeAllUrl()
+    {
+        return $this->urlBuilder->getUrl('nitropack/purge');
+    }
+
+
     public function isCheckCartRoute($route)
     {
-        if (strpos(strtolower($route), '/checkout') !== false) {
+        if (strpos(strtolower($route),'/checkout') !==  false) {
             return true;
         }
         return false;

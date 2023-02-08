@@ -43,18 +43,6 @@ class SettingsBlock extends Template
      * @var Store
      * */
     protected $store;
-
-    /***
-     * @param Context $context
-     * @param NitroServiceInterface $nitro
-     * @param UrlInterface $backendUrl
-     * @param StoreManagerInterface $storeManager
-     * @param RequestInterface $request
-     * @param ScopeConfigInterface $scopeConfig
-     * @param TypeListInterface $cacheTypeList
-     * @param Store $store
-     * @param array $data
-     **/
     public function __construct(
         Context $context, // required as part of the Magento\Backend\Block\Template constructor
         NitroServiceInterface $nitro, // dependency injection'ed
@@ -79,6 +67,7 @@ class SettingsBlock extends Template
 
     public function getSettings()
     {
+
         $this->nitro->reload($this->_storeManager->getGroup($this->getRequest()->getParam('group'))->getCode());
         return $this->nitro->getSettings();
     }
@@ -193,12 +182,12 @@ class SettingsBlock extends Template
         $group = $this->_storeManager->getGroup($storeGroupId);
         $url = '';
 
-        $defaultStoreView = $this->_storeManager->getStore($group->getDefaultStoreId());
-        $url = $this->store->isUseStoreInUrl() ? str_replace(
-            $defaultStoreView->getCode() . '/',
-            '',
-            $defaultStoreView->getBaseUrl()
-        ) : $defaultStoreView->getBaseUrl(); // get store view name
+            $defaultStoreView = $this->_storeManager->getStore($group->getDefaultStoreId());
+            $url = $this->store->isUseStoreInUrl() ? str_replace(
+                $defaultStoreView->getCode() . '/',
+                '',
+                $defaultStoreView->getBaseUrl()
+            ) : $defaultStoreView->getBaseUrl(); // get store view name
 
 
         return $url;
@@ -242,6 +231,8 @@ class SettingsBlock extends Template
         $stats['is_warmup_active'] = (bool)$stats['status'] && (bool)$stats['pending'];
         return $stats;
     }
+
+
 
 
     public function getCacheLabels()

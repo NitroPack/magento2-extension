@@ -9,6 +9,8 @@ use Psr\Log\LoggerInterface;
 
 class BacklogStaleCache
 {
+
+
     /**
      * @var NitroServiceInterface
      * */
@@ -35,12 +37,6 @@ class BacklogStaleCache
      * */
     protected $logger;
 
-    /**
-     * @param NitroServiceInterface $nitro
-     * @param StoreManagerInterface $storeManager
-     * @param RedisHelper $redisHelper
-     * @param LoggerInterface $logger
-     * */
     public function __construct(
         NitroServiceInterface $nitro,
         StoreManagerInterface $storeManager,

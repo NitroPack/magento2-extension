@@ -61,21 +61,6 @@ class InvalidationHelper extends AbstractHelper
      * @var UrlInterface
      * */
     protected $_backendUrl;
-    /**
-     *
-     * @param  Context $context
-     * @param  Shell $shell
-     * @param  \Magento\Store\Api\GroupRepositoryInterface $storeGroupRepo
-     * @param DirectoryList $directoryList
-     * @param \Magento\Cron\Model\ResourceModel\Schedule\CollectionFactory $cronFactory
-     * @param ApiHelper $apiHelper
-     * @param \Magento\Store\Api\GroupRepositoryInterface $storeGroupRepository
-     * @param ScopeConfigInterface $_scopeConfig
-     * @param StateInterface $_cacheState
-     * @param \Magento\Framework\Filesystem\Driver\File $fileDriver
-     * @param UrlInterface $backendUrl
-     * @param \Magento\Framework\Serialize\SerializerInterface $serializer
-     * */
 
     public function __construct(
         Context $context,
@@ -217,7 +202,6 @@ class InvalidationHelper extends AbstractHelper
     {
         return $this->_backendUrl->getUrl('NitroPack/connect/index', ['group' => $id]);
     }
-
     public function checkHavePreviouslyConnected()
     {
         $rootPath = $this->directoryList->getPath('var') . DIRECTORY_SEPARATOR;

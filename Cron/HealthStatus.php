@@ -21,17 +21,12 @@ class HealthStatus
      * @var LoggerInterface
      * */
     protected $logger;
-
-    /**
-     * @param NitroServiceInterface $nitro
-     * @param LoggerInterface $logger
-     * */
     public function __construct(
         NitroServiceInterface $nitro,
         LoggerInterface $logger
     ) {
         $this->nitro = $nitro;
-        $this->logger = $logger;
+        $this->logger= $logger;
     }
 
     public function execute()
