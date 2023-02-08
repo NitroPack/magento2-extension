@@ -27,7 +27,18 @@ class CacheCleanHelper extends AbstractHelper
      * @var TaggingServiceInterface
      * */
     protected $tagger;
+    /**
+     * @var StoreManagerInterface
+     * */
+    protected $storeManager;
 
+    /**
+     * @param Context $context
+     * @param LoggerInterface $logger
+     * @param NitroServiceInterface $nitro
+     * @param TaggingServiceInterface $tagger
+     * @param StoreManagerInterface $storeManager
+     * */
     public function __construct(
         Context $context,
         LoggerInterface $logger,

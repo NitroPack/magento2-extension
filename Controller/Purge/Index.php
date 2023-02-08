@@ -10,7 +10,7 @@ use NitroPack\NitroPack\Helper\VarnishHelper;
 
 class Index extends Action
 {
-    protected $_shell;
+
     /**
      * @var RequestInterface
      * */
@@ -19,9 +19,19 @@ class Index extends Action
      * @var VarnishHelper
      * */
     protected $varnishHelper;
-
+<<<<<<< HEAD
+    /*
+=======
+    /**
+     * @var JsonFactory
+>>>>>>> master
+     * */
     protected $resultJsonFactory;
-
+    /**
+     * @param Context $context
+     * @param VarnishHelper $varnishHelper
+     * @param RequestInterface $request
+     * */
     public function __construct(
         Context $context,
         VarnishHelper $varnishHelper,

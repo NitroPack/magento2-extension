@@ -53,6 +53,17 @@ class NitroPackConfigHelper extends AbstractHelper
      * */
     protected $request;
 
+    /**
+     * @param Context $context
+     * @param \Magento\Framework\App\State $state
+     * @param NitroServiceInterface $nitro
+     * @param StateInterface $_cacheState
+     * @param DirectoryList $directoryList
+     * @param RequestInterface $request
+     * @param \Magento\Framework\Filesystem\Driver\File $fileDriver
+     * @param ScopeConfigInterface $_scopeConfig
+     * @param \Magento\Framework\Serialize\SerializerInterface $serializer
+     * */
     public function __construct(
         Context $context,
         \Magento\Framework\App\State $state,
@@ -84,7 +95,6 @@ class NitroPackConfigHelper extends AbstractHelper
         }
         return $caches;
     }
-
 
 
     public function getFullPageCacheValue()
