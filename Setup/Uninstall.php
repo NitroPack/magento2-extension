@@ -31,7 +31,7 @@ class Uninstall implements UninstallInterface
      * */
     protected $varnishHelper;
     /**
-     * @var \Magento\Framework\Filesystem\DriverInterface
+     * @var  \Magento\Framework\Filesystem\Driver\File
      * */
     protected $fileDriver;
     /**
@@ -45,7 +45,7 @@ class Uninstall implements UninstallInterface
 
     public function __construct(
         \NitroPack\NitroPack\Model\NitroPackEvent\Trigger $trigger,
-        \Magento\Framework\Filesystem\DriverInterface $fileDriver,
+        \Magento\Framework\Filesystem\Driver\File $fileDriver,
         WriterInterface $configWriter,
         VarnishHelper $varnishHelper,
         \NitroPack\NitroPack\Helper\ApiHelper $apiHelper,
