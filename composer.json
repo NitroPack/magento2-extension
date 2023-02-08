@@ -29,9 +29,5 @@
         "psr-4": {
             "NitroPack\\NitroPack\\": ""
         }
-    },
-    "extra": {
-        "class": "NitroPack\\NitroPack\\ComposerUninstall"
-
     }
 }
