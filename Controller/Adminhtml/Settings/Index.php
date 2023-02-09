@@ -32,13 +32,6 @@ class Index extends StoreAwareAction
      */
     private $objectManager;
 
-    /**
-     * @param Context $context
-     * @param PageFactory $resultPageFactory
-     * @param ScopeConfigInterface $_scopeConfig
-     * @param ObjectManagerInterface $objectManager
-     * @param NitroServiceInterface $nitro
-     * */
     public function __construct(
         Context $context,
         PageFactory $resultPageFactory,
