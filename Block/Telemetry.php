@@ -43,6 +43,17 @@ class Telemetry extends Template
      */
     private $serializer;
 
+    /**
+     * @param Context $context
+     * @param \Magento\Framework\Filesystem\DirectoryList $directoryList
+     * @param \Magento\Framework\Filesystem\Driver\File $driverFile
+     * @param \NitroPack\NitroPack\Model\Telemetry\Reason $reason
+     * @param \Magento\Framework\App\ResponseInterface $header
+     * @param NitroServiceInterface $nitro
+     * @param RequestInterface $request
+     * @param SerializerInterface $serializer
+     * @param array $data
+     * */
     public function __construct(
         Context $context,
         \Magento\Framework\Filesystem\DirectoryList $directoryList,

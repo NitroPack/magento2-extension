@@ -22,7 +22,11 @@ class VarnishHelper extends AbstractHelper
      * @var RequestInterface
      * */
     protected $request;
-
+    /**
+     * @param Context $context
+     * @param RequestInterface $request
+     * @param ScopeConfigInterface $_scopeConfig
+     * */
     public function __construct(
         Context $context,
         RequestInterface $request,
