@@ -2,9 +2,8 @@
     "name": "nitropack/magento2-extension",
     "description": "The official NitroPack extension for Magento 2.3 and Magento 2.4.",
     "require": {
-        "nitropack/nitropackcloud-sdk": "^0.53.0"
-    },
-    "require-dev": {
+        "php": ">=7.4.0",
+        "ext-curl": "*",
         "nitropack/nitropackcloud-sdk": "^0.53.0"
     },
     "type": "magento2-module",
@@ -20,8 +19,11 @@
         "ecommerce",
         "cdn"
     ],
+    "homepage": "https://github.com/NitroPack/magento2-extension",
+    "authors": [{"name": "NitroPack Support", "email": "support@nitropack.com", "homepage": "https://nitropack.com"}],
     "version": "2.1.0",
     "license": "MIT",
+
     "autoload": {
         "files": [
             "registration.php"
