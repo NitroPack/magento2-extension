@@ -22,7 +22,10 @@ class Support extends Action
      * @var AdminFrontendUrl
      * */
     protected $urlHelper;
-
+    /**
+     * @param Context $context
+     * @param PageFactory $resultPageFactory
+     * */
     public function __construct(
         Context $context,
         PageFactory $resultPageFactory

@@ -15,7 +15,9 @@ use Magento\Framework\App\Config\Storage\WriterInterface;
 
 class EnableCaches extends StoreAwareAction
 {
-
+    /**
+     * @var JsonFactory
+     * */
     protected $resultJsonFactory;
     /**
      * @var NitroServiceInterface
@@ -49,6 +51,16 @@ class EnableCaches extends StoreAwareAction
      * @var \Magento\Framework\App\Cache\Frontend\Pool
      * */
     protected $cacheFrontendPool;
+    /**
+     * @param Context $context
+     * @param NitroServiceInterface $nitro
+     * @param TypeListInterface $cacheTypeList
+     * @param NitroPackConfigHelper $_helper
+     * @param ScopeConfigInterface $_scopeConfig
+     * @param WriterInterface $configWriter
+     * @param StateInterface $cacheState
+     * @param \Magento\Framework\App\Cache\Frontend\Pool $cacheFrontendPool
+     * */
     public function __construct(
         Context $context,
         NitroServiceInterface $nitro,
