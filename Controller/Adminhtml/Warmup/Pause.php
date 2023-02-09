@@ -10,13 +10,19 @@ use NitroPack\NitroPack\Api\NitroServiceInterface;
 
 class Pause extends StoreAwareAction
 {
-
+    /**
+     * @var JsonFactory
+     * */
     protected $resultJsonFactory;
     /**
      * @var NitroServiceInterface
      * */
     protected $nitro;
 
+    /**
+     * @param Context $context
+     * @param NitroServiceInterface $nitro
+     * */
     public function __construct(
         Context $context,
         NitroServiceInterface $nitro

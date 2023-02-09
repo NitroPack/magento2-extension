@@ -40,6 +40,13 @@ class AgainUpdateCredential extends Action
     protected $_helper;
     protected $store;
 
+    /**
+     * @param Context $context
+     * @param NitroServiceInterface $nitro
+     * @param AdminFrontendUrl $urlHelper
+     * @param NitroPackConfigHelper $_helper
+     * @param StoreManagerInterface $storeManager
+     * */
     public function __construct(
         Context $context,
         NitroServiceInterface $nitro,

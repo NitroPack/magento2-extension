@@ -17,15 +17,16 @@ abstract class StoreAwareAction extends Action
     protected $storeManager = null;
     protected $usedDefaultStore = false;
 
-
+    /**
+     * @param Context $context
+     * @param NitroServiceInterface $nitro
+     * */
     public function __construct(
         Context $context,
         NitroServiceInterface $nitro
     ) {
         parent::__construct($context);
         $this->nitro = $nitro;
-
-
         $this->storeManager = $this->_objectManager->get(StoreManagerInterface::class);
     }
 
@@ -37,7 +38,6 @@ abstract class StoreAwareAction extends Action
             // This happens when the user has selected "All store views", use the default configured store
             // @TODO the user should be notified that they're editing the settings for the default store view, not all store views
             $storeGroupId = $this->storeManager->getGroup()->getId();
-
             $this->usedDefaultStore = true;
         }
 
@@ -45,9 +45,7 @@ abstract class StoreAwareAction extends Action
         $fileDriver = $this->_objectManager->get(\Magento\Framework\Filesystem\Driver\File::class);
         $settingsFilename = $this->nitro->getSettingsFilename($this->storeGroup->getCode());
         try {
-
-                $this->nitro->reload($this->storeGroup->getCode());
-
+            $this->nitro->reload($this->storeGroup->getCode());
         } catch (\Exception $e) {
             if ($fileDriver->isExists($settingsFilename)) {
                 $this->messageManager->addErrorMessage("Nitropack:" . $e->getMessage());
