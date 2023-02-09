@@ -27,18 +27,10 @@ class RemoteCache extends Template
      * */
     protected $nitro;
     /**
-     * @var \Magento\Framework\UrlInterface
+     * @var   \Magento\Framework\UrlInterface
      * */
     protected $urlInterface;
 
-    /**
-     * @param Context $context ,
-     * @param \Magento\Framework\App\ResponseInterface $response
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
-     * @param RequestInterface $request
-     * @param NitroServiceInterface $nitro ,
-     * @param \Magento\Framework\UrlInterface $urlInterface ,
-     * */
     public function __construct(
         Context $context,
         \Magento\Framework\App\ResponseInterface $response,
@@ -46,6 +38,7 @@ class RemoteCache extends Template
         RequestInterface $request,
         NitroServiceInterface $nitro,
         \Magento\Framework\UrlInterface $urlInterface,
+
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -101,7 +94,6 @@ class RemoteCache extends Template
         $settings = $this->nitro->getSettings();
         return $settings->siteId;
     }
-
     public function getSiteSecret()
     {
         $settings = $this->nitro->getSettings();
@@ -111,6 +103,7 @@ class RemoteCache extends Template
     public function getStoreCode()
     {
         $store = $this->storeManager->getStore();
+
         return $store->getCode();
     }
 }
