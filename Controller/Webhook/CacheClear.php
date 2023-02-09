@@ -24,13 +24,14 @@ class CacheClear extends WebhookController
      * @var VarnishHelper
      * */
     protected $varnishHelper;
-
-    public function __construct(
-        Context $context,
-        RequestInterface $request,
-        ScopeConfigInterface $_scopeConfig,
-        VarnishHelper $varnishHelper
-    ) {
+    /**
+     * @param Context $context
+     * @param RequestInterface $request
+     * @param ScopeConfigInterface $_scopeConfig
+     * @param VarnishHelper $varnishHelper
+     * */
+    public function __construct(Context $context, RequestInterface $request, ScopeConfigInterface $_scopeConfig,VarnishHelper $varnishHelper)
+    {
         $this->_scopeConfig = $_scopeConfig;
         $this->request = $request;
         $this->varnishHelper = $varnishHelper;

@@ -24,12 +24,16 @@ class Index extends Action implements HttpGetActionInterface
      * @var VarnishHelper
      * */
     protected $varnishHelper;
-
+    /**
+     * @param  Context $context
+     * @param  VarnishHelper $varnishHelper,
+     * @param  PageFactory $resultPageFactory,
+     * @param  RequestInterface $request
+     * */
     public function __construct(
         Context $context,
         VarnishHelper $varnishHelper,
         PageFactory $resultPageFactory,
-
         RequestInterface $request
     ) {
         $this->request = $request;

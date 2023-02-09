@@ -44,6 +44,14 @@ class Save extends StoreAwareAction
 
     protected $store = null;
 
+    /**
+     * @param Context $context ,
+     * @param RequestInterface $request ,
+     * @param NitroServiceInterface $nitro ,
+     * @param AdminFrontendUrl $urlHelper ,
+     * @param SitemapHelper $sitemapHelper ,
+     * @param NitroPackConfigHelper $nitroPackConfigHelper
+     * */
     public function __construct(
         Context $context,
         RequestInterface $request,
@@ -119,10 +127,11 @@ class Save extends StoreAwareAction
                     $eventUrl = $this->nitro->integrationUrl('extensionEvent');
                     $eventSent = $this->nitro->nitroEvent($event, $eventUrl, $this->store);
                     $resultData['event'] = $eventSent;
-                }else{
-
-                    array_push($additional_meta_data,['setting'=> $option, 'before'=> isset($oldSettings[$option]) ? : null, 'after'=> $value]);
-
+                } else {
+                    array_push(
+                        $additional_meta_data,
+                        ['setting' => $option, 'before' => isset($oldSettings[$option]) ?: null, 'after' => $value]
+                    );
                 }
                 //EVENT TRIGGER
                 $this->nitroPackConfigHelper->setBoolean('previous_extension_status', $value);
@@ -140,11 +149,17 @@ class Save extends StoreAwareAction
             if (is_array($value)) {
                 $this->setArray($option, $value);
                 $shouldSave = true;
-                array_push($additional_meta_data,['setting'=> $option, 'before'=> isset($oldSettings[$option]) ? : null, 'after'=> $value]);
-            } elseif ($value  === "") {
+                array_push(
+                    $additional_meta_data,
+                    ['setting' => $option, 'before' => isset($oldSettings[$option]) ?: null, 'after' => $value]
+                );
+            } elseif ($value === "") {
                 $this->setArray($option, array());
                 $shouldSave = true;
-                array_push($additional_meta_data,['setting'=> $option, 'before'=> isset($oldSettings[$option]) ? : null, 'after'=> $value]);
+                array_push(
+                    $additional_meta_data,
+                    ['setting' => $option, 'before' => isset($oldSettings[$option]) ?: null, 'after' => $value]
+                );
             } else {
                 $resultData['nope'] = $value;
                 return $this->resultJsonFactory->create()->setData($resultData);
