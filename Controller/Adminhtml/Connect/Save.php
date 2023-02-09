@@ -5,32 +5,25 @@ namespace NitroPack\NitroPack\Controller\Adminhtml\Connect;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
+
 use Magento\Framework\Filesystem\DirectoryList;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Store\Model\Store;
 use NitroPack\NitroPack\Controller\Adminhtml\StoreAwareAction;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
 use NitroPack\NitroPack\Helper\AdminFrontendUrl;
+
 use NitroPack\Url\Url as NitropackUrl;
 
 //use \NitroPack\SDK\NitroPack;
 
 class Save extends StoreAwareAction
 {
-    /**
-     * @var NitroServiceInterface
-     * */
-    protected $nitro;
-    /**
-     * @var AdminFrontendUrl
-     * */
-    protected $urlHelper;
-    /**
-     * @var JsonFactory
-     * */
-    protected $resultJsonFactory;
 
-    protected $request = null;
+    protected $nitro;
+    protected $urlHelper;
+    protected $resultJsonFactory;
+    protected $request;
 
     protected $siteId = null;
     protected $siteSecret = null;
@@ -43,24 +36,9 @@ class Save extends StoreAwareAction
      * @var ObjectManagerInterface
      * */
     private $objectManager;
-    /**
-     * @var \Magento\Framework\Filesystem\Driver\File
-     * */
     protected $fileDriver;
-    /**
-     * @var DirectoryList
-     * */
-    protected $directoryList;
 
-    /**
-     * @param Context $context
-     * @param NitroServiceInterface $nitro
-     * @param AdminFrontendUrl $urlHelper
-     * @param ObjectManagerInterface $objectManager
-     * @param DirectoryList $directoryList
-     * @param \Magento\Framework\Filesystem\Driver\File $fileDriver
-     * @param ScopeConfigInterface $_scopeConfig
-     * */
+    protected $directoryList;
     public function __construct(
         Context $context,
         NitroServiceInterface $nitro,

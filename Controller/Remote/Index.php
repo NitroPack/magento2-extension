@@ -37,15 +37,6 @@ class Index extends Action implements HttpPostActionInterface
      * */
     protected $storeRepository;
 
-    /**
-     * @param Context $context
-     * @param NitroServiceInterface $nitro
-     * @param VarnishHelper $varnishHelper
-     * @param ScopeConfigInterface $scopeConfig
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
-     * @param \Magento\Store\Api\StoreRepositoryInterface $storeRepository
-     * @param RequestInterface $request
-     * */
     public function __construct(
         Context $context,
         NitroServiceInterface $nitro,
@@ -53,6 +44,7 @@ class Index extends Action implements HttpPostActionInterface
         ScopeConfigInterface $scopeConfig,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Store\Api\StoreRepositoryInterface $storeRepository,
+
         RequestInterface $request
     ) {
         $this->nitro = $nitro;
