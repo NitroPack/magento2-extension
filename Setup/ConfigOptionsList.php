@@ -88,7 +88,7 @@ class ConfigOptionsList implements ConfigOptionsListInterface
                 TextConfigOption::FRONTEND_WIZARD_TEXT,
                 self::CONFIG_PATH__NITROPACK_CACHE_REDIS_DB,
                 'Storage Type DB Value',
-                '2'
+                '3'
             ),
         ];
     }
@@ -188,7 +188,11 @@ class ConfigOptionsList implements ConfigOptionsListInterface
                 self::CONFIG_PATH__NITROPACK_CACHE_REDIS_PASS,
                 $this->getDefaultConfigValue(self::NITROPACK_CACHE_REDIS_PASS)
             );
-
+        //Additional check for Magento Cloud
+        if (!$this->redisValidator->isValidConnection($config)) {
+            $config['host'] = 'redis';
+            return $this->redisValidator->isValidConnection($config);
+        }
         return $this->redisValidator->isValidConnection($config);
     }
 
