@@ -16,13 +16,16 @@ class ConfigOptionsList implements ConfigOptionsListInterface
     private const NITROPACK_CACHE_STORAGE_TYPE_VALUE = 'redis';
     private const CONFIG_PATH__NITROPACK_CACHE_STORAGE_TYPE = 'nitropack/cache/storage_type';
     private const NITROPACK_CACHE_REDIS_HOST = 'nitropack-cache-redis_host';
+    private const NITROPACK_CACHE_REDIS_HOST_DEFAULT = '127.0.0.1';
     private const CONFIG_PATH__NITROPACK_CACHE_REDIS_HOST = 'nitropack/cache/redis_host';
     private const NITROPACK_CACHE_REDIS_PORT = 'nitropack-cache-redis_port';
+    private const NITROPACK_CACHE_REDIS_PORT_DEFAULT = '6379';
     private const CONFIG_PATH__NITROPACK_CACHE_REDIS_PORT = 'nitropack/cache/redis_port';
     private const NITROPACK_CACHE_REDIS_PASS = 'nitropack-cache-redis_pass';
+    private const NITROPACK_CACHE_REDIS_PASS_DEFAULT = null;
     private const CONFIG_PATH__NITROPACK_CACHE_REDIS_PASS = 'nitropack/cache/redis_pass';
-
     private const NITROPACK_CACHE_REDIS_DB = 'nitropack-cache-redis_db';
+    private const NITROPACK_CACHE_REDIS_DB_DEFAULT = null;
     private const CONFIG_PATH__NITROPACK_CACHE_REDIS_DB = 'nitropack/cache/redis_db';
 
     public const CONFIG_PATH_PAGE_CACHE_BACKEND = 'cache/frontend/page_cache/backend';
@@ -67,28 +70,28 @@ class ConfigOptionsList implements ConfigOptionsListInterface
                 TextConfigOption::FRONTEND_WIZARD_TEXT,
                 self::CONFIG_PATH__NITROPACK_CACHE_REDIS_HOST,
                 'Cache Redis Host Value',
-                '127.0.0.1'
+                self::NITROPACK_CACHE_REDIS_HOST_DEFAULT
             ),
             new TextConfigOption(
                 self::NITROPACK_CACHE_REDIS_PORT,
                 TextConfigOption::FRONTEND_WIZARD_TEXT,
                 self::CONFIG_PATH__NITROPACK_CACHE_REDIS_PORT,
                 'Cache redis Port Value',
-                '6379'
+                self::NITROPACK_CACHE_REDIS_PORT_DEFAULT
             ),
             new TextConfigOption(
                 self::NITROPACK_CACHE_REDIS_PASS,
                 TextConfigOption::FRONTEND_WIZARD_TEXT,
                 self::CONFIG_PATH__NITROPACK_CACHE_REDIS_PASS,
                 'Storage Type Password',
-                null
+                self::NITROPACK_CACHE_REDIS_PASS_DEFAULT
             ),
             new TextConfigOption(
                 self::NITROPACK_CACHE_REDIS_DB,
                 TextConfigOption::FRONTEND_WIZARD_TEXT,
                 self::CONFIG_PATH__NITROPACK_CACHE_REDIS_DB,
                 'Storage Type DB Value',
-                '3'
+                self::NITROPACK_CACHE_REDIS_DB_DEFAULT
             ),
         ];
     }
@@ -113,11 +116,29 @@ class ConfigOptionsList implements ConfigOptionsListInterface
     public function createConfig(array $options, DeploymentConfig $deploymentConfig)
     {
         $configData = new ConfigData(ConfigFilePool::APP_ENV);
-
+        $defaultHostChange =false;
+        if (isset($options[self::NITROPACK_CACHE_REDIS_HOST]) && isset($options[self::NITROPACK_CACHE_REDIS_PORT])) {
+            $config = [
+                'host' => self::NITROPACK_CACHE_REDIS_HOST_DEFAULT,
+                'port' => self::NITROPACK_CACHE_REDIS_PORT_DEFAULT,
+                'db' => self::NITROPACK_CACHE_REDIS_DB_DEFAULT,
+                'password' => self::NITROPACK_CACHE_REDIS_PASS_DEFAULT,
+            ];
+            if (!$this->redisValidator->isValidConnection($config)) {
+                $config['host'] = 'redis';
+                if ($this->redisValidator->isValidConnection($config)) {
+                    $defaultHostChange = true;
+                }
+            }
+        }
 
         foreach (self::$map as $inputKey => $configPath) {
             if (isset($options[$inputKey])) {
-                $configData->set($configPath, $options[$inputKey]);
+                if ($defaultHostChange && $configPath == self::CONFIG_PATH__NITROPACK_CACHE_REDIS_HOST) {
+                    $configData->set($configPath, 'redis');
+                } else {
+                    $configData->set($configPath, $options[$inputKey]);
+                }
             }
         }
 
@@ -191,6 +212,7 @@ class ConfigOptionsList implements ConfigOptionsListInterface
         //Additional check for Magento Cloud
         if (!$this->redisValidator->isValidConnection($config)) {
             $config['host'] = 'redis';
+
             return $this->redisValidator->isValidConnection($config);
         }
         return $this->redisValidator->isValidConnection($config);
