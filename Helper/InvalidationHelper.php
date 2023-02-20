@@ -138,7 +138,7 @@ class InvalidationHelper extends AbstractHelper
         foreach ($crontabCollection->getData() as $crontabCollectionValue) {
             $to_time = strtotime($crontabCollectionValue['executed_at']);
             $from_time = time();
-            if (round(abs($to_time - $from_time) / 60, 2) <= 10) {
+            if (round(abs($to_time - $from_time) / $this->cacheTtl, 2) <= 10) {
                 $cronSetup = true;
             }
         }
