@@ -148,7 +148,7 @@ class NitroService implements NitroServiceInterface
                             self::FULL_PAGE_CACHE_NITROPACK
                         ) == self::FULL_PAGE_CACHE_NITROPACK_VALUE
                         && isset($_SERVER['HTTP_X_VARNISH'])
-                    ) {
+                     && !is_null( $this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_BACKEND_HOST))) {
                         $backendServer = explode(
                             ',',
                             $this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_BACKEND_HOST)
