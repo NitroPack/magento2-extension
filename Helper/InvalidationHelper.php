@@ -170,18 +170,24 @@ class InvalidationHelper extends AbstractHelper
             if ($haveData) {
                 $this->settings = json_decode($haveData);
                 if (isset($this->settings->enabled)) {
+                    $triggerEnabled=false;
+                    if( $serviceEnable!=$this->settings->enabled){
+                        $triggerEnabled = true;
+                    }
                     if (isset($this->settings->previous_extension_status) && !$this->settings->previous_extension_status && $serviceEnable) {
                         $this->settings->enabled = false;
                     } else {
                         $this->settings->enabled = $serviceEnable;
                     }
+                    if($triggerEnabled){
 
-                    $this->apiHelper->triggerEventMultipleStore(
-                        $serviceEnable ? 'enable_extension' : 'disable_extension',
-                        false,
-                        $storesData,
-                        $this->settings
-                    );
+                        $this->apiHelper->triggerEventMultipleStore(
+                            $serviceEnable ? 'enable_extension' : 'disable_extension',
+                            false,
+                            $storesData,
+                            $this->settings
+                        );
+                    }
                     $this->fileDriver->filePutContents(
                         $settingsFilename,
                         $this->serializer->serialize($this->settings)
