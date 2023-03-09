@@ -49,8 +49,19 @@ if ($websites = $block->getWebsites()): ?>
                 <?php
                 if (!isset($secureRenderer)) { ?> onchange="switchScope(this);"<?= /* @noEscape */
                     $block->getUiId() ?><?php
-                } ?> />
+                } ?> <?php
+                if (isset($secureRenderer)) {?>
 
+                    <?= /* @noEscape */
+                    $block->getUiId() ?>
+              <?php  } ?> />
+            <?php if (isset($secureRenderer)) {?>
+            <?= /* @noEscape */ $secureRenderer->renderEventListenerAsTag(
+                'onchange',
+                'switchScope(this);',
+                '#store_switcher'
+            ) ?>
+            <?php } ?>
             <button
                 type="button"
                 class="admin__action-dropdown"
