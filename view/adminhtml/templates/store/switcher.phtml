@@ -31,44 +31,51 @@ if ($websites = $block->getWebsites()): ?>
                    data-role="store-view-id" data-param="<?= $block->escapeHtmlAttr($block->getStoreVarName()) ?>"
                    value="<?= $block->escapeHtml($block->getStoreId()) ?>"
                 <?php
-                if (!isset($secureRenderer)) { ?>  onchange="switchScope(this);"<?= /* @noEscape */
-                    $block->getUiId() ?><?php
-                } ?> />
-
+                if (!isset($secureRenderer)) { ?>  onchange="switchScope(this);" <?php
+                } ?><?= /* @noEscape */
+            $block->getUiId() ?> />
+            <?php if (isset($secureRenderer)) {?>
+                <?= /* @noEscape */ $secureRenderer->renderEventListenerAsTag(
+                    'onchange',
+                    'switchScope(this);',
+                    '#store_switcher'
+                ) ?>
+            <?php } ?>
             <input type="hidden" name="store_group_switcher" id="store_group_switcher"
                    data-role="store-group-id" data-param="<?= $block->escapeHtmlAttr($block->getStoreGroupVarName()) ?>"
                    value="<?= $block->escapeHtml($block->getStoreGroupId()) ?>"
                 <?php
-                if (!isset($secureRenderer)) { ?> onchange="switchScope(this);"<?= /* @noEscape */
-                    $block->getUiId() ?><?php
-                } ?> />
-
+                if (!isset($secureRenderer)) { ?> onchange="switchScope(this);" <?php
+                } ?><?= /* @noEscape */
+            $block->getUiId() ?> />
+            <?php if (isset($secureRenderer)) {?>
+                <?= /* @noEscape */ $secureRenderer->renderEventListenerAsTag(
+                    'onchange',
+                    'switchScope(this);',
+                    '#store_group_switcher'
+                ) ?>
+            <?php } ?>
             <input type="hidden" name="website_switcher" id="website_switcher"
                    data-role="website-id" data-param="<?= $block->escapeHtmlAttr($block->getWebsiteVarName()) ?>"
                    value="<?= $block->escapeHtml($block->getWebsiteId()) ?>"
                 <?php
-                if (!isset($secureRenderer)) { ?> onchange="switchScope(this);"<?= /* @noEscape */
-                    $block->getUiId() ?><?php
-                } ?> <?php
-                if (isset($secureRenderer)) {?>
-
-                    <?= /* @noEscape */
-                    $block->getUiId() ?>
-              <?php  } ?> />
+                if (!isset($secureRenderer)) { ?> onchange="switchScope(this);"<?php
+                } ?> <?= /* @noEscape */
+            $block->getUiId() ?> />
             <?php if (isset($secureRenderer)) {?>
-            <?= /* @noEscape */ $secureRenderer->renderEventListenerAsTag(
-                'onchange',
-                'switchScope(this);',
-                '#store_switcher'
-            ) ?>
+                <?= /* @noEscape */ $secureRenderer->renderEventListenerAsTag(
+                    'onchange',
+                    'switchScope(this);',
+                    '#website_switcher'
+                ) ?>
             <?php } ?>
             <button
-                type="button"
-                class="admin__action-dropdown"
-                data-mage-init='{"dropdown":{}}'
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                id="store-change-button">
+                    type="button"
+                    class="admin__action-dropdown"
+                    data-mage-init='{"dropdown":{}}'
+                    data-toggle="dropdown"
+                    aria-haspopup="true"
+                    id="store-change-button">
                 <?= $block->escapeHtml($currentStoreName) ?>
             </button>
             <ul class="dropdown-menu" data-role="stores-list">
