@@ -160,7 +160,7 @@ class ConfigOptionsList implements ConfigOptionsListInterface
         $errors = [];
 
 
-        if (isset($options[self::NITROPACK_CACHE_STORAGE_TYPE])) {
+        if (isset($options[self::NITROPACK_CACHE_REDIS_DB_DEFAULT]) && !is_null($options[self::NITROPACK_CACHE_REDIS_DB_DEFAULT])  && isset($options[self::NITROPACK_CACHE_STORAGE_TYPE])) {
             if ($options[self::NITROPACK_CACHE_STORAGE_TYPE] == self::NITROPACK_CACHE_STORAGE_TYPE_VALUE) {
                 if (!$this->validateRedisConfig($options, $deploymentConfig)) {
                     $errors[] = 'Invalid Redis configuration. Could not connect to Redis server.';
