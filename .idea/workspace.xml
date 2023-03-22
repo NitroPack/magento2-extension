@@ -32,7 +32,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "//wsl$/Ubuntu-20.04/var/www/html/nitropackcloud-sdk",
+    "last_opened_file_path": "//wsl$/Ubuntu-20.04/var/www/html/magento-latest",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -57,6 +57,7 @@
       <workItem from="1678791437252" duration="1159000" />
       <workItem from="1678794625039" duration="3557000" />
       <workItem from="1679056191574" duration="17000" />
+      <workItem from="1679472891640" duration="1319000" />
     </task>
     <servers />
   </component>

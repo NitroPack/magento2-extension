@@ -28,6 +28,7 @@ class NitroService implements NitroServiceInterface
     const FULL_PAGE_CACHE_NITROPACK = 'system/full_page_cache/caching_application';
     const FULL_PAGE_CACHE_NITROPACK_VALUE = 3;
     public const XML_VARNISH_PAGECACHE_ACCESS_LIST = 'system/full_page_cache/varnish_nitro/access_list';
+    public const XML_VARNISH_PAGECACHE_VARNISH_PORT = 'system/full_page_cache/varnish_nitro/varnish_port';
     public const XML_VARNISH_PAGECACHE_BACKEND_HOST = 'system/full_page_cache/varnish_nitro/backend_host';
 
     protected static $pageRoutes = array(
@@ -166,16 +167,26 @@ class NitroService implements NitroServiceInterface
                             ',',
                             $this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_BACKEND_HOST)
                         );
-                        $backendServer = array_map(function ($backendValue) {
+                        $varnishPortConfig =$this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_VARNISH_PORT);
+                        $backendServer = array_map(function ($backendValue) use($varnishPortConfig) {
                             if ($backendValue == "localhost") {
+                                if($varnishPortConfig!=80){
+                                    return "127.0.0.1:".$varnishPortConfig;
+                                }
                                 return "127.0.0.1";
+
+                            }
+                            if($varnishPortConfig!=80){
+                            return $backendValue.':'.$varnishPortConfig;
                             }
                             return $backendValue;
+
                         }, $backendServer);
 
                         $this->varnish = $this->initializeVarnish();
                         $url = $this->request->isSecure() ? 'https://' . $this->request->getHttpHost(
                             ) : 'http://' . $this->request->getHttpHost();
+
                         $this->varnish->configure([
                             'Servers' => $backendServer,
                             'PurgeAllUrl' => $url,

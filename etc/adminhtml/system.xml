@@ -56,6 +56,15 @@
                             <field id="caching_application">3</field>
                         </depends>
                     </field>
+                    <field id="varnish_port" type="text" translate="label comment" sortOrder="20" showInDefault="1" >
+                        <label>Varnish Port</label>
+                        <comment>Varnish Port If field is empty default value 80 will be saved.
+                        </comment>
+                        <backend_model>NitroPack\NitroPack\Model\System\Backend\VarnishNitroPackConfig</backend_model>
+                        <depends>
+                            <field id="caching_application">3</field>
+                        </depends>
+                    </field>
                     <field id="grace_period" type="text" translate="label comment" sortOrder="30" showInDefault="1">
                         <label>Grace period</label>
                         <comment>Specify grace period in seconds for config file generation. If field is empty default
