@@ -62,7 +62,10 @@ class Trigger
      * @var \Magento\Store\Model\StoreManagerInterface
      * */
      protected $storeManager;
-
+     /**
+      * @var \Magento\Store\Model\Store $store
+      * */
+     protected $store;
     public function __construct(
         \Magento\Store\Api\GroupRepositoryInterface $groupRepository,
         DirectoryList $directoryList,

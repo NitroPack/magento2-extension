@@ -46,7 +46,9 @@ class VarnishConfigAfter
 
     public function afterGetVclFile(\Magento\PageCache\Model\Config $subject, $vclTemplatePath, $returnValue)
     {
-        if (!is_null($this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_NITRO_ENABLED)) && $this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_NITRO_ENABLED)==1) {
+
+
+
             $accessList = $this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_ACCESS_LIST);
             $designExceptions = $this->_scopeConfig->getValue(
                 Config::XML_VARNISH_PAGECACHE_DESIGN_THEME_REGEX,
@@ -65,6 +67,7 @@ class VarnishConfigAfter
             $sslOffloadedHeader = $this->_scopeConfig->getValue(
                 Request::XML_PATH_OFFLOADER_HEADER
             );
+
             $vclGenerator = $this->vclGeneratorFactory->create(
                 [
                     'backendHost' => $this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_BACKEND_HOST),
@@ -76,9 +79,7 @@ class VarnishConfigAfter
                 ]
             );
             return $vclGenerator->generateVcl($version);
-        }
 
-        return $returnValue;
     }
 
 }

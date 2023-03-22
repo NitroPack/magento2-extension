@@ -3,8 +3,10 @@
 namespace NitroPack\NitroPack\Plugin\CacheDelivery;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\App\RequestInterface;
 
+use Magento\Framework\App\Response\Http as ResponseHttp;
 use NitroPack\NitroPack\Api\NitroService;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
 use NitroPack\NitroPack\Observer\CacheTagObserver;
@@ -23,23 +25,54 @@ class LocalCachePlugin
      * @var ScopeConfigInterface
      * */
     protected $_scopeConfig;
+    /**
+     * @var \Magento\Framework\App\Http\Context
+     */
+    private $context;
+    /**
+     * @var   \Magento\Framework\App\Http\ContextFactory
+     * */
+    private $contextFactory;
+    /**
+     * @var \Magento\Framework\App\Response\HttpFactory
+     * */
+    private $httpFactory;
 
+    /**
+     * @param NitroServiceInterface $nitro
+     * @param \Magento\Framework\ObjectManagerInterface $objectManager
+     * @param \Magento\Framework\App\Http\Context|null $context
+     * @param \Magento\Framework\App\Http\ContextFactory|null $contextFactory
+     * @param \Magento\Framework\App\Response\HttpFactory|null $httpFactory
+     * */
     public function __construct(
-        NitroServiceInterface $nitro,
-        \Magento\Framework\ObjectManagerInterface $objectManager,
-        ScopeConfigInterface $_scopeConfig
-    ) {
+        NitroServiceInterface                       $nitro,
+        \Magento\Framework\ObjectManagerInterface   $objectManager,
+        ScopeConfigInterface                        $_scopeConfig,
+        \Magento\Framework\App\Http\Context         $context = null,
+        \Magento\Framework\App\Http\ContextFactory  $contextFactory = null,
+        \Magento\Framework\App\Response\HttpFactory $httpFactory = null
+    )
+    {
         $this->_scopeConfig = $_scopeConfig;
         $this->objectManager = $objectManager;
         $this->nitro = $nitro;
+        $this->context = $context ?? ObjectManager::getInstance()->get(\Magento\Framework\App\Http\Context::class);
+        $this->contextFactory = $contextFactory ?? ObjectManager::getInstance()->get(
+            \Magento\Framework\App\Http\ContextFactory::class
+        );
+        $this->httpFactory = $httpFactory ?? ObjectManager::getInstance()->get(
+            \Magento\Framework\App\Response\HttpFactory::class
+        );
     }
 
     // The RequestInterface below is not injected, it's passed to the dispatch function. We can inject it in the controller, but it is not yet routed, so we should use the one passed in
     public function aroundDispatch(
         \Magento\Framework\App\FrontController $subject,
-        \Closure $proceed,
-        RequestInterface $request
-    ) {
+        \Closure                               $proceed,
+        RequestInterface                       $request
+    )
+    {
         if (headers_sent() || NitroService::isANitroRequest()) {
             return $proceed($request);
         }
@@ -67,8 +100,8 @@ class LocalCachePlugin
             CacheTagObserver::enableObservers();
             return $proceed($request);
         }
-        try{
-
+        try {
+            if ($request->isGet() || $request->isHead()) {
             if ($this->nitro->hasLocalCache()) {
                 header('X-Nitro-Cache: HIT', true);
 
@@ -84,32 +117,18 @@ class LocalCachePlugin
                     header('cache-control: max-age=' . $pageCacheTTL . ', public, s-maxage=' . $pageCacheTTL, true);
                     header('x-magento-tags: ', true);
                 }
-                $this->nitro->pageCache->readfile();
-                exit;
-//            $context = $this->objectManager->create(\Magento\Framework\View\Element\Template\Context::class);
-//            $layoutFactory = $this->objectManager->create(\Magento\Framework\View\LayoutFactory::class);
-//            $template = '';
-//
-//            $layoutReaderPool = $this->objectManager->create(\Magento\Framework\View\Layout\ReaderPool::class);
-//            $translateInline = $this->objectManager->create(\Magento\Framework\Translate\InlineInterface::class);
-//            $layoutBuilderFactory = $this->objectManager->create(\Magento\Framework\View\Layout\BuilderFactory::class);
-//            $generatorPool = $this->objectManager->create(\Magento\Framework\View\Layout\GeneratorPool::class);
-//            $pageConfigRendererFactory = $this->objectManager->create(
-//                \Magento\Framework\View\Page\Config\RendererFactory::class
-//            );
-//            $pageLayoutReader = $this->objectManager->create(\Magento\Framework\View\Page\Layout\Reader::class);
-//            $data = new \Magento\Framework\View\Result\Page(
-//                $context,
-//                $layoutFactory,
-//                $layoutReaderPool,
-//                $translateInline,
-//                $layoutBuilderFactory,
-//                $generatorPool,
-//                $pageConfigRendererFactory,
-//                $pageLayoutReader,
-//                $template
-//            );
-                return '';
+
+                $responseData = [
+                    'content' => $this->nitro->pageCache->readfile(),
+                    'status_code' => 200,
+                    'headers' => [],
+                    'context' => $this->context->toArray()
+
+                ];
+
+
+                return $this->buildResponse($responseData);
+
             } else {
                 if ($this->nitro->getSdk()->getHealthStatus() == "SICK") {
                     //TODO  LOG FILE WILL CREATED self::logException(new \Exception("Health status = SICK."));
@@ -119,7 +138,8 @@ class LocalCachePlugin
                     return $proceed($request);
                 }
             }
-        }catch (\Exception $exception){
+            }
+        } catch (\Exception $exception) {
 
             header('X-Nitro-Disabled: 1', true);
             CacheTagObserver::enableObservers();
@@ -130,4 +150,37 @@ class LocalCachePlugin
         return $proceed($request);
     }
 
+    /**
+     * Build response using response data.
+     *
+     * @param array $responseData
+     * @return \Magento\Framework\App\Response\Http
+     */
+    private function buildResponse($responseData)
+    {
+
+
+        $context = $this->contextFactory->create(
+            [
+                'data' => $responseData['context']['data'],
+                'default' => $responseData['context']['default']
+            ]
+        );
+
+        $response = $this->httpFactory->create(
+            [
+                'context' => $context
+            ]
+        );
+        $response->setStatusCode(200);
+        $response->setContent($responseData['content']);
+//        echo '<pre>';
+//        print_r($responseData['headers']);
+//        exit();
+        foreach ($responseData['headers'] as $headerKey => $headerValue) {
+            $response->setHeader($headerKey, $headerValue, true);
+        }
+
+        return $response;
+    }
 }

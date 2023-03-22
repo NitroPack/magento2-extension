@@ -181,12 +181,12 @@ class InvalidationHelper extends AbstractHelper
                     }
                     if($triggerEnabled){
 
-                        $this->apiHelper->triggerEventMultipleStore(
-                            $serviceEnable ? 'enable_extension' : 'disable_extension',
-                            false,
-                            $storesData,
-                            $this->settings
-                        );
+                    $this->apiHelper->triggerEventMultipleStore(
+                        $serviceEnable ? 'enable_extension' : 'disable_extension',
+                        false,
+                        $storesData,
+                        $this->settings
+                    );
                     }
                     $this->fileDriver->filePutContents(
                         $settingsFilename,

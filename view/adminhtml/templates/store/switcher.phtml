@@ -33,7 +33,7 @@ if ($websites = $block->getWebsites()): ?>
                 <?php
                 if (!isset($secureRenderer)) { ?>  onchange="switchScope(this);" <?php
                 } ?><?= /* @noEscape */
-            $block->getUiId() ?> />
+                    $block->getUiId() ?> />
             <?php if (isset($secureRenderer)) {?>
                 <?= /* @noEscape */ $secureRenderer->renderEventListenerAsTag(
                     'onchange',
@@ -47,7 +47,7 @@ if ($websites = $block->getWebsites()): ?>
                 <?php
                 if (!isset($secureRenderer)) { ?> onchange="switchScope(this);" <?php
                 } ?><?= /* @noEscape */
-            $block->getUiId() ?> />
+                    $block->getUiId() ?> />
             <?php if (isset($secureRenderer)) {?>
                 <?= /* @noEscape */ $secureRenderer->renderEventListenerAsTag(
                     'onchange',
@@ -61,7 +61,7 @@ if ($websites = $block->getWebsites()): ?>
                 <?php
                 if (!isset($secureRenderer)) { ?> onchange="switchScope(this);"<?php
                 } ?> <?= /* @noEscape */
-            $block->getUiId() ?> />
+                    $block->getUiId() ?> />
             <?php if (isset($secureRenderer)) {?>
                 <?= /* @noEscape */ $secureRenderer->renderEventListenerAsTag(
                     'onchange',
@@ -70,12 +70,12 @@ if ($websites = $block->getWebsites()): ?>
                 ) ?>
             <?php } ?>
             <button
-                    type="button"
-                    class="admin__action-dropdown"
-                    data-mage-init='{"dropdown":{}}'
-                    data-toggle="dropdown"
-                    aria-haspopup="true"
-                    id="store-change-button">
+                type="button"
+                class="admin__action-dropdown"
+                data-mage-init='{"dropdown":{}}'
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                id="store-change-button">
                 <?= $block->escapeHtml($currentStoreName) ?>
             </button>
             <ul class="dropdown-menu" data-role="stores-list">
