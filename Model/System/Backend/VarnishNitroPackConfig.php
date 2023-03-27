@@ -23,9 +23,9 @@ class VarnishNitroPackConfig extends \Magento\Framework\App\Config\Value
      */
     protected $defaultValues;
     /**
-     * @var \Magento\Framework\HTTP\Client\Curl
+     * @var \Magento\Framework\Message\ManagerInterface
      */
-    protected $_curl;
+    protected $messageManager;
 
     public function __construct(
         \Magento\Framework\Model\Context                        $context,
@@ -34,12 +34,12 @@ class VarnishNitroPackConfig extends \Magento\Framework\App\Config\Value
         \Magento\Framework\App\Cache\TypeListInterface          $cacheTypeList,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb           $resourceCollection = null,
-        \Magento\Framework\HTTP\Client\Curl                     $curl,
-
+        \Magento\Framework\Message\ManagerInterface $messageManager,
         array                                                   $data = []
     )
     {
-        $this->_curl = $curl;
+
+        $this->messageManager = $messageManager;
 
         parent::__construct($context, $registry, $config, $cacheTypeList, $resource, $resourceCollection, $data);
     }
@@ -59,10 +59,8 @@ class VarnishNitroPackConfig extends \Magento\Framework\App\Config\Value
             $replaceValue = isset($data[$this->getField()]) ? $data[$this->getField()] : false;
             $this->setValue($replaceValue);
         }
-        $host = $this->_config->getValue('system/full_page_cache/default/backend_host', $scopeType = ScopeConfigInterface::SCOPE_TYPE_DEFAULT, $scopeCode = null);
-
+        $host = $this->_config->getValue('system/full_page_cache/varnish_nitro/backend_host', $scopeType = ScopeConfigInterface::SCOPE_TYPE_DEFAULT, $scopeCode = null);
         $url = 'http://' . $host . ':' . $currentValue;
-
         $httpMulti = new HttpClientMulti();
         $client = new HttpClient($url);
         $client->hostOverride($client->host, $host);
@@ -76,7 +74,14 @@ class VarnishNitroPackConfig extends \Magento\Framework\App\Config\Value
             if ($exception instanceof SocketReadTimedOutException) {
                 continue; // Ignore read timeouts
             } else {
-                throw $exception;
+                if ($exception instanceof \NitroPack\HttpClient\Exceptions\SocketWriteException) {
+                    $this->messageManager->addError( __("Reverted the assign port to port 80.  ".$exception->getMessage()) );
+                    $this->setValue(80);
+                    return false;
+                }else{
+                $this->messageManager->addError( __($exception->getMessage()) );
+                return false;
+                }
             }
         }
         }

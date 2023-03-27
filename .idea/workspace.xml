@@ -6,6 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="ec8709bb-0c6d-420a-bbce-0d2f296fb020" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Model/System/Backend/VarnishNitroPackConfig.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/System/Backend/VarnishNitroPackConfig.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/etc/queue_publisher.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/queue_publisher.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/etc/queue_topology.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/queue_topology.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,7 +36,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "//wsl$/Ubuntu-20.04/var/www/html/magento-latest",
+    "last_opened_file_path": "//wsl$/Ubuntu-20.04/var/www/html/magento2-extension",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -41,6 +45,11 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="\\wsl$\Ubuntu-20.04\var\www\html\magento2-extension" />
+    </key>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -58,6 +67,9 @@
       <workItem from="1678794625039" duration="3557000" />
       <workItem from="1679056191574" duration="17000" />
       <workItem from="1679472891640" duration="1319000" />
+      <workItem from="1679483626616" duration="4357000" />
+      <workItem from="1679565524443" duration="9000" />
+      <workItem from="1679898193012" duration="101000" />
     </task>
     <servers />
   </component>
