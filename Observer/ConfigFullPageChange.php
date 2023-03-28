@@ -99,7 +99,9 @@ class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
     public function execute(EventObserver $observer)
     {
         $groupParams = $this->request->getParam('groups');
+        if(!is_null($groupParams)){
         $varnishEnableKey = $groupParams['full_page_cache']['fields']['varnish_enable']['value'];
+
         //Check Properly Configure ENABLED && DISABLED
         if (!is_null(
                 $this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_NITRO_ENABLED)
@@ -124,7 +126,6 @@ class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
         //
         $this->invalidationHelper->setEnableAndDisable($serviceEnable);
         $this->configWriter->save('full_page_cache/fields/caching_application/value', $nitroCacheKey);
-
         $types = array(
             'config',
             'layout',
@@ -145,8 +146,9 @@ class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
         foreach ($this->_cacheFrontendPool as $cacheFrontend) {
             $cacheFrontend->getBackend()->clean();
         }
-
+        }
         return $this;
+
     }
 
 
