@@ -1,0 +1,4 @@
+.ftpconfig
+sftp-config.json
+*.zip
+.idea
