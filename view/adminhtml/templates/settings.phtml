@@ -370,9 +370,11 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
                         break;
                     case 'enabled':
                         if (data[setting] == 1) {
+                            $('input[name=enabled]').val(1);
                             $('span[data-connection="connected"]').show();
                             $('span[data-connection="disabled"]').hide();
                         } else {
+                            $('input[name=enabled]').val(0);
                             $('span[data-connection="connected"]').hide();
                             $('span[data-connection="disabled"]').show();
                         }
@@ -568,11 +570,15 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
             }
 
             NitroPack.Optimizations.setPurgeCacheHandler(async function (success, error) {
+             if($('#status').val()==1){
                 purgeCache().then(function () {
                     success();
                 }, function () {
                     error();
                 });
+             }else{
+                 Notification.danger("NitroPack is disabled. The Cache Purge option is not possible");
+             }
             });
 
         });
