@@ -116,32 +116,14 @@ class ConfigOptionsList implements ConfigOptionsListInterface
     public function createConfig(array $options, DeploymentConfig $deploymentConfig)
     {
         $configData = new ConfigData(ConfigFilePool::APP_ENV);
-        $defaultHostChange =false;
-        if (isset($options[self::NITROPACK_CACHE_REDIS_HOST]) && isset($options[self::NITROPACK_CACHE_REDIS_PORT])) {
-            $config = [
-                'host' => self::NITROPACK_CACHE_REDIS_HOST_DEFAULT,
-                'port' => self::NITROPACK_CACHE_REDIS_PORT_DEFAULT,
-                'db' => self::NITROPACK_CACHE_REDIS_DB_DEFAULT,
-                'password' => self::NITROPACK_CACHE_REDIS_PASS_DEFAULT,
-            ];
-            if (!$this->redisValidator->isValidConnection($config)) {
-                $config['host'] = 'redis';
-                if ($this->redisValidator->isValidConnection($config)) {
-                    $defaultHostChange = true;
-                }
-            }
-        }
+        if (isset($options[self::NITROPACK_CACHE_REDIS_DB]) && !is_null($options[self::NITROPACK_CACHE_REDIS_DB]) && isset($options[self::NITROPACK_CACHE_REDIS_HOST]) && isset($options[self::NITROPACK_CACHE_REDIS_PORT])) {
+            foreach (self::$map as $inputKey => $configPath) {
 
-        foreach (self::$map as $inputKey => $configPath) {
-            if (isset($options[$inputKey])) {
-                if ($defaultHostChange && $configPath == self::CONFIG_PATH__NITROPACK_CACHE_REDIS_HOST) {
-                    $configData->set($configPath, 'redis');
-                } else {
+                if (isset($options[$inputKey])) {
                     $configData->set($configPath, $options[$inputKey]);
                 }
             }
         }
-
         return [$configData];
     }
 
@@ -207,12 +189,6 @@ class ConfigOptionsList implements ConfigOptionsListInterface
                 self::CONFIG_PATH__NITROPACK_CACHE_REDIS_PASS,
                 $this->getDefaultConfigValue(self::NITROPACK_CACHE_REDIS_PASS)
             );
-        //Additional check for Magento Cloud
-        if (!$this->redisValidator->isValidConnection($config)) {
-            $config['host'] = 'redis';
-
-            return $this->redisValidator->isValidConnection($config);
-        }
         return $this->redisValidator->isValidConnection($config);
     }
 
