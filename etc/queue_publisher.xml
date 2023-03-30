@@ -1,7 +1,4 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/consumer.xsd">
-    <publisher topic="nitropack.cache.queue.topic">
-        <connection name="amqp" exchange="magento" />
-        <connection name="db" exchange="magento2" disabled="true" />
-    </publisher>
+    <publisher topic="nitropack.cache.queue.topic" />
 </config>

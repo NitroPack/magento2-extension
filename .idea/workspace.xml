@@ -5,10 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ec8709bb-0c6d-420a-bbce-0d2f296fb020" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Api/NitroService.php" beforeDir="false" afterPath="$PROJECT_DIR$/Api/NitroService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Observer/ConfigFullPageChange.php" beforeDir="false" afterPath="$PROJECT_DIR$/Observer/ConfigFullPageChange.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/etc/module.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/module.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/etc/queue_publisher.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/queue_publisher.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,7 +73,9 @@
       <workItem from="1679984456099" duration="33000" />
       <workItem from="1679986469154" duration="3155000" />
       <workItem from="1679998260601" duration="9041000" />
-      <workItem from="1680069470331" duration="525000" />
+      <workItem from="1680069470331" duration="3852000" />
+      <workItem from="1680089818453" duration="569000" />
+      <workItem from="1680172326091" duration="18000" />
     </task>
     <servers />
   </component>
