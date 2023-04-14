@@ -24,7 +24,7 @@ use Magento\Framework\UrlInterface;
 class NitroService implements NitroServiceInterface
 {
 
-    const EXTENSION_VERSION = '2.1.3';
+    const EXTENSION_VERSION = '2.1.4';
     const FULL_PAGE_CACHE_NITROPACK = 'system/full_page_cache/caching_application';
     const FULL_PAGE_CACHE_NITROPACK_VALUE = 3;
     public const XML_VARNISH_PAGECACHE_ACCESS_LIST = 'system/full_page_cache/varnish_nitro/access_list';
