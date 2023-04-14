@@ -1,4 +1,9 @@
 <?xml version="1.0"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/consumer.xsd">
-    <consumer name="nitropack.cache.queue.consumer" queue="nitropack.cache.queue" handler="NitroPack\NitroPack\Model\Queue\Consumer::process"/>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/consumer.xsd">
+    <consumer name="nitropack.cache.queue.consumer" queue="nitropack.cache.queue"
+              handler="NitroPack\NitroPack\Model\Queue\Consumer::process"/>
+    <consumer name="nitropack.cache.queue.consumer.db"
+              connection="db" maxMessages="5000" queue="nitropack.cache.queue.db"
+              handler="NitroPack\NitroPack\Model\Queue\Consumer::process"/>
 </config>

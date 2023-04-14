@@ -5,4 +5,10 @@
                consumerInstance="Magento\Framework\MessageQueue\Consumer"
                handler="NitroPack\NitroPack\Model\Queue\Consumer::process"/>
     </broker>
+    <broker topic="nitropack.cache.queue.topic.db" exchange="magento-db" >
+        <queue name="nitropack.cache.queue.db"
+               consumer="nitropack.cache.queue.consumer.db"
+               consumerInstance="Magento\Framework\MessageQueue\Consumer"
+               handler="NitroPack\NitroPack\Model\Queue\Consumer::process"/>
+    </broker>
 </config>

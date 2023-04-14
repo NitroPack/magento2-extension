@@ -6,7 +6,24 @@
   <component name="ChangeListManager">
     <list default="true" id="ec8709bb-0c6d-420a-bbce-0d2f296fb020" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Api/NitroService.php" beforeDir="false" afterPath="$PROJECT_DIR$/Api/NitroService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Observer/CacheClear/AttributeObserver.php" beforeDir="false" afterPath="$PROJECT_DIR$/Observer/CacheClear/AttributeObserver.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Observer/CacheClear/AttributeSetObserver.php" beforeDir="false" afterPath="$PROJECT_DIR$/Observer/CacheClear/AttributeSetObserver.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Observer/CacheClear/BlockObserver.php" beforeDir="false" afterPath="$PROJECT_DIR$/Observer/CacheClear/BlockObserver.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Observer/CacheClear/CategoryObserver.php" beforeDir="false" afterPath="$PROJECT_DIR$/Observer/CacheClear/CategoryObserver.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Observer/CacheClear/NewOrderObserver.php" beforeDir="false" afterPath="$PROJECT_DIR$/Observer/CacheClear/NewOrderObserver.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Observer/CacheClear/PageObserver.php" beforeDir="false" afterPath="$PROJECT_DIR$/Observer/CacheClear/PageObserver.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Observer/CacheClear/ProductObserver.php" beforeDir="false" afterPath="$PROJECT_DIR$/Observer/CacheClear/ProductObserver.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Observer/CacheClear/ReviewObserver.php" beforeDir="false" afterPath="$PROJECT_DIR$/Observer/CacheClear/ReviewObserver.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Observer/CacheClear/WidgetObserver.php" beforeDir="false" afterPath="$PROJECT_DIR$/Observer/CacheClear/WidgetObserver.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Observer/CacheClearObserver.php" beforeDir="false" afterPath="$PROJECT_DIR$/Observer/CacheClearObserver.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Observer/Import/CatalogProductImportBunchSaveAfter.php" beforeDir="false" afterPath="$PROJECT_DIR$/Observer/Import/CatalogProductImportBunchSaveAfter.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/etc/communication.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/communication.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/etc/module.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/module.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/etc/queue.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/queue.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/etc/queue_consumer.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/queue_consumer.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/etc/queue_publisher.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/queue_publisher.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/etc/queue_topology.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/queue_topology.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,7 +92,12 @@
       <workItem from="1679998260601" duration="9041000" />
       <workItem from="1680069470331" duration="3852000" />
       <workItem from="1680089818453" duration="569000" />
-      <workItem from="1680172326091" duration="18000" />
+      <workItem from="1680172326091" duration="2391000" />
+      <workItem from="1680773567660" duration="658000" />
+      <workItem from="1680783073450" duration="207000" />
+      <workItem from="1681405527317" duration="575000" />
+      <workItem from="1681459431806" duration="1238000" />
+      <workItem from="1681463870687" duration="602000" />
     </task>
     <servers />
   </component>

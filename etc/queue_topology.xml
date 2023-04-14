@@ -6,4 +6,10 @@
                  destinationType="queue"
                  destination="nitropack.cache.queue"/>
     </exchange>
+    <exchange name="magento-db" type="topic" connection="db">
+        <binding id="processAddOrderToQueueBinding1"
+                 topic="nitropack.cache.queue.topic.db"
+                 destinationType="queue"
+                 destination="nitropack.cache.queue"/>
+    </exchange>
 </config>

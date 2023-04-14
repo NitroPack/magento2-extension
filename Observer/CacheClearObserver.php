@@ -2,6 +2,8 @@
 
 namespace NitroPack\NitroPack\Observer;
 
+use Magento\Framework\App\DeploymentConfig;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\App\RequestInterface;
@@ -15,7 +17,8 @@ use NitroPack\SDK\PurgeType;
 
 class CacheClearObserver implements ObserverInterface
 {
-    const TOPIC_NAME = 'nitropack.cache.queue.topic';
+    const TOPIC_NAME_AMQP = 'nitropack.cache.queue.topic';
+    const TOPIC_NAME_DB = 'nitropack.cache.queue.topic.db';
     const REASON_MANUAL_INVALIDATE_TYPE = "Manual invalidation of %s %s.";
     const REASON_MANUAL_INVALIDATE_ALL = "Manual invalidation of all store pages.";
     const REASON_MANUAL_PURGE_TYPE = "Manual purge of the %s %s.";
@@ -39,16 +42,23 @@ class CacheClearObserver implements ObserverInterface
      * @var \Magento\Framework\MessageQueue\PublisherInterface
      */
     protected $_publisher;
+    /**
+     * @var \Magento\Framework\MessageQueue\DefaultValueProvider
+     * */
+    protected $defaultQueueValueProvider;
 
+    protected $defaultQueueValueConnection;
     public function __construct(
-        NitroServiceInterface $nitro,
-        TaggingServiceInterface $tagger,
-        RequestInterface $request,
-        StoreManagerInterface $storeManager,
-        LoggerInterface $logger,
-        \Magento\Framework\MessageQueue\PublisherInterface $publisher,
-        \Magento\Framework\Serialize\Serializer\Json $json
-    ) {
+        NitroServiceInterface                                $nitro,
+        TaggingServiceInterface                              $tagger,
+        RequestInterface                                     $request,
+        StoreManagerInterface                                $storeManager,
+        LoggerInterface                                      $logger,
+        \Magento\Framework\MessageQueue\DefaultValueProvider $defaultQueueValueProvider,
+        \Magento\Framework\MessageQueue\PublisherInterface   $publisher,
+        \Magento\Framework\Serialize\Serializer\Json         $json
+    )
+    {
         $this->objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $this->logger = $logger;
         $this->request = $request;
@@ -57,6 +67,8 @@ class CacheClearObserver implements ObserverInterface
         $this->tagger = $tagger;
         $this->_json = $json;
         $this->_publisher = $publisher;
+        $this->defaultQueueValueProvider = $defaultQueueValueProvider;
+        $this->defaultQueueValueConnection = $this->defaultQueueValueProvider->getConnection();
         $storeId = $this->request->getParam('store');
         if ($storeId == 0) {
             $storeId = $this->storeManager->getDefaultStoreView()->getId();

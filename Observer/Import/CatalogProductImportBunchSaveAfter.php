@@ -52,20 +52,30 @@ class CatalogProductImportBunchSaveAfter implements ObserverInterface
      */
     protected $_publisher;
 
-    const TOPIC_NAME = 'nitropack.cache.queue.topic';
+    const TOPIC_NAME_AMQP = 'nitropack.cache.queue.topic';
+    const TOPIC_NAME_DB = 'nitropack.cache.queue.topic.db';
+
 
     protected $storeId = 0;
+    /**
+     * @var \Magento\Framework\MessageQueue\DefaultValueProvider
+     * */
+    protected $defaultQueueValueProvider;
+
+    protected $defaultQueueValueConnection;
 
     public function __construct(
-        NitroServiceInterface $nitro,
-        TaggingServiceInterface $tagger,
-        RequestInterface $request,
-        StoreManagerInterface $storeManager,
-        \Magento\Framework\MessageQueue\PublisherInterface $publisher,
-        \Magento\Framework\Serialize\Serializer\Json $json,
-        ProductRepositoryInterface $productRepository,
-        LoggerInterface $logger
-    ) {
+        NitroServiceInterface                                $nitro,
+        TaggingServiceInterface                              $tagger,
+        RequestInterface                                     $request,
+        StoreManagerInterface                                $storeManager,
+        \Magento\Framework\MessageQueue\PublisherInterface   $publisher,
+        \Magento\Framework\Serialize\Serializer\Json         $json,
+        \Magento\Framework\MessageQueue\DefaultValueProvider $defaultQueueValueProvider,
+        ProductRepositoryInterface                           $productRepository,
+        LoggerInterface                                      $logger
+    )
+    {
         $this->logger = $logger;
         $this->request = $request;
         $this->storeManager = $storeManager;
@@ -74,6 +84,7 @@ class CatalogProductImportBunchSaveAfter implements ObserverInterface
         $this->tagger = $tagger;
         $this->_json = $json;
         $this->_publisher = $publisher;
+        $this->defaultQueueValueConnection = $defaultQueueValueProvider->getConnection();
         $this->storeId = $this->request->getParam('store');
         if ($this->storeId == 0) {
             $this->storeId = $this->storeManager->getDefaultStoreView()->getId();
@@ -93,7 +104,7 @@ class CatalogProductImportBunchSaveAfter implements ObserverInterface
                 $this->productSave($product);
             }
         } catch (\Execption $e) {
-             $this->logger->info($e->getMessage());
+            $this->logger->info($e->getMessage());
         }
     }
 
@@ -114,7 +125,7 @@ class CatalogProductImportBunchSaveAfter implements ObserverInterface
             'reasonEntity' => $productName
         ];
 
-        $this->_publisher->publish(self::TOPIC_NAME, $this->_json->serialize($rawData));
+        $this->_publisher->publish($this->defaultQueueValueConnection == 'amqp' ? self::TOPIC_NAME_AMQP : self::TOPIC_NAME_DB, $this->_json->serialize($rawData));
         //$this->invalidateTag($tag, 'product', $productName);
 
         foreach ($product->getCategoryIds() as $catId) {
@@ -128,7 +139,7 @@ class CatalogProductImportBunchSaveAfter implements ObserverInterface
                     'storeId' => $this->storeId,
                     'reasonEntity' => $productName
                 ];
-                $this->_publisher->publish(self::TOPIC_NAME, $this->_json->serialize($rawData));
+                $this->_publisher->publish($this->defaultQueueValueConnection == 'amqp' ? self::TOPIC_NAME_AMQP : self::TOPIC_NAME_DB, $this->_json->serialize($rawData));
                 // $this->invalidateTag($cTag, 'category for', $productName);
             }
         }

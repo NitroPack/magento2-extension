@@ -29,10 +29,11 @@ class ReviewObserver extends CacheClearObserver
         RequestInterface $request,
         StoreManagerInterface $storeManager,
         \Magento\Framework\MessageQueue\PublisherInterface $publisher,
+        \Magento\Framework\MessageQueue\DefaultValueProvider $defaultQueueValueProvider,
         \Magento\Framework\Serialize\Serializer\Json $json,
         LoggerInterface $logger
     ) {
-        parent::__construct($nitro, $tagger, $request, $storeManager, $logger, $publisher, $json);
+        parent::__construct($nitro, $tagger, $request, $storeManager, $logger,$defaultQueueValueProvider, $publisher, $json);
         $this->storeId = $this->request->getParam('store');
         if ($this->storeId == 0) {
             $this->storeId = $this->storeManager->getDefaultStoreView()->getId();
@@ -77,7 +78,7 @@ class ReviewObserver extends CacheClearObserver
             'storeId' => $this->storeId,
             'reasonEntity' => $productName
         ];
-        $this->_publisher->publish(self::TOPIC_NAME, $this->_json->serialize($rawData));
+        $this->_publisher->publish($this->defaultQueueValueConnection =='amqp' ? self::TOPIC_NAME_AMQP : self::TOPIC_NAME_DB, $this->_json->serialize($rawData));
         // $this->purgeTagPageCache($tag, 'product', $productName);
     }
 

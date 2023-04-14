@@ -24,10 +24,11 @@ class WidgetObserver extends CacheClearObserver
         RequestInterface $request,
         StoreManagerInterface $storeManager,
         \Magento\Framework\MessageQueue\PublisherInterface $publisher,
+        \Magento\Framework\MessageQueue\DefaultValueProvider $defaultQueueValueProvider,
         \Magento\Framework\Serialize\Serializer\Json $json,
         LoggerInterface $logger
     ) {
-        parent::__construct($nitro, $tagger, $request, $storeManager, $logger, $publisher, $json);
+        parent::__construct($nitro, $tagger, $request, $storeManager, $logger,$defaultQueueValueProvider, $publisher, $json);
         $this->storeId = $this->request->getParam('store');
         if ($this->storeId == 0) {
             $this->storeId = $this->storeManager->getDefaultStoreView()->getId();
@@ -73,7 +74,7 @@ class WidgetObserver extends CacheClearObserver
             'reasonEntity' => $widgetName
         ];
 
-        $this->_publisher->publish(self::TOPIC_NAME, $this->_json->serialize($rawData));
+        $this->_publisher->publish($this->defaultQueueValueConnection =='amqp' ? self::TOPIC_NAME_AMQP : self::TOPIC_NAME_DB, $this->_json->serialize($rawData));
         //  $this->invalidateTag('page', 'widget', $widgetName);
         $rawData = [
             'action' => 'invalidation',
@@ -84,7 +85,7 @@ class WidgetObserver extends CacheClearObserver
             'reasonEntity' => $widgetName
         ];
 
-        $this->_publisher->publish(self::TOPIC_NAME, $this->_json->serialize($rawData));
+        $this->_publisher->publish($this->defaultQueueValueConnection =='amqp' ? self::TOPIC_NAME_AMQP : self::TOPIC_NAME_DB, $this->_json->serialize($rawData));
         // $this->invalidateTag('block', 'widget', $widgetName);
     }
 
@@ -102,7 +103,7 @@ class WidgetObserver extends CacheClearObserver
             'storeId' => $this->storeId,
             'reasonEntity' => $widgetName
         ];
-        $this->_publisher->publish(self::TOPIC_NAME, $this->_json->serialize($rawData));
+        $this->_publisher->publish($this->defaultQueueValueConnection =='amqp' ? self::TOPIC_NAME_AMQP : self::TOPIC_NAME_DB, $this->_json->serialize($rawData));
         //$this->purgeTagPageCache('page', 'widget', $widgetName);
         $rawData = [
             'action' => 'purge_tag',
@@ -112,7 +113,7 @@ class WidgetObserver extends CacheClearObserver
             'storeId' => $this->storeId,
             'reasonEntity' => $widgetName
         ];
-        $this->_publisher->publish(self::TOPIC_NAME, $this->_json->serialize($rawData));
+        $this->_publisher->publish($this->defaultQueueValueConnection =='amqp' ? self::TOPIC_NAME_AMQP : self::TOPIC_NAME_DB, $this->_json->serialize($rawData));
         //$this->purgeTagPageCache('block', 'widget', $widgetName);
     }
 

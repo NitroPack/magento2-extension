@@ -3,4 +3,7 @@
     <topic name="nitropack.cache.queue.topic" request="string">
         <handler name="processorAddToQueue" type="NitroPack\NitroPack\Model\Queue\Consumer" method="process" />
     </topic>
+    <topic name="nitropack.cache.queue.topic.db" request="string">
+        <handler name="processorAddToQueue" type="NitroPack\NitroPack\Model\Queue\Consumer" method="process" />
+    </topic>
 </config>
