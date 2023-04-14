@@ -6,8 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="ec8709bb-0c6d-420a-bbce-0d2f296fb020" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/etc/module.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/module.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Plugin/CacheDelivery/LocalCachePlugin.php" beforeDir="false" afterPath="$PROJECT_DIR$/Plugin/CacheDelivery/LocalCachePlugin.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,7 +80,8 @@
       <workItem from="1680783073450" duration="207000" />
       <workItem from="1681405527317" duration="575000" />
       <workItem from="1681459431806" duration="1238000" />
-      <workItem from="1681463870687" duration="799000" />
+      <workItem from="1681463870687" duration="3383000" />
+      <workItem from="1681482799077" duration="26000" />
     </task>
     <servers />
   </component>

@@ -118,8 +118,12 @@ class LocalCachePlugin
                     header('x-magento-tags: ', true);
                 }
 
+                [ $returnHeader, $contents ]  = $this->nitro->pageCache->returnCacheFileContent();
+                foreach ($returnHeader as $headerValue) {
+                    header($headerValue['name'] . ': ' . $headerValue['value'], false);
+                }
                 $responseData = [
-                    'content' => $this->nitro->pageCache->readfile(),
+                    'content' => $contents,
                     'status_code' => 200,
                     'headers' => [],
                     'context' => $this->context->toArray()
