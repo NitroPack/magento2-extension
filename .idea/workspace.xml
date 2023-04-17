@@ -6,10 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="ec8709bb-0c6d-420a-bbce-0d2f296fb020" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Plugin/CacheDelivery/LocalCachePlugin.php" beforeDir="false" afterPath="$PROJECT_DIR$/Plugin/CacheDelivery/LocalCachePlugin.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/etc/queue.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/queue.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/etc/queue_publisher.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/queue_publisher.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/etc/queue_topology.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/queue_topology.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Api/NitroService.php" beforeDir="false" afterPath="$PROJECT_DIR$/Api/NitroService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,7 +34,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "//wsl$/Ubuntu-20.04/var/www/html/m243-check",
+    "last_opened_file_path": "//wsl$/Ubuntu-20.04/var/www/html/magento2-extension",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -87,6 +85,7 @@
       <workItem from="1681482799077" duration="2908000" />
       <workItem from="1681716543625" duration="483000" />
       <workItem from="1681717149075" duration="519000" />
+      <workItem from="1681717997406" duration="98000" />
     </task>
     <servers />
   </component>
