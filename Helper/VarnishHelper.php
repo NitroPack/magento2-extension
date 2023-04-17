@@ -41,29 +41,31 @@ class VarnishHelper extends AbstractHelper
     public function purgeVarnish($url = null)
     {
         $urlValue = !is_null($url) ? parse_url($url) : ['path'=>'/'];
-        $backendServer = explode(
-            ',',
-            $this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_BACKEND_HOST)
-        );
-        $backendServer = array_map(function ($backendValue) {
-            if ($backendValue == "localhost") {
-                return "127.0.0.1";
-            }
-            return $backendValue;
-        }, $backendServer);
-        $url ='http://'. isset($backendServer[0]) ? $backendServer[0] : '';
-        $url = !empty($url) ?  isset($urlValue['path']) ? 'http://'.$url .$urlValue['path'] : '' : '';
+        if(!is_null($this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_BACKEND_HOST))) {
+            $backendServer = explode(
+                ',',
+                $this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_BACKEND_HOST)
+            );
+            $backendServer = array_map(function ($backendValue) {
+                if ($backendValue == "localhost") {
+                    return "127.0.0.1";
+                }
+                return $backendValue;
+            }, $backendServer);
+            $url = 'http://' . isset($backendServer[0]) ? $backendServer[0] : '';
+            $url = !empty($url) ? isset($urlValue['path']) ? 'http://' . $url . $urlValue['path'] : '' : '';
 
-        $reverseProxy = new \NitroPack\SDK\Integrations\ReverseProxy(
-            $backendServer,
-            'PURGE',
-            ['X-Magento-Tags-Pattern' => '.*']
-        );
-        try {
-            $reverseProxy->purge($url);
-        } catch (\Exception $e) {
-            throw new \RuntimeException($e->getMessage());
+            $reverseProxy = new \NitroPack\SDK\Integrations\ReverseProxy(
+                $backendServer,
+                'PURGE',
+                ['X-Magento-Tags-Pattern' => '.*']
+            );
+            try {
+                $reverseProxy->purge($url);
+            } catch (\Exception $e) {
+                throw new \RuntimeException($e->getMessage());
+            }
+            return '';
         }
-        return '';
     }
 }

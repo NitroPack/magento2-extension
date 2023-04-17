@@ -12,6 +12,7 @@ use NitroPack\NitroPack\Model\EntityAttributeRelationFactory;
 use NitroPack\NitroPack\Observer\CacheClearObserver;
 use Psr\Log\LoggerInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\Framework\App\DeploymentConfig;
 
 class AttributeObserver extends CacheClearObserver
 {
@@ -32,14 +33,16 @@ class AttributeObserver extends CacheClearObserver
         \Magento\Framework\MessageQueue\DefaultValueProvider $defaultQueueValueProvider,
         \Magento\Framework\MessageQueue\PublisherInterface   $publisher,
         \Magento\Framework\Serialize\Serializer\Json         $json,
-        LoggerInterface                                      $logger
+        LoggerInterface                                      $logger,
+        DeploymentConfig $config
     )
     {
-        parent::__construct($nitro, $tagger, $request, $storeManager, $logger, $defaultQueueValueProvider, $publisher, $json);
+        parent::__construct($nitro, $tagger, $request, $storeManager, $logger, $defaultQueueValueProvider, $publisher, $json,$config);
         $this->storeId = $this->request->getParam('store');
         if ($this->storeId == 0) {
             $this->storeId = $this->storeManager->getDefaultStoreView()->getId();
         }
+
     }
 
     protected $attribute; // Magento\Catalog\Model\ResourceModel\Eav\Attribute
@@ -87,7 +90,7 @@ class AttributeObserver extends CacheClearObserver
                 'reasonEntity' => $attributeName
             ];
 
-            $this->_publisher->publish($this->defaultQueueValueConnection == 'amqp' ? self::TOPIC_NAME_AMQP : self::TOPIC_NAME_DB, $this->_json->serialize($rawData));
+            $this->_publisher->publish($this->getTopicName(), $this->_json->serialize($rawData));
             //$this->invalidateTag($tag, 'attribute', $attributeName);
         }
     }
@@ -117,7 +120,7 @@ class AttributeObserver extends CacheClearObserver
                 'storeId' => $this->storeId,
                 'reasonEntity' => $attributeName
             ];
-            $this->_publisher->publish($this->defaultQueueValueConnection == 'amqp' ? self::TOPIC_NAME_AMQP : self::TOPIC_NAME_DB, $this->_json->serialize($rawData));
+            $this->_publisher->publish($this->getTopicName(), $this->_json->serialize($rawData));
             //$this->purgeTagPageCache($tag, 'attribute', $attributeName);
         }
     }

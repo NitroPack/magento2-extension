@@ -2,6 +2,7 @@
 
 namespace NitroPack\NitroPack\Observer\CacheClear;
 
+use Magento\Framework\App\DeploymentConfig;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Event\Observer;
 
@@ -31,9 +32,10 @@ class CategoryObserver extends CacheClearObserver
         \Magento\Framework\MessageQueue\PublisherInterface $publisher,
         \Magento\Framework\MessageQueue\DefaultValueProvider $defaultQueueValueProvider,
         \Magento\Framework\Serialize\Serializer\Json $json,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        DeploymentConfig $config
     ) {
-        parent::__construct($nitro, $tagger, $request, $storeManager, $logger,$defaultQueueValueProvider, $publisher, $json);
+        parent::__construct($nitro, $tagger, $request, $storeManager, $logger,$defaultQueueValueProvider, $publisher, $json,$config);
         $this->storeId = $this->request->getParam('store');
         if ($this->storeId == 0) {
             $this->storeId = $this->storeManager->getDefaultStoreView()->getId();
@@ -74,7 +76,7 @@ class CategoryObserver extends CacheClearObserver
             'storeId' => $this->storeId,
             'reasonEntity' => $categoryName
         ];
-        $this->_publisher->publish($this->defaultQueueValueConnection =='amqp' ? self::TOPIC_NAME_AMQP : self::TOPIC_NAME_DB, $this->_json->serialize($rawData));
+        $this->_publisher->publish($this->getTopicName(), $this->_json->serialize($rawData));
         //  $this->invalidateTag($tag, 'category', $categoryName);
     }
 
@@ -93,7 +95,7 @@ class CategoryObserver extends CacheClearObserver
             'storeId' => $this->storeId,
             'reasonEntity' => $categoryName
         ];
-        $this->_publisher->publish($this->defaultQueueValueConnection =='amqp' ? self::TOPIC_NAME_AMQP : self::TOPIC_NAME_DB, $this->_json->serialize($rawData));
+        $this->_publisher->publish($this->getTopicName(), $this->_json->serialize($rawData));
         //$this->purgeTagComplete($tag, 'category', $categoryName);
     }
 
@@ -112,7 +114,7 @@ class CategoryObserver extends CacheClearObserver
             'storeId' => $this->storeId,
             'reasonEntity' => $categoryName
         ];
-        $this->_publisher->publish($this->defaultQueueValueConnection =='amqp' ? self::TOPIC_NAME_AMQP : self::TOPIC_NAME_DB, $this->_json->serialize($rawData));
+        $this->_publisher->publish($this->getTopicName(), $this->_json->serialize($rawData));
         //  $this->invalidateTag($tag, 'category', $categoryName);
     }
 
@@ -131,7 +133,7 @@ class CategoryObserver extends CacheClearObserver
             'storeId' => $this->storeId,
             'reasonEntity' => $categoryName
         ];
-        $this->_publisher->publish($this->defaultQueueValueConnection =='amqp' ? self::TOPIC_NAME_AMQP : self::TOPIC_NAME_DB, $this->_json->serialize($rawData));
+        $this->_publisher->publish($this->getTopicName(), $this->_json->serialize($rawData));
         // $this->invalidateTag($tag, 'category', $categoryName);
     }
 

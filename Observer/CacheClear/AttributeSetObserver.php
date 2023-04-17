@@ -2,6 +2,7 @@
 
 namespace NitroPack\NitroPack\Observer\CacheClear;
 
+use Magento\Framework\App\DeploymentConfig;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Event\Observer;
 use Magento\Eav\Model\Entity\Attribute\Set;
@@ -33,10 +34,11 @@ class AttributeSetObserver extends CacheClearObserver
         \Magento\Framework\MessageQueue\DefaultValueProvider $defaultQueueValueProvider,
         \Magento\Framework\MessageQueue\PublisherInterface $publisher,
         \Magento\Framework\Serialize\Serializer\Json $json,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        DeploymentConfig $config
     ) {
 
-        parent::__construct($nitro, $tagger, $request, $storeManager, $logger,$defaultQueueValueProvider, $publisher, $json);
+        parent::__construct($nitro, $tagger, $request, $storeManager, $logger,$defaultQueueValueProvider, $publisher, $json,$config);
         $this->storeId = $this->request->getParam('store');
         if ($this->storeId == 0) {
             $this->storeId = $this->storeManager->getDefaultStoreView()->getId();
@@ -80,7 +82,7 @@ class AttributeSetObserver extends CacheClearObserver
                 'reasonEntity' => $attributeSetName
             ];
 
-            $this->_publisher->publish($this->defaultQueueValueConnection =='amqp' ? self::TOPIC_NAME_AMQP : self::TOPIC_NAME_DB , $this->_json->serialize($rawData));
+            $this->_publisher->publish($this->getTopicName() , $this->_json->serialize($rawData));
             //$this->invalidateTag($tag, 'attribute set', $attributeSetName);
         }
     }
@@ -103,7 +105,7 @@ class AttributeSetObserver extends CacheClearObserver
                 'reasonEntity' => $attributeSetName
             ];
 
-            $this->_publisher->publish($this->defaultQueueValueConnection =='amqp' ? self::TOPIC_NAME_AMQP : self::TOPIC_NAME_DB , $this->_json->serialize($rawData));
+            $this->_publisher->publish($this->getTopicName() , $this->_json->serialize($rawData));
             //$this->invalidateTag($tag, 'attribute set', $attributeSetName);
         }
     }

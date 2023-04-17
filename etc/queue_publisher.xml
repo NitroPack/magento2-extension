@@ -2,6 +2,6 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/consumer.xsd">
     <publisher topic="nitropack.cache.queue.topic" />
     <publisher topic="nitropack.cache.queue.topic.db" >
-        <connection name="db" exchange="magento" disabled="false" />
+        <connection name="db" exchange="magento-db" disabled="false" />
     </publisher>
 </config>

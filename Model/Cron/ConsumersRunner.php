@@ -54,7 +54,12 @@ class ConsumersRunner
      * @var CheckIsAvailableMessagesInQueue
      */
     private $checkIsAvailableMessages;
+    /**
+     * @var \Magento\Framework\MessageQueue\DefaultValueProvider
+     * */
+    protected $defaultQueueValueProvider;
 
+    protected $defaultQueueValueConnection;
     /**
      * @param PhpExecutableFinder $phpExecutableFinder The executable finder specifically designed
      *        for the PHP executable
@@ -63,19 +68,22 @@ class ConsumersRunner
      * @param LockManagerInterface $lockManager The lock manager
      * @param ConnectionTypeResolver $mqConnectionTypeResolver Consumer connection resolver
      * @param LoggerInterface $logger Logger
+     * @param \Magento\Framework\MessageQueue\DefaultValueProvider $defaultQueueValueProvider Logger
      * @param CheckIsAvailableMessagesInQueue $checkIsAvailableMessages
      */
     public function __construct(
         PhpExecutableFinder $phpExecutableFinder,
         DeploymentConfig $deploymentConfig,
         ShellInterface $shellBackground,
+        \Magento\Framework\MessageQueue\DefaultValueProvider $defaultQueueValueProvider,
         LockManagerInterface $lockManager,
         ConnectionTypeResolver $mqConnectionTypeResolver = null,
         LoggerInterface $logger = null
 
     ) {
         $this->phpExecutableFinder = $phpExecutableFinder;
-
+        $this->defaultQueueValueProvider = $defaultQueueValueProvider;
+        $this->defaultQueueValueConnection = $this->defaultQueueValueProvider->getConnection();
         $this->deploymentConfig = $deploymentConfig;
         $this->shellBackground = $shellBackground;
         $this->lockManager = $lockManager;
@@ -94,7 +102,10 @@ class ConsumersRunner
     {
 
         $php = $this->phpExecutableFinder->find() ?: 'php';
-        $arguments = ['nitropack.cache.queue.consumer'];
+
+        $arguments = [$this->defaultQueueValueConnection=='amqp' && $this->deploymentConfig->get('queue/amqp') && count($this->deploymentConfig->get('queue/amqp')) > 0 ? 'nitropack.cache.queue.consumer' : 'nitropack.cache.queue.consumer.db'];
+
+
         $command = $php . ' ' . BP . '/bin/magento queue:consumers:start ';
         $this->shellBackground->execute($command, $arguments);
     }

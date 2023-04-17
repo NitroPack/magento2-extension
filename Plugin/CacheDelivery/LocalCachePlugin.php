@@ -102,46 +102,42 @@ class LocalCachePlugin
         }
         try {
             if ($request->isGet() || $request->isHead()) {
-            if ($this->nitro->hasLocalCache()) {
-                header('X-Nitro-Cache: HIT', true);
+                if ($this->nitro->hasLocalCache()) {
+                    header('X-Nitro-Cache: HIT', true);
 
-                //CHECK VARNISH ENABLE && VARNISH IS CONFIGURE
-                if (!is_null(
-                        $this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_NITRO_ENABLED)
-                    ) && $this->_scopeConfig->getValue(
-                        self::XML_VARNISH_PAGECACHE_NITRO_ENABLED
-                    ) == 1 && isset($_SERVER['HTTP_X_VARNISH'])) {
-                    $pageCacheTTL = !is_null(
-                        $this->_scopeConfig->getValue(self::XML_PAGECACHE_TTL)
-                    ) ? $this->_scopeConfig->getValue(self::XML_PAGECACHE_TTL) : 86400;
-                    header('cache-control: max-age=' . $pageCacheTTL . ', public, s-maxage=' . $pageCacheTTL, true);
-                    header('x-magento-tags: ', true);
+                    //CHECK VARNISH ENABLE && VARNISH IS CONFIGURE
+                    if (!is_null(
+                            $this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_NITRO_ENABLED)
+                        ) && $this->_scopeConfig->getValue(
+                            self::XML_VARNISH_PAGECACHE_NITRO_ENABLED
+                        ) == 1 && isset($_SERVER['HTTP_X_VARNISH'])) {
+                        $pageCacheTTL = !is_null(
+                            $this->_scopeConfig->getValue(self::XML_PAGECACHE_TTL)
+                        ) ? $this->_scopeConfig->getValue(self::XML_PAGECACHE_TTL) : 86400;
+                        header('cache-control: max-age=' . $pageCacheTTL . ', public, s-maxage=' . $pageCacheTTL, true);
+                        header('x-magento-tags: ', true);
+                    }
+                    $content = $this->nitro->pageCache->returnCacheFileContent();
+                    $responseData = [
+                        'content' => $content[1],
+                        'status_code' => 200,
+                        'headers' =>  [],
+                        'context' => $this->context->toArray()
+
+                    ];
+
+
+                    return $this->buildResponse($responseData);
+
+                } else {
+                    if ($this->nitro->getSdk()->getHealthStatus() == "SICK") {
+                        //TODO  LOG FILE WILL CREATED self::logException(new \Exception("Health status = SICK."));
+                        header("X-Nitro-Cache: MISS");
+                        header("X-Nitro-Cache-From: SICK");
+                        CacheTagObserver::enableObservers();
+                        return $proceed($request);
+                    }
                 }
-
-                [ $returnHeader, $contents ]  = $this->nitro->pageCache->returnCacheFileContent();
-                foreach ($returnHeader as $headerValue) {
-                    header($headerValue['name'] . ': ' . $headerValue['value'], false);
-                }
-                $responseData = [
-                    'content' => $contents,
-                    'status_code' => 200,
-                    'headers' => [],
-                    'context' => $this->context->toArray()
-
-                ];
-
-
-                return $this->buildResponse($responseData);
-
-            } else {
-                if ($this->nitro->getSdk()->getHealthStatus() == "SICK") {
-                    //TODO  LOG FILE WILL CREATED self::logException(new \Exception("Health status = SICK."));
-                    header("X-Nitro-Cache: MISS");
-                    header("X-Nitro-Cache-From: SICK");
-                    CacheTagObserver::enableObservers();
-                    return $proceed($request);
-                }
-            }
             }
         } catch (\Exception $exception) {
 

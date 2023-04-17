@@ -60,6 +60,7 @@ class VarnishNitroPackConfig extends \Magento\Framework\App\Config\Value
             $this->setValue($replaceValue);
         }
         $host = $this->_config->getValue('system/full_page_cache/varnish_nitro/backend_host', $scopeType = ScopeConfigInterface::SCOPE_TYPE_DEFAULT, $scopeCode = null);
+        if(!is_null($host)){
         $url = 'http://' . $host . ':' . $currentValue;
         $httpMulti = new HttpClientMulti();
         $client = new HttpClient($url);
@@ -86,6 +87,7 @@ class VarnishNitroPackConfig extends \Magento\Framework\App\Config\Value
         }
         }
         $this->setValue($currentValue);
+        }
         return $this;
     }
 

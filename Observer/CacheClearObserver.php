@@ -48,6 +48,10 @@ class CacheClearObserver implements ObserverInterface
     protected $defaultQueueValueProvider;
 
     protected $defaultQueueValueConnection;
+    /**
+     * @var DeploymentConfig
+     */
+    private $config;
     public function __construct(
         NitroServiceInterface                                $nitro,
         TaggingServiceInterface                              $tagger,
@@ -56,7 +60,8 @@ class CacheClearObserver implements ObserverInterface
         LoggerInterface                                      $logger,
         \Magento\Framework\MessageQueue\DefaultValueProvider $defaultQueueValueProvider,
         \Magento\Framework\MessageQueue\PublisherInterface   $publisher,
-        \Magento\Framework\Serialize\Serializer\Json         $json
+        \Magento\Framework\Serialize\Serializer\Json         $json,
+        DeploymentConfig $config
     )
     {
         $this->objectManager = \Magento\Framework\App\ObjectManager::getInstance();
@@ -64,6 +69,7 @@ class CacheClearObserver implements ObserverInterface
         $this->request = $request;
         $this->storeManager = $storeManager;
         $this->nitro = $nitro;
+        $this->config = $config ?? ObjectManager::getInstance()->get(DeploymentConfig::class);
         $this->tagger = $tagger;
         $this->_json = $json;
         $this->_publisher = $publisher;
@@ -172,5 +178,8 @@ class CacheClearObserver implements ObserverInterface
             }
         }
     }
+    public function getTopicName(){
 
+        return $this->defaultQueueValueConnection =='amqp' && $this->config->get('queue/amqp') && count($this->config->get('queue/amqp')) > 0  ? self::TOPIC_NAME_AMQP : self::TOPIC_NAME_DB;
+    }
 }
