@@ -5,12 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ec8709bb-0c6d-420a-bbce-0d2f296fb020" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Api/NitroService.php" beforeDir="false" afterPath="$PROJECT_DIR$/Api/NitroService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Plugin/Config/AdminConfigAfterCheck.php" beforeDir="false" afterPath="$PROJECT_DIR$/Plugin/Config/AdminConfigAfterCheck.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Setup/Patch/Data/DataPatch.php" beforeDir="false" afterPath="$PROJECT_DIR$/Setup/Patch/Data/DataPatch.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/etc/module.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/module.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/frontend/web/js/ready.js" beforeDir="false" afterPath="$PROJECT_DIR$/view/frontend/web/js/ready.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -89,7 +85,7 @@
       <workItem from="1681716543625" duration="483000" />
       <workItem from="1681717149075" duration="519000" />
       <workItem from="1681717997406" duration="3031000" />
-      <workItem from="1681896854088" duration="869000" />
+      <workItem from="1681896854088" duration="1165000" />
     </task>
     <servers />
   </component>
