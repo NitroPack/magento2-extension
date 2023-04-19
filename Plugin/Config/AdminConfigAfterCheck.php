@@ -55,10 +55,6 @@ class AdminConfigAfterCheck
                     if ($parseStoreUrl['host'] != $parseDefaultStoreUrl['host']) {
                         if (strpos($parseStoreUrl['host'], '.' . $parseDefaultStoreUrl['host']) === false) {
                             $duplicateAliasDomain[] = $storeView->getBaseUrl();
-                            $writer = new \Zend_Log_Writer_Stream(BP . '/var/log/custom.log');
-                            $logger = new \Zend_Log();
-                            $logger->addWriter($writer);
-                            $logger->info($storeView->getBaseUrl());
                         }
                     }
                 } else {

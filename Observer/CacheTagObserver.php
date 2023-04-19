@@ -5,28 +5,44 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\App\RequestInterface;
 use Psr\Log\LoggerInterface;
+use Magento\Store\Model\StoreManagerInterface;
 
 use NitroPack\NitroPack\Api\TaggingServiceInterface;
 
 class CacheTagObserver implements ObserverInterface {
-
+    /**
+     * @var \NitroPack\NitroPack\Api\TaggingServiceInterface
+     * */
 	protected $tagger;
+    /**
+     * @var \Magento\Framework\App\RequestInterface
+     * */
 	protected $request;
+    /**
+     * @var \Psr\Log\LoggerInterface
+     * */
 	protected $logger;
 
 	static $loggedRequest = false;
 
 	protected static $observersEnabled = true;
+    /**
+     * @var StoreManagerInterface
+     * */
+    protected $storeManager;
 
 	public function __construct(
 		TaggingServiceInterface $tagger,
 		RequestInterface $request,
-		LoggerInterface $logger
+		LoggerInterface $logger,
+        StoreManagerInterface $storeManager
 	) {
 		$this->tagger = $tagger;
 		$this->request = $request;
 		$this->logger = $logger;
-	}
+        $this->storeManager = $storeManager;
+
+    }
 
 	public function execute(Observer $observer) {
 		if (!static::$observersEnabled) {
@@ -81,5 +97,13 @@ class CacheTagObserver implements ObserverInterface {
 			}
 		}
 	}
+
+    public function getRootCategoryId(): int
+    {
+        // get store group id for current store
+        $storeGroupId = $this->storeManager->getStore()->getStoreGroupId();
+        // get root category id
+        return $this->storeManager->getGroup($storeGroupId)->getRootCategoryId();
+    }
 
 }

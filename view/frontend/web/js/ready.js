@@ -17,9 +17,8 @@ require([
             siteSecret: $('#nitropack_siteSecret').val()
         },
         success: function (data) {
-            this.nitropack_remote_cache = customerData.set('nitropack_remote_cache', true);
+            customerData.set('nitropack_remote_cache', true);
             customerData.reload(['nitropack_remote_cache']);
-            this._super();
         }.bind(this)
     });
 });

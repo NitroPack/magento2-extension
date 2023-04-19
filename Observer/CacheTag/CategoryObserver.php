@@ -26,7 +26,10 @@ class CategoryObserver extends CacheTagObserver {
 				if (!isset($data['category']) || !is_a($data['category'], Category::class)) {
 					return false;
 				}
-				$this->category = $data['category'];
+                if($data['category']->getId()!=$this->getRootCategoryId())
+				    $this->category = $data['category'];
+                else
+                    return  false;
 				break;
 			case 'catalog_category_collection_load_after':
 				if (!isset($data['category_collection']) || !is_a($data['category_collection'], Collection::class)) {
@@ -50,5 +53,5 @@ class CategoryObserver extends CacheTagObserver {
 			// $this->tagger->tagCategory($category);
 		}
 	}
-	
+
 }

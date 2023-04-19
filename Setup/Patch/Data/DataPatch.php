@@ -373,7 +373,7 @@ class DataPatch implements DataPatchInterface, PatchRevertableInterface
             );
 
             if (!is_null($nitroPackSdk)) {
-                $response = $nitroPackSdk->getApi()->getCache($url, 'magento-cli', [], false, '');
+                    $response = $nitroPackSdk->getApi()->getCache($url, 'magento-cli', [], false, '',null);
 
                 if ($response->getStatus() == \NitroPack\SDK\Api\ResponseStatus::OK || $response->getStatus(
                     ) == \NitroPack\SDK\Api\ResponseStatus::ACCEPTED) {
