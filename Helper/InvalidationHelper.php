@@ -48,7 +48,7 @@ class InvalidationHelper extends AbstractHelper
      * */
     protected $serializer;
     protected $settings;
-    private $cacheTtl = 259200;
+    private $cacheTtl = 25920;
     /**
      * @var DirectoryList
      * */
@@ -139,6 +139,28 @@ class InvalidationHelper extends AbstractHelper
             $to_time = strtotime($crontabCollectionValue['executed_at']);
             $from_time = time();
             if (round(abs($to_time - $from_time) / $this->cacheTtl, 2) <= 10) {
+                $cronSetup = true;
+            }
+        }
+        return $cronSetup;
+    }
+
+
+
+    function checkCronJobForHealth()
+    {
+        $crontabCollection = $this->cronFactory->create()->addFieldToSelect('executed_at')->addFieldToFilter(
+            'job_code',
+            'nitropack_cron_health_status',
+            'eq'
+        )
+            ->addFieldToFilter('executed_at', array('notnull' => true))
+            ->setOrder('executed_at', 'DESC')->setPageSize(3);
+        $cronSetup = false;
+        foreach ($crontabCollection->getData() as $crontabCollectionValue) {
+            $to_time = strtotime($crontabCollectionValue['executed_at']);
+            $from_time = time();
+            if (round(abs($to_time - $from_time) / 600, 2) <= 10) {
                 $cronSetup = true;
             }
         }

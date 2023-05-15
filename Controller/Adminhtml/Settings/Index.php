@@ -10,6 +10,7 @@ use Magento\Framework\View\Result\PageFactory;
 use Magento\Store\Model\Store;
 use NitroPack\NitroPack\Controller\Adminhtml\StoreAwareAction;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
+use NitroPack\SDK\HealthStatus;
 
 class Index extends StoreAwareAction
 {
@@ -40,12 +41,13 @@ class Index extends StoreAwareAction
      * @param NitroServiceInterface $nitro
      * */
     public function __construct(
-        Context $context,
-        PageFactory $resultPageFactory,
-        ScopeConfigInterface $_scopeConfig,
+        Context                $context,
+        PageFactory            $resultPageFactory,
+        ScopeConfigInterface   $_scopeConfig,
         ObjectManagerInterface $objectManager,
-        NitroServiceInterface $nitro
-    ) {
+        NitroServiceInterface  $nitro
+    )
+    {
         parent::__construct($context, $nitro);
         $this->resultPageFactory = $resultPageFactory;
         $this->nitro = $nitro;
@@ -55,6 +57,7 @@ class Index extends StoreAwareAction
 
     protected function nitroExecute()
     {
+
         if (!$this->nitro->isConnected()) {
             $resultRedirect = $this->resultRedirectFactory->create();
             $resultRedirect->setUrl($this->getUrlWithStore('NitroPack/connect/index'));
@@ -62,20 +65,23 @@ class Index extends StoreAwareAction
         }
         /** @var Store $store */
         $store = $this->objectManager->get(Store::class);
-        if (!$store->isUseStoreInUrl()) {
-            $storeViewCode = [];
-            foreach ($this->getStoreGroup()->getStores() as $store) {
-                if ($this->getStoreGroup()->getDefaultStoreId() != $store->getId()) {
-                    $storeViewCode[] = $store->getCode(); // get store view name
+        if ($this->nitro->getSdk()->getHealthStatus() == HealthStatus::HEALTHY) {
+            if (!$store->isUseStoreInUrl()) {
+                $storeViewCode = [];
+                foreach ($this->getStoreGroup()->getStores() as $store) {
+                    if ($this->getStoreGroup()->getDefaultStoreId() != $store->getId()) {
+                        $storeViewCode[] = $store->getCode(); // get store view name
+                    }
                 }
-            }
-            if (count($storeViewCode) > 0) {
-                $this->nitro->getSdk()->getApi()->setVariationCookie('store', $storeViewCode, 1);
+
+                if (count($storeViewCode) > 0) {
+                    $this->nitro->getSdk()->getApi()->setVariationCookie('store', $storeViewCode, 1);
+                } else {
+                    $this->nitro->getSdk()->getApi()->unsetVariationCookie('store');
+                }
             } else {
                 $this->nitro->getSdk()->getApi()->unsetVariationCookie('store');
             }
-        } else {
-            $this->nitro->getSdk()->getApi()->unsetVariationCookie('store');
         }
         $page = $this->resultPageFactory->create();
 

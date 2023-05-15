@@ -1,6 +1,7 @@
 <?php
 
 $InvalidationHelper = $this->helper('NitroPack\NitroPack\Helper\InvalidationHelper');
+
 if($InvalidationHelper->checkHavePreviouslyConnected()){
 if (!$InvalidationHelper->checkInvalidationAndPurgeProcess() && !$InvalidationHelper->checkCronJobIsSetup()) {
     //Disable
@@ -13,7 +14,14 @@ if (!$InvalidationHelper->checkInvalidationAndPurgeProcess() && !$InvalidationHe
     </div>
 
     <?php
-} else {
+}else if (!$InvalidationHelper->checkCronJobForHealth()){
+?>
+    <div class="messages">
+        <div class="message message-warning message-demo-mode">
+            NitroPack connection CRON is not running. Enable CRON by running the following command: <strong> php bin/magento cron:run </strong> or setup a crontab <strong> php bin/magento cron:install </strong>
+        </div>
+    </div>
+<?php } else {
     //Enabled
     $InvalidationHelper->makeConnectionsDisableAndEnable(true);
 } ?>

@@ -4,6 +4,7 @@ namespace NitroPack\NitroPack\Plugin\Config;
 
 use Magento\Store\Model\StoreManagerInterface;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
+use NitroPack\SDK\HealthStatus;
 
 
 class AdminConfigAfterCheck
@@ -63,7 +64,7 @@ class AdminConfigAfterCheck
             }
 
             $this->nitro->reload($storeGroupCode);
-            if ($this->nitro->isConnected()) {
+            if ($this->nitro->isConnected() && $this->nitro->getSdk()->getHealthStatus() == HealthStatus::HEALTHY) {
                 if (count($storeViewCode) > 0) {
                     $this->nitro->getSdk()->getApi()->setVariationCookie('store', $storeViewCode, 1);
                 } else {

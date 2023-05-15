@@ -7,6 +7,7 @@ use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Event\Observer as EventObserver;
 use Magento\Store\Model\Store;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
+use NitroPack\SDK\HealthStatus;
 
 class ConfigWebChange implements \Magento\Framework\Event\ObserverInterface
 {
@@ -57,7 +58,7 @@ class ConfigWebChange implements \Magento\Framework\Event\ObserverInterface
             }
             try {
                 $this->nitro->reload($storesData->getCode());
-                if (!is_null($this->nitro->getSdk())) {
+                if (!is_null($this->nitro->getSdk())  && $this->nitro->getSdk()->getHealthStatus() == HealthStatus::HEALTHY) {
                     if (isset($storeCodeChange) && !$storeCodeChange) {
                         if (count($storeViewCode) > 0) {
                             $this->nitro->getSdk()->getApi()->setVariationCookie('store', $storeViewCode, 1);

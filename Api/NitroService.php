@@ -24,13 +24,14 @@ use Magento\Framework\UrlInterface;
 class NitroService implements NitroServiceInterface
 {
 
-    const EXTENSION_VERSION = '2.1.6';
+    const EXTENSION_VERSION = '2.1.7';
     const FULL_PAGE_CACHE_NITROPACK = 'system/full_page_cache/caching_application';
     const FULL_PAGE_CACHE_NITROPACK_VALUE = 3;
     public const XML_VARNISH_PAGECACHE_ACCESS_LIST = 'system/full_page_cache/varnish_nitro/access_list';
     public const XML_VARNISH_PAGECACHE_VARNISH_PORT = 'system/full_page_cache/varnish_nitro/varnish_port';
     public const XML_VARNISH_PAGECACHE_BACKEND_HOST = 'system/full_page_cache/varnish_nitro/backend_host';
 
+    public const XML_VARNISH_PAGECACHE_NITRO_ENABLED = 'system/full_page_cache/varnish_enable';
     protected static $pageRoutes = array(
         'cms_index_index' => 'home',
         'catalog_product_view' => 'product',
@@ -155,6 +156,7 @@ class NitroService implements NitroServiceInterface
             } else {
                 $this->sdk = $this->initializeSdk();
                 if (!is_null($this->sdk)) {
+
                     if (
                         !is_null($this->_scopeConfig->getValue(self::FULL_PAGE_CACHE_NITROPACK))
                         && $this->_scopeConfig->getValue(
@@ -162,7 +164,12 @@ class NitroService implements NitroServiceInterface
                         ) == self::FULL_PAGE_CACHE_NITROPACK_VALUE
                         && isset($_SERVER['HTTP_X_VARNISH'])
                         &&   !is_null($this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_BACKEND_HOST))
+                    && !is_null($this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_NITRO_ENABLED))
+                    && $this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_NITRO_ENABLED)
                     ) {
+                        // Config url check because the value is reset via configuration
+                        if($this->urlBuilder->getCurrentUrl()!=$this->urlBuilder->getUrl('NitroPack/Webhook/Config/')){
+
                         $backendServer = explode(
                             ',',
                             $this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_BACKEND_HOST)
@@ -198,7 +205,7 @@ class NitroService implements NitroServiceInterface
                             'X-Magento-Tags-Pattern' => ' .*'
                         ]);
                     }
-                }
+                    }}
             }
             //  $this->sdk->purgeLocalCache(true);
             //exit;
