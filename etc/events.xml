@@ -12,5 +12,7 @@
     <event name="nitropack_cache_flush_after">
         <observer name="nitropack_cache_flush_after" instance="NitroPack\NitroPack\Observer\NitroPackCacheFlush"/>
     </event>
-
+    <event name="maintenance_mode_changed">
+        <observer name="nitropack_nitropack_maintenance_mode_observer" instance="NitroPack\NitroPack\Observer\MaintenanceModeObserver" />
+    </event>
 </config>

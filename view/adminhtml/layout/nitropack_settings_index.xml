@@ -25,7 +25,9 @@
             </block>
 		</referenceContainer>
 		<referenceContainer name="content">
-			<block class="NitroPack\NitroPack\Block\SettingsBlock" template="NitroPack_NitroPack::settings.phtml"/>
+            <block class="NitroPack\NitroPack\Block\SettingsBlock" template="NitroPack_NitroPack::settings.phtml">
+                <block  class="NitroPack\NitroPack\Block\DiagnosticsBlock" name="DiagnosticsBlock" template="NitroPack_NitroPack::diagnostics.phtml"  />
+            </block>
 		</referenceContainer>
 		<referenceContainer name="page.messages">
         <block class="Magento\Framework\View\Element\Messages" name="messages" as="messages"/>

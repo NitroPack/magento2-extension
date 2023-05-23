@@ -109,3 +109,131 @@ body .ui-tooltip {
     bottom: -20px;
     top: auto;
 }*/
+
+
+/* embed.css */
+.card-d-item {
+    max-width: none;
+    height: 100%;
+    margin-top: 0;
+}
+
+.card.no-border {
+    border: none;
+}
+
+.word-break {
+    word-break: break-all;
+}
+
+.nav.nav-tabs>* {
+    margin-bottom: 0;
+}
+
+.card-overlay {
+    position: absolute;
+    z-index: 100;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, .5);
+    padding: 2.25rem;
+}
+
+.card-overlay-hidden {
+    display: none;
+}
+
+.card-overlay-box {
+    min-width: 50%;
+    padding: 30px 20px;
+    margin: 0px;
+    background-color: white;
+    box-shadow: 0px 0px 100px rgba(200,200,200,.5);
+    text-align: center;
+    position: relative;
+}
+
+.card-overlay-box.dismissable {
+    padding: 20px 50px 20px 20px;
+}
+
+.card-overlay-box > .progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: white;
+    border-radius: 0;
+}
+
+.card-overlay-box > .progress > .progress-bar {
+    transition: width .1s ease-out;
+}
+.card-overlay-blurrable {
+    -webkit-filter: blur(0px);
+    -moz-filter: blur(0px);
+    -o-filter: blur(0px);
+    -ms-filter: blur(0px);
+    filter:progid:DXImageTransform.Microsoft.Blur(PixelRadius='0');
+    filter: blur(0px);
+}
+
+.card-overlay-blurred {
+    -webkit-filter: blur(30px); -moz-filter: blur(30px);
+    -o-filter: blur(30px); -ms-filter: blur(30px);
+    filter: url(.blurrable); filter: blur(30px);  filter:progid:DXImageTransform.Microsoft.Blur(PixelRadius='3');
+    -webkit-transition: 0.5s -webkit-filter ease-out;
+    -o-transition: 0.5s -o-filter ease-out;
+}
+.diagnostic__data-grid{
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    padding-left: 0;
+    margin-bottom: 0;
+}
+.diagnostic__data-item{
+    border: 1px solid rgba(0,0,0,.125);
+    border-right:0;
+    border-left:0;
+    border-radius:0;
+    position: relative;
+    display: block;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: -1px;
+    background-color: #fff;
+
+}
+.diagnostic__data-item > .diagnostic__data-item-text{
+    margin-top: .83rem;
+}
+.px-0 {
+    padding-left: 0!important;
+}
+.px-0 {
+    padding-right: 0!important;
+}
+.justify-content-between {
+    -ms-flex-pack: justify!important;
+    justify-content: space-between!important;
+}
+.d-flex {
+    display: -ms-flexbox!important;
+    display: flex!important;
+}
+
+#gen-report-btn{
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+    font-size: 13px;
+    padding: 1rem;
+    width: 100%;
+}

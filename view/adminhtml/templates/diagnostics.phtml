@@ -1,0 +1,174 @@
+<?php
+$diagnosticsReport = $block->getDiagnosticsReport();
+$diagnosticsReportStoreGroupId = $block->getStoreGroup()->getId()
+?>
+<div>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <div class="card-overlay-blurrable np-widget" id="diagnostic-widget">
+                <div class="card card-d-item">
+                    <div class="card-body">
+                        <h3 class="card-title"><?= __(" Diagnostics report") ?></h3>
+                        <ul class="diagnostic__data-grid">
+                            <li class="diagnostic__data-item px-0 d-flex justify-content-between align-items-center">
+                <span id="loading-general-info" class="diagnostic__data-item-text">
+                  <?= __("Include NitroPack info(version, methods, environment)"); ?>
+                </span>
+                                <span id="general-info-toggle">
+                  <label id="general-info-slider" class="switch">
+                    <input type="checkbox" class="diagnostic-option" id="general-info-status" checked>
+                    <span class="slider round"></span>
+                  </label>
+                </span>
+                            </li>
+                            <li class="diagnostic__data-item px-0 d-flex justify-content-between align-items-center">
+                <span id="loading-plugins-status" class="diagnostic__data-item-text">
+                  <?= __("Include active plugins list"); ?>
+                </span>
+                                <span id="active-plugins-toggle">
+                  <label id="active-plugins-slider" class="switch">
+                    <input type="checkbox" class="diagnostic-option" id="active-plugins-status" checked>
+                    <span class="slider round"></span>
+                  </label>
+                </span>
+                            </li>
+                            <li class="diagnostic__data-item px-0 d-flex justify-content-between align-items-center">
+                <span id="conflicting-plugins-info" class="diagnostic__data-item-text">
+        <?= __("Include conflicting plugins list"); ?>
+                </span>
+                                <span id="conflicting-plugins-toggle">
+                  <label id="conflicting-plugins-slider" class="switch">
+                    <input type="checkbox" class="diagnostic-option" id="conflicting-plugins-status" checked>
+                    <span class="slider round"></span>
+                  </label>
+                </span>
+                            </li>
+                            <li class="diagnostic__data-item px-0 d-flex justify-content-between align-items-center">
+                <span id="loading-user-config" class="diagnostic__data-item-text">
+                   <?= __("Include user config"); ?>
+                </span>
+                                <span id="user-config-toggle">
+                  <label id="user-config-slider" class="switch">
+                    <input type="checkbox" class="diagnostic-option" id="user-config-status" checked>
+                    <span class="slider round"></span>
+                  </label>
+                </span>
+                            </li>
+                            <li class="diagnostic__data-item px-0 d-flex justify-content-between align-items-center">
+                <span id="loading-dir-info" class="diagnostic__data-item-text">
+                  <?= __("Include directory info(structure,permissions)"); ?>
+                </span>
+                                <span id="dir-info-toggle">
+                  <label id="dir-info-slider" class="switch">
+                    <input type="checkbox" class="diagnostic-option" id="dir-info-status" checked>
+                    <span class="slider round"></span>
+                  </label>
+                </span>
+                            </li>
+                            <li class="diagnostic__data-item px-0 d-flex justify-content-between align-items-center">
+                <span style="margin-top: 1rem; margin-bottom: 1rem; ">
+                  <a id="gen-report-btn" href="javascript:void(0);" class="btn btn-primary btn-sm ml-3"><i
+                          class="fa fa-refresh fa-spin" style="display:none"
+                          id="diagnostics-loader"></i>&nbsp;&nbsp;<?= __("Generate Report"); ?></a>
+                </span>
+                            </li>
+                        </ul>
+                        <p style="margin-top: 1rem;"><i class="fa fa-info-circle text-primary"
+                                                        aria-hidden="true"></i> <?= __("The generated report will be saved to your computer and can later be attached to your ticket."); ?>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    require(['jquery'], function ($) {
+        let isReportGenerating = false;
+
+        $("#gen-report-btn").on("click", function (e) {
+            if (isReportGenerating) return;
+
+            $.ajax({
+                url: "<?= $diagnosticsReport; ?>",
+                type: "POST",
+                dataType: "text",
+                data: {
+                    action: 'nitropack_generate_report',
+                    group: <?= $diagnosticsReportStoreGroupId; ?>,
+                    toggled: {
+                        "general-info-status": $("#general-info-status:checked").length,
+                        "active-plugins-status": $("#active-plugins-status:checked").length,
+                        "conflicting-plugins-status": $("#conflicting-plugins-status:checked").length,
+                        "user-config-status": $("#user-config-status:checked").length,
+                        "dir-info-status": $("#dir-info-status:checked").length
+                    }
+                },
+                beforeSend: function (xhr, sett) {
+                    if ($(".diagnostic-option:checked").length > 0) {
+                        $("#diagnostics-loader").show();
+                        isReportGenerating = true;
+                        return true;
+                    } else {
+                        alert("<?= __('Please select at least one of the report options'); ?>");
+                        return false;
+                    }
+                },
+                success: function (response, status, xhr) {
+
+
+                    if (response.length > 1) {
+                        var filename = "";
+                        var disposition = xhr.getResponseHeader('Content-Disposition');
+                        if (disposition && disposition.indexOf('attachment') !== -1) {
+                            var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                            var matches = filenameRegex.exec(disposition);
+                            if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+                        }
+
+                        var type = xhr.getResponseHeader('Content-Type');
+                        var blob = new Blob([response], {type: type});
+
+                        if (typeof window.navigator.msSaveBlob !== 'undefined') {
+                            // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
+                            window.navigator.msSaveBlob(blob, filename);
+                        } else {
+                            var URL = window.URL || window.webkitURL;
+                            var downloadUrl = URL.createObjectURL(blob);
+
+                            if (filename) {
+                                // use HTML5 a[download] attribute to specify filename
+                                var a = document.createElement("a");
+                                // safari doesn't support this yet
+                                if (typeof a.download === 'undefined') {
+                     //               window.location.href = downloadUrl;
+                                } else {
+                                    a.href = downloadUrl;
+                                    a.download = filename;
+                                    document.body.appendChild(a);
+                                    a.click();
+                                }
+                            } else {
+                   //             window.location.href = downloadUrl;
+                            }
+
+                            setTimeout(function () {
+                                URL.revokeObjectURL(downloadUrl);
+                            }, 100);
+                        }
+                        Notification.success("<?= __('Report generated successfully.'); ?>");
+                    } else {
+                        Notification.error("<?= __('Response is empty. Report generation failed.'); ?>");
+                    }
+                },
+                error: function () {
+                    Notification.error("<?= __('There was an error while generating the report.'); ?>");
+                },
+                complete: function () {
+                    $("#diagnostics-loader").hide();
+                    isReportGenerating = false;
+                }
+            });
+        });
+    });
+</script>

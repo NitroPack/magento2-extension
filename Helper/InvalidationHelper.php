@@ -160,7 +160,7 @@ class InvalidationHelper extends AbstractHelper
         foreach ($crontabCollection->getData() as $crontabCollectionValue) {
             $to_time = strtotime($crontabCollectionValue['executed_at']);
             $from_time = time();
-            if (round(abs($to_time - $from_time) / 600, 2) <= 10) {
+            if (round(abs($to_time - $from_time) / 300, 2) <= 10) {
                 $cronSetup = true;
             }
         }
@@ -248,14 +248,28 @@ class InvalidationHelper extends AbstractHelper
 
     public function checkHavePreviouslyConnected()
     {
-        $rootPath = $this->directoryList->getPath('var') . DIRECTORY_SEPARATOR;
-        if ($this->fileDriver->isDirectory($rootPath) && $this->fileDriver->isWritable($rootPath)) {
-            $paths = $this->fileDriver->readDirectory($rootPath);
-            $checkHaveConnectedFile = preg_grep('/nitro_settings_(\w+)/', $paths);
-            if (count($checkHaveConnectedFile) > 0) {
-                return true;
+
+            $rootPath = $this->directoryList->getPath('var') . DIRECTORY_SEPARATOR;
+            if ($this->fileDriver->isDirectory($rootPath) && $this->fileDriver->isWritable($rootPath)) {
+                $paths = $this->fileDriver->readDirectory($rootPath);
+                $checkHaveConnectedFileArray = preg_grep('/nitro_settings_(\w+)/', $paths);
+
+                if (count($checkHaveConnectedFileArray) > 0) {
+                    $enabledFlag = true;
+                    foreach ($checkHaveConnectedFileArray as $checkHaveConnectedFile) {
+
+                        $data = json_decode($this->fileDriver->fileGetContents($checkHaveConnectedFile));
+                        if (!$data->enabled) {
+                            $enabledFlag = false;
+                        } else {
+                            $enabledFlag = true;
+                        }
+                    }
+                    return $enabledFlag;
+                }
             }
-        }
-        return false;
+            return false;
+
+
     }
 }

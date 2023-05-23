@@ -29,5 +29,5 @@ interface NitroServiceInterface {
 	public function getSdk();
 
 	public function nitroEvent($event, $integrationUrl, $store = null, $additional_meta_data = null);
-
+    public function nitroGenerateWebhookToken($siteId);
 }

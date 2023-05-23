@@ -26,10 +26,14 @@ abstract class WebhookController extends Action implements HttpGetActionInterfac
      * */
     public function __construct(Context $context)
     {
-        parent::__construct($context);
 
+        parent::__construct($context);
         $objManager = $context->getObjectManager();
         $this->nitro = $objManager->get(NitroServiceInterface::class);
+
+        if(!$this->isValidNitropackWebhook()){
+            throw new \Exception('Invalid WebHook token ');
+        }
         $this->responseFactory = $objManager->get(RawFactory::class);
     }
 
@@ -39,6 +43,17 @@ abstract class WebhookController extends Action implements HttpGetActionInterfac
         $result->setHeader('Content-Type', 'text/html');
         $result->setContents($contents);
         return $result;
+    }
+
+
+    function isValidNitropackWebhook() {
+        return !empty($this->_request->getParam("token")) && $this->nitropackValidateWebhookToken($this->_request->getParam("token"));
+    }
+
+
+    function nitropackValidateWebhookToken($token){
+        $data = $this->nitro->getSettings();
+        return preg_match("/^([abcdef0-9]{32})$/", strtolower($token)) && $token == $this->nitro->nitroGenerateWebhookToken($data->siteId);
     }
 
 }

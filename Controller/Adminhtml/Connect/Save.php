@@ -92,7 +92,9 @@ class Save extends StoreAwareAction
                 if ($this->fileDriver->isExists($rootPath . 'notify_disconnection' . '.json')) {
                     $this->fileDriver->deleteFile($rootPath . 'notify_disconnection' . '.json');
                 }
-                $urls = $this->getWebhookUrls();
+                $siteId = $this->nitro->getSettings()->siteId;
+                $token = $this->nitro->nitroGenerateWebhookToken($siteId);
+                $urls = $this->getWebhookUrls($token);
 
                 foreach ($urls as $type => $url) {
                     $this->nitro->getSdk()->getApi()->setWebhook($type, $url);
@@ -198,12 +200,12 @@ class Save extends StoreAwareAction
         $this->nitro->persistSettings($this->storeGroup->getCode());
     }
 
-    protected function getWebhookUrls()
+    protected function getWebhookUrls($token)
     {
         $urls = array(
-            'config' => new NitropackUrl($this->urlHelper->getUrl('NitroPack/Webhook/Config')),
-            'cache_clear' => new NitropackUrl($this->urlHelper->getUrl('NitroPack/Webhook/CacheClear')),
-            'cache_ready' => new NitropackUrl($this->urlHelper->getUrl('NitroPack/Webhook/CacheReady'))
+            'config' => new NitropackUrl($this->urlHelper->getUrl('NitroPack/Webhook/Config').'?token='.$token),
+            'cache_clear' => new NitropackUrl($this->urlHelper->getUrl('NitroPack/Webhook/CacheClear').'?token='.$token),
+            'cache_ready' => new NitropackUrl($this->urlHelper->getUrl('NitroPack/Webhook/CacheReady').'?token='.$token)
         );
 
         return $urls;

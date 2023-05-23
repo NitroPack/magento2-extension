@@ -24,7 +24,8 @@ use Magento\Framework\UrlInterface;
 class NitroService implements NitroServiceInterface
 {
 
-    const EXTENSION_VERSION = '2.1.7';
+    const EXTENSION_VERSION = '2.2.0';
+
     const FULL_PAGE_CACHE_NITROPACK = 'system/full_page_cache/caching_application';
     const FULL_PAGE_CACHE_NITROPACK_VALUE = 3;
     public const XML_VARNISH_PAGECACHE_ACCESS_LIST = 'system/full_page_cache/varnish_nitro/access_list';
@@ -80,11 +81,6 @@ class NitroService implements NitroServiceInterface
      * @var \Magento\Framework\Serialize\SerializerInterface
      * */
     protected $serializer;
-
-    /**
-     * @var \Magento\Framework\App\DeploymentConfig
-     */
-    private $deploymentConfig;
     /**
      * @var ScopeConfigInterface
      * */
@@ -114,7 +110,6 @@ class NitroService implements NitroServiceInterface
      * @param \Magento\Framework\Filesystem\Driver\File $fileDriver
      * @param \Magento\Framework\Serialize\SerializerInterface $serializer
      * @param LoggerInterface $logger
-     * @param \Magento\Framework\App\DeploymentConfig $deploymentConfig
      * @param RedisHelper $redisHelper
      * @param ScopeConfigInterface $_scopeConfig
      * @param UrlInterface $urlBuilder
@@ -128,7 +123,6 @@ class NitroService implements NitroServiceInterface
         \Magento\Framework\Filesystem\Driver\File $fileDriver,
         \Magento\Framework\Serialize\SerializerInterface $serializer,
         LoggerInterface $logger,
-        \Magento\Framework\App\DeploymentConfig $deploymentConfig,
         RedisHelper $redisHelper,
         ScopeConfigInterface $_scopeConfig,
         UrlInterface $urlBuilder,
@@ -144,7 +138,6 @@ class NitroService implements NitroServiceInterface
         $this->serializer = $serializer;
         $this->request = $request;
         $this->urlBuilder = $urlBuilder;
-        $this->deploymentConfig = $deploymentConfig;
         $this->redisHelper = $redisHelper;
         $this->store = $store;
         $this->storeManager = $this->objectManager->get(StoreManagerInterface::class);
@@ -168,7 +161,7 @@ class NitroService implements NitroServiceInterface
                     && $this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_NITRO_ENABLED)
                     ) {
                         // Config url check because the value is reset via configuration
-                        if($this->urlBuilder->getCurrentUrl()!=$this->urlBuilder->getUrl('NitroPack/Webhook/Config/')){
+                        if($this->urlBuilder->getCurrentUrl()!=$this->urlBuilder->getUrl('NitroPack/Webhook/Config/').'?token'.$this->nitroGenerateWebhookToken($this->settings->siteId)){
 
                         $backendServer = explode(
                             ',',
@@ -667,5 +660,11 @@ class NitroService implements NitroServiceInterface
             return true;
         }
         return false;
+    }
+
+
+    public function nitroGenerateWebhookToken($siteId) {
+
+        return md5($this->directoryList->getPath('var'). ":" . $siteId);
     }
 }
