@@ -206,7 +206,7 @@ class DiagnosticsReport extends AbstractHelper
             $info['isConnectedWithElasticSearch'] = $this->isConnectedToElasticsearch();
             $info['isConnectedWithOpenSearch'] = $this->isConnectedToOpenSearch();
             $info['isConnectedWithRedis'] = $this->redisHelper->validatedRedisConnection();
-            $info['isConnectedWithVarnish'] = $this->isConnectedToVarnish();
+            $info['isConnectedWithVarnishSelfHosted'] = $this->isConnectedToVarnish();
             $info['isConnectedWithRabbitMq'] = $this->isRabbitMQConnected();
             if (!$info) {
                 $info = __('Config found, but unable to get contents.', 'nitropack');
@@ -312,16 +312,9 @@ class DiagnosticsReport extends AbstractHelper
     public function isConnectedToElasticsearch(): bool
     {
         $engine = $this->scopeConfig->getValue('catalog/search/engine', 'default');
-        if ($engine === 'elasticsearch6' || $engine === 'elasticsearch7') {
+        if ($engine === 'elasticsearch6' || $engine === 'elasticsearch7' || $engine === 'elasticsearch') {
             // Elasticsearch is configured as the search engine
-            try {
-                $client = $this->objectManager->create(\Elasticsearch\Client::class);
-                $pingResponse = $client->ping();
-                return $pingResponse;
-
-            } catch (\Exception $e) {
-                return false;
-            }
+            return  true;
         }
         return false;
     }
@@ -335,14 +328,7 @@ class DiagnosticsReport extends AbstractHelper
         // Assuming you have installed and configured the OpenSearch extension properly
         $engine = $this->scopeConfig->getValue('catalog/search/engine', 'default');
         if ($engine === 'opensearch') {
-            // OpenSearch is configured as the search engine
-            try {
-                $client = $this->objectManager->create(\OpenSearch\Client::class);
-                $infoResponse = $client->info();
-                return $infoResponse['status'] === 200;
-            } catch (\Exception $e) {
-                return false;
-            }
+          return true;
 
         }
         return false;
@@ -351,12 +337,20 @@ class DiagnosticsReport extends AbstractHelper
     public function isConnectedToVarnish(): bool
     {
         try {
-            $baseUrl = $this->scopeConfig->getValue('web/unsecure/base_url');
-            $httpClient = $this->httpClientFactory->create();
-            $httpClient->setUri($baseUrl);
-            $response = $httpClient->request('GET');
-            $varnishHeader = $this->httpHeader->getHttpUserAgent();
-            return $response->getHeader($varnishHeader) !== null;
+            $ch = curl_init();
+
+            curl_setopt($ch, CURLOPT_URL, 'http://localhost');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PURGE');
+            $headers = array();
+            $headers[] = 'X-Magento-Tags-Pattern: .*';
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            $result = curl_exec($ch);
+            if (curl_errno($ch)) {
+                echo 'Error:' . curl_error($ch);
+            }
+            curl_close($ch);
+            return $result;
         } catch (\Exception $e) {
             return false;
         }
