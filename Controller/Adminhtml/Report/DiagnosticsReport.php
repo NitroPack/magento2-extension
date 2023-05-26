@@ -87,6 +87,7 @@ class DiagnosticsReport extends StoreAwareAction
         FileFactory $fileFactory,
         RawFactory $resultRawFactory,
         Filesystem $filesystem,
+        \Magento\Framework\Message\ManagerInterface $messageManager,
         SerializerInterface $serializer,
         File $file
 
@@ -122,7 +123,7 @@ class DiagnosticsReport extends StoreAwareAction
         $diag_data=[];
         try {
             $ar = !empty($this->_request->getParam("toggled")) ? $this->_request->getParam("toggled") : NULL;
-
+            $errorMsg = [];
             if ($ar !== NULL) {
 
                 foreach ($ar as $func_name => $func_allowed) {
@@ -130,10 +131,11 @@ class DiagnosticsReport extends StoreAwareAction
                         try{
                         $diag_data[$func_name] =$this->{$nitroDiagnosticFunctions[$func_name]}();
                         }catch (\Exception $e){
-                            echo $e->getMessage();
+                            $errorMsg[] = $e->getMessage();
                         }
                       }
                 }
+
                 $directory = $this->filesystem->getDirectoryWrite(DirectoryList::VAR_DIR);
                 $filepath = $directory->getAbsolutePath('nitropack_diag_file.txt');
                 if($this->file->fileExists($filepath)){
@@ -141,7 +143,6 @@ class DiagnosticsReport extends StoreAwareAction
                 }
 
                 $content = $this->serializer->serialize($diag_data);
-
                 $directory->writeFile($filepath, $content);
                 $resultRaw = $this->resultRawFactory->create();
                 $resultRaw->setHttpResponseCode(200);
@@ -152,10 +153,9 @@ class DiagnosticsReport extends StoreAwareAction
 
             }
         } catch (\Exception $e) {
-            //exception handling here
+            $this->messageManager->addError($e->getMessage());
+            return false;
         }
-
-        //   return $this->resultJsonFactory->create()->setData($resultData);
     }
 
     public function getGeneralInfo()

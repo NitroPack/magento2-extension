@@ -53,7 +53,7 @@ abstract class WebhookController extends Action implements HttpGetActionInterfac
 
     function nitropackValidateWebhookToken($token){
         $data = $this->nitro->getSettings();
-        return preg_match("/^([abcdef0-9]{32})$/", strtolower($token)) && $token == $this->nitro->nitroGenerateWebhookToken($data->siteId);
+        return  $token == $this->nitro->nitroGenerateWebhookToken($data->siteId);
     }
 
 }

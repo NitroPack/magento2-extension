@@ -5,6 +5,7 @@ namespace NitroPack\NitroPack\Helper;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\ProductMetadataInterface;
+use Magento\Framework\Filesystem\DirectoryList;
 use Magento\PageCache\Model\Config;
 use Magento\Framework\HTTP\Client\Curl;
 use NitroPack\NitroPack\Api\NitroService;
@@ -78,6 +79,14 @@ class DiagnosticsReport extends AbstractHelper
      * */
     protected $deploymentConfig;
     /**
+     * @var DirectoryList
+     * */
+    protected $directoryList;
+    /**
+     * @var \Magento\Framework\Encryption\EncryptorInterface
+     * */
+    protected $encryptor;
+    /**
      * @var Context $context
      * @var ProductMetadataInterface $productMetadata
      * @var \Magento\Store\Model\StoreManagerInterface $storeManager
@@ -93,6 +102,9 @@ class DiagnosticsReport extends AbstractHelper
      * @param \Magento\Framework\App\DeploymentConfig $deploymentConfig = null
      * @param Header $httpHeader
      * @param \Magento\PageCache\Model\Config  $config
+     * @param DirectoryList $directoryList
+     * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
+     *
      * */
     public function __construct(
         Context                                     $context,
@@ -109,7 +121,10 @@ class DiagnosticsReport extends AbstractHelper
         ZendClientFactory $httpClientFactory,
         Header $httpHeader,
         \Magento\Framework\App\DeploymentConfig $deploymentConfig = null,
-        \Magento\PageCache\Model\Config  $config
+        \Magento\PageCache\Model\Config  $config,
+        DirectoryList $directoryList,
+        \Magento\Framework\Encryption\EncryptorInterface $encryptor
+
     )
     {
         $this->config = $config;
@@ -126,6 +141,8 @@ class DiagnosticsReport extends AbstractHelper
         $this->fullModuleList = $fullModuleList;
         $this->storeManager = $storeManager;
         $this->deploymentConfig  = $deploymentConfig;
+        $this->directoryList = $directoryList;
+        $this->encryptor = $encryptor;
         parent::__construct($context);
     }
     function getDirInfo($nitro,$nitroConfig) {
@@ -251,8 +268,10 @@ class DiagnosticsReport extends AbstractHelper
     {
         try {
             if (!empty($siteConfig['siteId'])) {
-                $constructedWH = strtolower($this->storeManager->getStore()->getBaseUrl()) . 'NitroPack/Webhook/Config/';
-                $storedWH = $nitro->getApi()->getWebhook("config");
+                 $constructedWH = $this->storeManager->getStore()->getBaseUrl() . 'NitroPack/Webhook/Config/?token='.$this->nitroGenerateWebhookToken($siteConfig['siteId']);
+
+                 $storedWH = $nitro->getApi()->getWebhook("config");
+
                 $matchResult = ($constructedWH == $storedWH) ? __('OK', 'nitropack') : __('Warning: Webhooks do not match this site', 'nitropack');
             } else {
                 $debugMsg = empty($_SERVER["HTTP_HOST"]) ? "HTTP_HOST is not defined. " : "";
@@ -347,7 +366,7 @@ class DiagnosticsReport extends AbstractHelper
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
             $result = curl_exec($ch);
             if (curl_errno($ch)) {
-                echo 'Error:' . curl_error($ch);
+                return false;
             }
             curl_close($ch);
             return $result;
@@ -379,5 +398,11 @@ class DiagnosticsReport extends AbstractHelper
         } catch (\Exception $e) {
             return false;
         }
+    }
+
+
+    public function nitroGenerateWebhookToken($siteId)
+    {
+        return $this->encryptor->hash($this->directoryList->getPath('var'). ":" . $siteId);
     }
 }

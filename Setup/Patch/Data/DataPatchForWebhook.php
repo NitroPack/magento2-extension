@@ -24,7 +24,7 @@ class DataPatchForWebhook implements DataPatchInterface
     /**
      * @var \Magento\Store\Api\GroupRepositoryInterface
      * */
-    protected  $storeGroupRepo;
+    protected $storeGroupRepo;
     /**
      * @var DirectoryList
      * */
@@ -34,19 +34,25 @@ class DataPatchForWebhook implements DataPatchInterface
      * */
     protected $apiHelper;
     /**
+     * @var  \Magento\Framework\Encryption\EncryptorInterface
+     * */
+    protected $encryptor;
+    /**
      * @param ModuleDataSetupInterface $moduleDataSetup
      * @param \Magento\Store\Api\GroupRepositoryInterface $storeGroupRepo
      * @param DirectoryList $directoryList
      * @param ApiHelper $apiHelper
      * @param ModuleDataSetupInterface $moduleDataSetup
      * @param AdminFrontendUrl $urlHelper
+     * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
      */
     public function __construct(
-        ModuleDataSetupInterface $moduleDataSetup,
+        ModuleDataSetupInterface                    $moduleDataSetup,
         \Magento\Store\Api\GroupRepositoryInterface $storeGroupRepo,
-        DirectoryList $directoryList,
-        ApiHelper $apiHelper,
-        AdminFrontendUrl $urlHelper
+        DirectoryList                               $directoryList,
+        ApiHelper                                   $apiHelper,
+        AdminFrontendUrl                            $urlHelper,
+        \Magento\Framework\Encryption\EncryptorInterface $encryptor
 
 
     )
@@ -55,6 +61,7 @@ class DataPatchForWebhook implements DataPatchInterface
         $this->apiHelper = $apiHelper;
         $this->directoryList = $directoryList;
         $this->storeGroupRepo = $storeGroupRepo;
+        $this->encryptor = $encryptor;
         /**
          * If before, we pass $setup as argument in install/upgrade function, from now we start
          * inject it with DI. If you want to use setup, you can inject it, with the same way as here
@@ -67,6 +74,7 @@ class DataPatchForWebhook implements DataPatchInterface
         $this->moduleDataSetup->getConnection()->startSetup();
         $storeGroup = $this->storeGroupRepo->getList();
         $storeViewCode = [];
+        $error = "";
         foreach ($storeGroup as $storesData) {
             $settingsFilename = $this->apiHelper->getSettingsFilename($storesData->getCode());
             $haveData = $this->apiHelper->readFile($settingsFilename);
@@ -88,11 +96,14 @@ class DataPatchForWebhook implements DataPatchInterface
                     foreach ($urls as $type => $url) {
                         $sdk->getApi()->setWebhook($type, $url);
                     }
-                }catch (\Exception $exception){
-                    echo $exception->getMessage();
+                } catch (\Exception $exception) {
+                    $error = $exception->getMessage();
 
                 }
             }
+        }
+        if (!empty($error)) {
+            return $error;
         }
         $this->moduleDataSetup->getConnection()->endSetup();
     }
@@ -115,17 +126,18 @@ class DataPatchForWebhook implements DataPatchInterface
     public function getWebhookUrls($token)
     {
         $urls = array(
-            'config' => new NitropackUrl($this->urlHelper->getUrl('NitroPack/Webhook/Config').'?token='.$token),
-            'cache_clear' => new NitropackUrl($this->urlHelper->getUrl('NitroPack/Webhook/CacheClear').'?token='.$token),
-            'cache_ready' => new NitropackUrl($this->urlHelper->getUrl('NitroPack/Webhook/CacheReady').'?token='.$token)
+            'config' => new NitropackUrl($this->urlHelper->getUrl('NitroPack/Webhook/Config') . '?token=' . $token),
+            'cache_clear' => new NitropackUrl($this->urlHelper->getUrl('NitroPack/Webhook/CacheClear') . '?token=' . $token),
+            'cache_ready' => new NitropackUrl($this->urlHelper->getUrl('NitroPack/Webhook/CacheReady') . '?token=' . $token)
         );
 
         return $urls;
     }
 
 
-    public function nitroGenerateWebhookToken($siteId) {
+    public function nitroGenerateWebhookToken($siteId)
+    {
 
-        return md5($this->directoryList->getPath('var'). ":" . $siteId);
+        return $this->encryptor->hash($this->directoryList->getPath('var'). ":" . $siteId);
     }
 }

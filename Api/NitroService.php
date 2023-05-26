@@ -24,8 +24,7 @@ use Magento\Framework\UrlInterface;
 class NitroService implements NitroServiceInterface
 {
 
-    const EXTENSION_VERSION = '2.2.0';
-
+    const EXTENSION_VERSION = '2.2.1';
     const FULL_PAGE_CACHE_NITROPACK = 'system/full_page_cache/caching_application';
     const FULL_PAGE_CACHE_NITROPACK_VALUE = 3;
     public const XML_VARNISH_PAGECACHE_ACCESS_LIST = 'system/full_page_cache/varnish_nitro/access_list';
@@ -71,8 +70,6 @@ class NitroService implements NitroServiceInterface
     protected $directoryList;
     // ! Do not rely on dependency injection for the session and cart, as they may trigger our frontend observers, and we do not want to do that from the constructor, since the observers inject this service, which then would lead to a dependency loop
     protected $session;
-    protected $cart;
-
     /**
      * @var \Magento\Framework\Filesystem\DriverInterface
      * */
@@ -102,7 +99,10 @@ class NitroService implements NitroServiceInterface
      * @var  \Magento\Store\Model\Store
      * */
     protected $store;
-
+    /**
+     * @var  \Magento\Framework\Encryption\EncryptorInterface
+     * */
+    protected $encryptor;
     /**
      * @param ObjectManagerInterface $objectManager
      * @param State $appState
@@ -115,6 +115,7 @@ class NitroService implements NitroServiceInterface
      * @param UrlInterface $urlBuilder
      * @param \Magento\Store\Model\Store $store
      * @param RequestInterface $request
+     * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
      * */
     public function __construct(
         ObjectManagerInterface $objectManager,
@@ -127,7 +128,9 @@ class NitroService implements NitroServiceInterface
         ScopeConfigInterface $_scopeConfig,
         UrlInterface $urlBuilder,
         \Magento\Store\Model\Store $store,
-        RequestInterface $request
+        RequestInterface $request,
+        \Magento\Framework\Encryption\EncryptorInterface $encryptor
+
     ) {
         $this->_scopeConfig = $_scopeConfig;
         $this->logger = $logger;
@@ -142,6 +145,7 @@ class NitroService implements NitroServiceInterface
         $this->store = $store;
         $this->storeManager = $this->objectManager->get(StoreManagerInterface::class);
         $this->loadedStoreCode = null;
+        $this->encryptor = $encryptor;
 
         try {
             if (!$this->readSettings($this->loadedStoreCode)) {
@@ -665,6 +669,8 @@ class NitroService implements NitroServiceInterface
 
     public function nitroGenerateWebhookToken($siteId) {
 
-        return md5($this->directoryList->getPath('var'). ":" . $siteId);
+        return $this->encryptor->hash($this->directoryList->getPath('var'). ":" . $siteId);
     }
+
+
 }
