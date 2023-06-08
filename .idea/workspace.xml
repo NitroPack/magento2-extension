@@ -6,11 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="ec8709bb-0c6d-420a-bbce-0d2f296fb020" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Connect/Again.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Connect/Again.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Settings/EnableCaches.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Settings/EnableCaches.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/StoreAwareAction.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/StoreAwareAction.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Helper/VarnishHelper.php" beforeDir="false" afterPath="$PROJECT_DIR$/Helper/VarnishHelper.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/etc/frontend/di.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/frontend/di.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Api/NitroService.php" beforeDir="false" afterPath="$PROJECT_DIR$/Api/NitroService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/etc/module.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/module.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -97,7 +95,7 @@
       <workItem from="1684992798644" duration="3656000" />
       <workItem from="1685019613189" duration="4249000" />
       <workItem from="1685078693991" duration="3723000" />
-      <workItem from="1686225769544" duration="5227000" />
+      <workItem from="1686225769544" duration="5568000" />
     </task>
     <servers />
   </component>
