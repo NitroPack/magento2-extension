@@ -27,7 +27,7 @@ class Again extends Action
      * @var StoreManagerInterface
      * */
     protected $storeManager;
-
+    protected $storeGroup = null;
     /**
      * @param Context $context
      * @param PageFactory $resultPageFactory
@@ -51,12 +51,16 @@ class Again extends Action
 
     public function execute()
     {
+
         $storeGroupId = (int)$this->getRequest()->getParam('group');
         if ($storeGroupId != 0) {
             $this->storeGroup = $this->storeManager->getGroup($storeGroupId);
             try {
                 $this->nitro->reload($this->storeGroup->getCode());
             } catch (\Exception $e) {
+                if (strpos(strtolower($e->getMessage()), 'verification') !== false) {
+                    return $this->resultPageFactory->create();
+                }
                 $fileDriver = $this->_objectManager->get(\Magento\Framework\Filesystem\Driver\File::class);
                 $settingsFilename = $this->nitro->getSettingsFilename($this->storeGroup->getCode());
                 if (!$fileDriver->isExists($settingsFilename)) {
@@ -67,6 +71,7 @@ class Again extends Action
                     return $resultRedirect;
                 }
             }
+
             if ($this->nitro->isConnected()) {
                 $resultRedirect = $this->resultRedirectFactory->create();
                 $resultRedirect->setUrl(
@@ -74,6 +79,7 @@ class Again extends Action
                 );
                 return $resultRedirect;
             }
+
         }
         return $this->resultPageFactory->create();
     }

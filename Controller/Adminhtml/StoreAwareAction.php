@@ -46,7 +46,18 @@ abstract class StoreAwareAction extends Action
         $settingsFilename = $this->nitro->getSettingsFilename($this->storeGroup->getCode());
         try {
             $this->nitro->reload($this->storeGroup->getCode());
+            if($this->nitro->isConnected()){
+                $this->nitro->getSdk()->getApi()->getDiskUsage();
+            }
         } catch (\Exception $e) {
+            if (strpos(strtolower($e->getMessage()), 'not reliable') !== false) {
+                $this->nitro->disconnect($this->storeGroup->getCode());
+                $this->nitro->purgeLocalCache(true);
+                $resultRedirect = $this->resultRedirectFactory->create();
+                return $resultRedirect->setPath(
+                    $this->_backendUrl->getUrl('NitroPack/connect/index', ['group' => $this->storeGroup->getId()])
+                );
+            }
             if ($fileDriver->isExists($settingsFilename)) {
                 $this->messageManager->addErrorMessage("Nitropack:" . $e->getMessage());
                 if (strpos(strtolower($e->getMessage()), 'verification') !== false) {

@@ -30,6 +30,7 @@
         <plugin name="nitropack_webhook_csrf_override" type="NitroPack\NitroPack\Plugin\WebhookValidationPlugin"/>
     </type>
     <type name="Magento\Store\Model\StoreSwitcher">
-        <plugin name="store_switcher_remove" type="NitroPack\NitroPack\Plugin\RemoveGetParam\StoreSwitcher" />
+        <plugin name="store_switcher_remove" type="NitroPack\NitroPack\Plugin\RemoveGetParam\StoreSwitcher"/>
     </type>
+    <preference for="Magento\PageCache\Model\Layout\LayoutPlugin" type="NitroPack\NitroPack\Model\Layout\LayoutPlugin"/>
 </config>

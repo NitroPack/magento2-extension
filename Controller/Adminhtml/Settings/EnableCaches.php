@@ -7,6 +7,8 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\App\Cache\StateInterface;
+use Magento\Framework\HTTP\Client\Curl;
+use Magento\Store\Model\StoreManagerInterface;
 
 use NitroPack\NitroPack\Controller\Adminhtml\StoreAwareAction;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
@@ -51,6 +53,12 @@ class EnableCaches extends StoreAwareAction
      * @var \Magento\Framework\App\Cache\Frontend\Pool
      * */
     protected $cacheFrontendPool;
+
+    /**
+     * @var Curl
+     * */
+    private $curlClient;
+
     /**
      * @param Context $context
      * @param NitroServiceInterface $nitro
@@ -59,6 +67,7 @@ class EnableCaches extends StoreAwareAction
      * @param ScopeConfigInterface $_scopeConfig
      * @param WriterInterface $configWriter
      * @param StateInterface $cacheState
+     * @param Curl $curlClient
      * @param \Magento\Framework\App\Cache\Frontend\Pool $cacheFrontendPool
      * */
     public function __construct(
@@ -69,6 +78,7 @@ class EnableCaches extends StoreAwareAction
         ScopeConfigInterface $_scopeConfig,
         WriterInterface $configWriter,
         StateInterface $cacheState,
+        Curl $curlClient,
         \Magento\Framework\App\Cache\Frontend\Pool $cacheFrontendPool
 
     ) {
@@ -81,6 +91,8 @@ class EnableCaches extends StoreAwareAction
         $this->configWriter = $configWriter;
         $this->_helper = $_helper;
         $this->cacheFrontendPool = $cacheFrontendPool;
+        $this->curlClient = $curlClient;
+
 
     }
 
@@ -94,8 +106,13 @@ class EnableCaches extends StoreAwareAction
             }
             if(!$this->_helper->getFullPageCacheValue()){
                 $this->configWriter->save(\NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK,\NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK_VALUE,ScopeConfigInterface::SCOPE_TYPE_DEFAULT,  0);
-                foreach ($this->cacheFrontendPool as $cacheFrontend) {
-                    $cacheFrontend->getBackend()->clean();
+                $baseUrl = $this->storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
+                if($this->isVarnishConfigured($baseUrl)){
+                    $this->configWriter->save(\NitroPack\NitroPack\Api\NitroService::XML_VARNISH_PAGECACHE_NITRO_ENABLED,1,ScopeConfigInterface::SCOPE_TYPE_DEFAULT,  0);
+                }
+                $types = array_keys($this->cacheTypeList->getTypes());
+                foreach ($types as $type) {
+                    $this->cacheFrontendPool->get($type)->getBackend()->clean();
                 }
 
             }
@@ -123,5 +140,12 @@ class EnableCaches extends StoreAwareAction
                 'extension_enabled' => false
             ));
         }
+    }
+
+    public function isVarnishConfigured($url)
+    {
+        $this->curlClient->get($url);
+        $responseHeaders = $this->curlClient->getHeaders();
+        return isset($responseHeaders['X-Magento-Cache-Debug']) && ($responseHeaders['X-Magento-Cache-Debug'] === 'HIT' || $responseHeaders['X-Magento-Cache-Debug'] === 'MISS');
     }
 }

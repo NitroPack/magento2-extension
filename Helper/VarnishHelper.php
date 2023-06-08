@@ -46,10 +46,18 @@ class VarnishHelper extends AbstractHelper
                 ',',
                 $this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_BACKEND_HOST)
             );
-            $backendServer = array_map(function ($backendValue) {
+            $varnishPortConfig =$this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_VARNISH_PORT);
+            $backendServer = array_map(function ($backendValue) use($varnishPortConfig) {
                 if ($backendValue == "localhost") {
+                    if($varnishPortConfig!=80)
+
+                        return "127.0.0.1:".$varnishPortConfig;
+
                     return "127.0.0.1";
                 }
+                if($varnishPortConfig!=80)
+                    return $backendValue.":".$varnishPortConfig;
+
                 return $backendValue;
             }, $backendServer);
             $url = 'http://' . isset($backendServer[0]) ? $backendServer[0] : '';
