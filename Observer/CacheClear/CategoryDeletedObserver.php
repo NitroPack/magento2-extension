@@ -8,8 +8,10 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
-class NewOrderObserver implements ObserverInterface
+class CategoryDeletedObserver implements ObserverInterface
 {
+
+
     protected $storeId = 0;
     /**
      * @var RequestInterface
@@ -37,6 +39,8 @@ class NewOrderObserver implements ObserverInterface
     protected $json;
     protected $defaultQueueValueConnection = null;
 
+    protected $category; // Magento\Catalog\Model\Category
+
     const TOPIC_NAME_AMQP = 'nitropack.cache.queue.topic';
     const TOPIC_NAME_DB = 'nitropack.cache.queue.topic.db';
     /**
@@ -48,13 +52,14 @@ class NewOrderObserver implements ObserverInterface
      * @param DeploymentConfig                                     $config
      * */
     public function __construct(
-        RequestInterface $request,
-        StoreManagerInterface $storeManager,
-        \Magento\Framework\MessageQueue\PublisherInterface $publisher,
+        RequestInterface                                     $request,
+        StoreManagerInterface                                $storeManager,
+        \Magento\Framework\MessageQueue\PublisherInterface   $publisher,
         \Magento\Framework\MessageQueue\DefaultValueProvider $defaultQueueValueProvider,
-        \Magento\Framework\Serialize\Serializer\Json $json,
-        DeploymentConfig $config
-    ) {
+        \Magento\Framework\Serialize\Serializer\Json         $json,
+        DeploymentConfig                                     $config
+    )
+    {
 
         $this->request = $request;
         $this->publisher = $publisher;
@@ -64,40 +69,39 @@ class NewOrderObserver implements ObserverInterface
         $this->defaultQueueValueProvider->getConnection();
         $this->config = $config;
         $this->json = $json;
-        $this->storeId = $this->request->getParam('store');
         if ($this->storeId == 0) {
             $this->storeId = $this->storeManager->getDefaultStoreView()->getId();
         }
     }
 
-    protected $order; // Magento\Sales\Model\Order
-
 
     public function execute(Observer $observer)
     {
+
         $data = $observer->getEvent()->getData();
-        if (!isset($data['order'])) {
+        if (!isset($data['category'])) {
             return false;
         }
-        $this->order = $data['order'];
-        $items = $this->order->getItems();
-        foreach ($items as $item) {
+        $this->category = $data['category'];
 
-            $rawData = [
-                'action' => 'invalidation',
-                'type' => 'order',
-                'tag' => 'cat_p_'.$item->getProductId(),
-                'reasonType' => 'order',
-                'storeId' => $this->storeId,
-                'reasonEntity' => '#' . $this->order->getId()
-            ];
-            $this->publisher->publish($this->getTopicName(), $this->json->serialize($rawData));
-
+        $categoryName = $this->category->getName();
+        if (!$categoryName || $categoryName == '') {
+            $categoryName = '#' . $this->category->getId();
         }
+        $rawData = [
+            'action' => 'purge_tag',
+            'type' => 'category',
+            'tag' => 'cat_c_'.$this->category->getId(),
+            'reasonType' => 'category',
+            'storeId' => $this->storeId,
+            'reasonEntity' => $categoryName
+        ];
+        $this->publisher->publish($this->getTopicName(), $this->json->serialize($rawData));
     }
 
     public function getTopicName()
     {
         return $this->defaultQueueValueConnection == 'amqp' && $this->config->get('queue/amqp') && count($this->config->get('queue/amqp')) > 0 ? self::TOPIC_NAME_AMQP : self::TOPIC_NAME_DB;
     }
+
 }

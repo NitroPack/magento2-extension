@@ -62,14 +62,15 @@ class Save extends StoreAwareAction
      * @param ScopeConfigInterface $_scopeConfig
      * */
     public function __construct(
-        Context $context,
-        NitroServiceInterface $nitro,
-        AdminFrontendUrl $urlHelper,
-        ObjectManagerInterface $objectManager,
-        DirectoryList $directoryList,
+        Context                                   $context,
+        NitroServiceInterface                     $nitro,
+        AdminFrontendUrl                          $urlHelper,
+        ObjectManagerInterface                    $objectManager,
+        DirectoryList                             $directoryList,
         \Magento\Framework\Filesystem\Driver\File $fileDriver,
-        ScopeConfigInterface $_scopeConfig
-    ) {
+        ScopeConfigInterface                      $_scopeConfig
+    )
+    {
         parent::__construct($context, $nitro);
         $this->nitro = $nitro;
         $this->_scopeConfig = $_scopeConfig;
@@ -149,6 +150,14 @@ class Save extends StoreAwareAction
                 ));
             } catch (\Exception $e) {
                 $this->nitro->disconnect($this->getStoreGroup()->getCode());
+                if (strpos(strtolower($e->getMessage()), 'not reliable') !== false) {
+                    $rootPath = $this->directoryList->getPath('var') . DIRECTORY_SEPARATOR;
+                    $path = $rootPath . 'nitro_cache' . DIRECTORY_SEPARATOR . $siteId;
+                    if ($path && !\NitroPack\SDK\Filesystem::isDirEmpty($path)) {
+                        \NitroPack\SDK\Filesystem::deleteDir($path);
+                    }
+                }
+
                 $errorMessage = $e->getMessage();
                 return $this->resultJsonFactory->create()->setData(array(
                     'connected' => false,
@@ -203,9 +212,9 @@ class Save extends StoreAwareAction
     protected function getWebhookUrls($token)
     {
         $urls = array(
-            'config' => new NitropackUrl($this->urlHelper->getUrl('NitroPack/Webhook/Config').'?token='.$token),
-            'cache_clear' => new NitropackUrl($this->urlHelper->getUrl('NitroPack/Webhook/CacheClear').'?token='.$token),
-            'cache_ready' => new NitropackUrl($this->urlHelper->getUrl('NitroPack/Webhook/CacheReady').'?token='.$token)
+            'config' => new NitropackUrl($this->urlHelper->getUrl('NitroPack/Webhook/Config') . '?token=' . $token),
+            'cache_clear' => new NitropackUrl($this->urlHelper->getUrl('NitroPack/Webhook/CacheClear') . '?token=' . $token),
+            'cache_ready' => new NitropackUrl($this->urlHelper->getUrl('NitroPack/Webhook/CacheReady') . '?token=' . $token)
         );
 
         return $urls;

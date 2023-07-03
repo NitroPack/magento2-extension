@@ -7,6 +7,7 @@ use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\RequestInterface;
+use NitroPack\NitroPack\Api\NitroService;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
 use NitroPack\NitroPack\Helper\VarnishHelper;
 
@@ -47,14 +48,15 @@ class Index extends Action implements HttpPostActionInterface
      * @param RequestInterface $request
      * */
     public function __construct(
-        Context $context,
-        NitroServiceInterface $nitro,
-        VarnishHelper $varnishHelper,
-        ScopeConfigInterface $scopeConfig,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        Context                                     $context,
+        NitroServiceInterface                       $nitro,
+        VarnishHelper                               $varnishHelper,
+        ScopeConfigInterface                        $scopeConfig,
+        \Magento\Store\Model\StoreManagerInterface  $storeManager,
         \Magento\Store\Api\StoreRepositoryInterface $storeRepository,
-        RequestInterface $request
-    ) {
+        RequestInterface                            $request
+    )
+    {
         $this->nitro = $nitro;
         $this->request = $request;
         $this->_scopeConfig = $scopeConfig;
@@ -70,32 +72,26 @@ class Index extends Action implements HttpPostActionInterface
         $url = $this->request->getParam('currentUrl');
         $storeCode = $this->request->getParam('storeCode');
         $store = $this->storeRepository->get($storeCode);
-
         $storeGroupCode = $this->_storeManager->getGroup($store->getStoreGroupId())->getCode();
-        $siteId = $this->request->getParam('siteId');
-        $siteSecret = $this->request->getParam('siteSecret');
         $this->nitro->reload($storeGroupCode, $url);
         $setting = $this->nitro->getSettings();
-        if ($setting->siteId == $siteId && $setting->siteSecret == $siteSecret) {
-            if (!$this->nitro->isCachableRoute($route)) {
+        if ($setting->siteId && $setting->siteSecret) {
+            if ($this->request->getFrontName()=='checkout') {
                 header('X-Nitro-Disabled: 1', true);
                 return false;
             }
             $nitroHeaderMiss = false;
-            $magentoHeaderMiss = false;
             foreach (headers_list() as $headers) {
                 $values = explode(":", $headers);
                 if (trim(strtolower($values[0])) == 'x-nitro-cache' && trim($values[1]) == 'MISS') {
                     $nitroHeaderMiss = true;
                 }
-                if (trim(strtolower($values[0])) == 'x-magento-cache-debug' && trim($values[1]) == 'MISS') {
-                    $magentoHeaderMiss = true;
-                }
-            }
-            if (!$magentoHeaderMiss && $nitroHeaderMiss) {
-                $this->varnishHelper->purgeVarnish($this->request->getParam('currentUrl'));
             }
 
+            if ($nitroHeaderMiss && $this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_NITRO_ENABLED) && $this->nitro->getSdk()->isAllowedUrl($this->request->getParam('currentUrl'))) {
+
+                $this->varnishHelper->purgeVarnish($this->request->getParam('currentUrl'));
+            }
             if ($this->nitro->getSdk()->hasRemoteCache($route)) {
                 header('X-Nitro-Cache: HIT', true);
                 return true;
@@ -103,6 +99,5 @@ class Index extends Action implements HttpPostActionInterface
         }
         return false;
     }
-
 
 }

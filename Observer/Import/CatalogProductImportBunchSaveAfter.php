@@ -9,7 +9,7 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
 use NitroPack\NitroPack\Api\TaggingServiceInterface;
-use NitroPack\NitroPack\Observer\CacheClearObserver;
+use NitroPack\NitroPack\Observer\DeleteObserver;
 use Psr\Log\LoggerInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 

@@ -15,4 +15,7 @@
     <event name="maintenance_mode_changed">
         <observer name="nitropack_nitropack_maintenance_mode_observer" instance="NitroPack\NitroPack\Observer\MaintenanceModeObserver" />
     </event>
+    <event name="clean_cache_by_tags">
+        <observer name="nitropack_clean_cache_by_tags_observer" instance="NitroPack\NitroPack\Observer\CleanCacheByTagsObserver" />
+    </event>
 </config>

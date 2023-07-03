@@ -25,13 +25,16 @@ abstract class StoreAwareAction extends Action
         Context $context,
         NitroServiceInterface $nitro
     ) {
+
         parent::__construct($context);
         $this->nitro = $nitro;
+
         $this->storeManager = $this->_objectManager->get(StoreManagerInterface::class);
     }
 
     public function execute()
     {
+
         $storeGroupId = (int)$this->getRequest()->getParam('group');
 
         if ($storeGroupId == 0) {
@@ -47,7 +50,7 @@ abstract class StoreAwareAction extends Action
         try {
             $this->nitro->reload($this->storeGroup->getCode());
             if($this->nitro->isConnected()){
-                $this->nitro->getSdk()->getApi()->getDiskUsage();
+            $this->nitro->getSdk()->getApi()->getDiskUsage();
             }
         } catch (\Exception $e) {
             if (strpos(strtolower($e->getMessage()), 'not reliable') !== false) {
@@ -70,6 +73,7 @@ abstract class StoreAwareAction extends Action
                     return $resultRedirect->setPath($this->_backendUrl->getUrl('NitroPack/connect/support', []));
                 }
             } else {
+
                 $resultRedirect = $this->resultRedirectFactory->create();
                 return $resultRedirect->setPath(
                     $this->_backendUrl->getUrl('NitroPack/connect/index', ['group' => $this->storeGroup->getId()])

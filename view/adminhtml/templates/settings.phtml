@@ -12,6 +12,8 @@ $warmupStartUrl = $block->getStartWarmupUrl();
 $warmupConfig = $block->getWarmupConfig();
 $warmupPauseUrl = $block->getPauseWarmupUrl();
 $enableCachesUrl = $block->getEnableCachesUrl();
+$safeModeEnableUrl = $block->getSafeModeEnableUrl();
+
 $storeCurrencies = $block->getAvailableCurrencies();
 $storeLocales = $block->getAvailableLocales();
 $builtInPageRoutes = $block->getBuiltInPageTypeRoutes();
@@ -119,7 +121,8 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
                     </div>
                     <div class="col-md-4 mb-5">
                         <div class="card nitro-row-one">
-                            <div class="card-body ">
+
+                            <div class="card-body" id="setting-widget">
                                 <h5 class="card-title">General Settings</h5>
                                 <div class="form-group row">
 
@@ -162,6 +165,21 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
                                         <label class="switch">
                                             <input id="cache_warmup" type="checkbox"
                                                    name="cacheWarmup" <?= ($settings->cacheWarmup ? 'checked' : '') ?>/>
+                                            <span class="slider round"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-md-8 col-form-label pl-0">
+                                        Safe Mode<br>
+                                        <small class="text-secondary">Learn more about this feature
+                                            <a href="https://support.nitropack.io/hc/en-us/articles/360060910574-Safe-Mode" target="_blank" rel="noreferrer noopener">here</a>
+                                        </small>
+                                    </label>
+                                    <div class="col-xs-4 text-right">
+                                        <label class="switch">
+                                            <input id="safe_mode" type="checkbox"
+                                                   name="safeMode" <?= ( isset($settings->safeMode) && $settings->safeMode ? 'checked' : '') ?>/>
                                             <span class="slider round"></span>
                                         </label>
                                     </div>
@@ -382,10 +400,12 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
             });
         });
     });
-    require(['jquery', 'Magento_Ui/js/modal/alert'], function ($, magentoAlert) {
+    require(['jquery', 'Magento_Ui/js/modal/alert','NitroPack_NitroPack/js/overlay'], function ($, magentoAlert,cardOverlay) {
         $(document).ready(function () {
-            if ($('.nitro-plan').height() >= $('.nitro-row-one').height()) {
-                $('.nitro-row-one').css('height', $('.nitro-plan').height());
+
+            if ($('.nitro-row-one').height() >= $('.nitro-plan').height()) {
+                $('.nitro-plan').css('height', $('.nitro-row-one').height());
+                $('.nitro-row').css('height', $('.nitro-row-one').height());
             }
             let currentStoreCode = <?= json_encode($block->getStoreGroup()->getCode()) ?>;
             let builtInPageTypes = <?= json_encode($builtInPageTypes) ?>;
@@ -426,6 +446,9 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
                             $('span[data-connection="connected"]').hide();
                             $('span[data-connection="disabled"]').show();
                         }
+                        break;
+                    case 'safeMode':
+                        saveRequest = false;
                         break;
                     case 'custom_route_status':
                         saveRequest = false;
@@ -574,6 +597,19 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
                     }
                 });
             })
+            $("#safe_mode").on("click", function (e) {
+                let isEnabled = $(this).is(":checked");
+                if (isEnabled) {
+                    enableSafemode();
+                } else {
+                    let confirmHtml = '<p><strong>Purge Cache?</strong></p>' +
+                        '<p>It is recommended to perform a full cache purge so all changes are correctly applied.</p>' +
+                        '<p>Would you like to purge the cache now?</p>' +
+                        '<p><a href="javascript:void(0);" onclick="closeModalOverlay()" class="btn btn-default btn-sm">No</a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="performCachePurge()" class="btn btn-info btn-sm">Yes (Recommended)</a></p>';
+                    $("#setting-widget").cardOverlay("notify", {message: confirmHtml, dismissable: false});
+                    disableSafemode();
+                }
+            });
 
 
             function setCacheWarmupTypes(enabled) {
@@ -596,25 +632,7 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
                 $('#container > .nitro').prepend('<div class="row"><div class="col"><div class="alert alert-' + status + ' alert-dismissible fade show" role="alert">' + msg + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">&times;</span> </button></div></div></div>');
             }
 
-            function purgeCache() {
-                let data = {'cache.purge': 1};
-                return $.ajax({
-                    url: '<?= $purgeUrl ?>',
-                    method: 'POST',
-                    dataType: 'json',
-                    data: data,
-                    success: function (response) {
-                        if (response.purged) {
-                            Notification.success(response.message);
-                        } else {
-                            Notification.danger(response.message);
-                        }
-                    },
-                    error: function (response, errType, msg) {
-                        Notification.danger('Cache was not purged. Error type: ' + errType + '. Error message: ' + msg);
-                    }
-                });
-            }
+
 
             NitroPack.Optimizations.setPurgeCacheHandler(async function (success, error) {
                 if ($('#status').val() == 1) {
@@ -629,7 +647,61 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
             });
 
         });
+        var safeModeUrl = "<?= $safeModeEnableUrl; ?>";
+        var enableSafemode = () => {
+            $.post(safeModeUrl, {
+                action: 'nitropack_enable_safemode'
+            }, function(response) {
+                var resp = JSON.parse(response);
+                if (resp.type == "success") {
+                    Notification.success('Success! Safe mode has been enabled successfully!');
+                    // Success notification
+                } else {
+                    Notification.error('Error! There was an error while enabling safe mode!');
+                }
+            });
+        }
 
+        var disableSafemode = () => {
+            $.post(safeModeUrl, {
+                action: 'nitropack_disable_safemode'
+            }, function(response) {
+                var resp = JSON.parse(response);
+                if (resp.type == "success") {
+                    // Success notification
+                    Notification.success('Success! Safe mode has been disabled successfully!');
+                } else {
+                    // Error notification
+                    Notification.error('Error! There was an error while enabling safe mode!');
+                }
+            });
+        }
+        window.closeModalOverlay = function() {
+            $("#setting-widget").cardOverlay("clear");
+        }
+        function purgeCache() {
+            let data = {'cache.purge': 1};
+            return $.ajax({
+                url: '<?= $purgeUrl ?>',
+                method: 'POST',
+                dataType: 'json',
+                data: data,
+                success: function (response) {
+                    if (response.purged) {
+                        Notification.success(response.message);
+                    } else {
+                        Notification.danger(response.message);
+                    }
+                },
+                error: function (response, errType, msg) {
+                    Notification.danger('Cache was not purged. Error type: ' + errType + '. Error message: ' + msg);
+                }
+            });
+        }
+        window.performCachePurge = () => {
+            purgeCache();
+            closeModalOverlay();
+        }
 
     });
 </script>

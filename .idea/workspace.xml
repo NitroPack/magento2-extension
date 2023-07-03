@@ -7,8 +7,45 @@
     <list default="true" id="ec8709bb-0c6d-420a-bbce-0d2f296fb020" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Api/NitroService.php" beforeDir="false" afterPath="$PROJECT_DIR$/Api/NitroService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Api/NitroServiceInterface.php" beforeDir="false" afterPath="$PROJECT_DIR$/Api/NitroServiceInterface.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Api/TaggingService.php" beforeDir="false" afterPath="$PROJECT_DIR$/Api/TaggingService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Api/TaggingServiceInterface.php" beforeDir="false" afterPath="$PROJECT_DIR$/Api/TaggingServiceInterface.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Block/SettingsBlock.php" beforeDir="false" afterPath="$PROJECT_DIR$/Block/SettingsBlock.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Connect/Save.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Connect/Save.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Settings/EnableCaches.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Settings/EnableCaches.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Settings/Index.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Settings/Index.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Settings/Save.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Settings/Save.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/StoreAwareAction.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/StoreAwareAction.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/Remote/Index.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Remote/Index.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/Webhook/CacheReady.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Webhook/CacheReady.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Helper/CacheCleanHelper.php" beforeDir="false" afterPath="$PROJECT_DIR$/Helper/CacheCleanHelper.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Helper/VarnishHelper.php" beforeDir="false" afterPath="$PROJECT_DIR$/Helper/VarnishHelper.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Model/Layout/LayoutPlugin.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Observer/CacheClear/AttributeObserver.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Observer/CacheClear/AttributeSetObserver.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Observer/CacheClear/BlockObserver.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Observer/CacheClear/CategoryObserver.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Observer/CacheClear/NewOrderObserver.php" beforeDir="false" afterPath="$PROJECT_DIR$/Observer/CacheClear/NewOrderObserver.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Observer/CacheClear/PageObserver.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Observer/CacheClear/ProductObserver.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Observer/CacheClear/ReviewObserver.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Observer/CacheClear/WidgetObserver.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Observer/CacheClearObserver.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Observer/Import/CatalogProductImportBunchSaveAfter.php" beforeDir="false" afterPath="$PROJECT_DIR$/Observer/Import/CatalogProductImportBunchSaveAfter.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Observer/NitroPackCacheChecker.php" beforeDir="false" afterPath="$PROJECT_DIR$/Observer/NitroPackCacheChecker.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Plugin/CacheDelivery/LocalCachePlugin.php" beforeDir="false" afterPath="$PROJECT_DIR$/Plugin/CacheDelivery/LocalCachePlugin.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Plugin/CacheDelivery/RemoteCachePlugin.php" beforeDir="false" afterPath="$PROJECT_DIR$/Plugin/CacheDelivery/RemoteCachePlugin.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/etc/adminhtml/events.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/adminhtml/events.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/etc/events.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/events.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/etc/frontend/di.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/frontend/di.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/etc/frontend/events.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/frontend/events.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/etc/module.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/module.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/view/adminhtml/templates/settings.phtml" beforeDir="false" afterPath="$PROJECT_DIR$/view/adminhtml/templates/settings.phtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/view/adminhtml/web/css/nitro_bootstrap.css" beforeDir="false" afterPath="$PROJECT_DIR$/view/adminhtml/web/css/nitro_bootstrap.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/view/frontend/templates/hasRemote.phtml" beforeDir="false" afterPath="$PROJECT_DIR$/view/frontend/templates/hasRemote.phtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/view/frontend/web/js/ready.js" beforeDir="false" afterPath="$PROJECT_DIR$/view/frontend/web/js/ready.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,7 +72,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "//wsl$/Ubuntu-20.04/var/www/html/m246-check",
+    "last_opened_file_path": "//wsl$/Ubuntu-20.04/var/www/html/magento2-extension",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -95,7 +132,9 @@
       <workItem from="1684992798644" duration="3656000" />
       <workItem from="1685019613189" duration="4249000" />
       <workItem from="1685078693991" duration="3723000" />
-      <workItem from="1686225769544" duration="5726000" />
+      <workItem from="1686225769544" duration="6630000" />
+      <workItem from="1686290161159" duration="1175000" />
+      <workItem from="1688375825041" duration="1635000" />
     </task>
     <servers />
   </component>

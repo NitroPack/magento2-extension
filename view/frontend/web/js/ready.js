@@ -12,9 +12,7 @@ require([
         data: {
             route: $('#nitropack_route').val(),
             currentUrl: $('#nitropack_currentUrl').val(),
-            storeCode: $('#nitropack_storeCode').val(),
-            siteId: $('#nitropack_siteId').val(),
-            siteSecret: $('#nitropack_siteSecret').val()
+            storeCode: $('#nitropack_storeCode').val()
         },
         success: function (data) {
             customerData.set('nitropack_remote_cache', true);

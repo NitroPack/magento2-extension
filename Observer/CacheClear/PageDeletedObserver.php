@@ -5,10 +5,11 @@ namespace NitroPack\NitroPack\Observer\CacheClear;
 use Magento\Framework\App\DeploymentConfig;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Event\Observer;
+use Magento\Cms\Model\Page;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
-class NewOrderObserver implements ObserverInterface
+class PageDeletedObserver implements ObserverInterface
 {
     protected $storeId = 0;
     /**
@@ -48,13 +49,14 @@ class NewOrderObserver implements ObserverInterface
      * @param DeploymentConfig                                     $config
      * */
     public function __construct(
-        RequestInterface $request,
-        StoreManagerInterface $storeManager,
-        \Magento\Framework\MessageQueue\PublisherInterface $publisher,
+        RequestInterface                                     $request,
+        StoreManagerInterface                                $storeManager,
+        \Magento\Framework\MessageQueue\PublisherInterface   $publisher,
         \Magento\Framework\MessageQueue\DefaultValueProvider $defaultQueueValueProvider,
-        \Magento\Framework\Serialize\Serializer\Json $json,
-        DeploymentConfig $config
-    ) {
+        \Magento\Framework\Serialize\Serializer\Json         $json,
+        DeploymentConfig                                     $config
+    )
+    {
 
         $this->request = $request;
         $this->publisher = $publisher;
@@ -64,37 +66,35 @@ class NewOrderObserver implements ObserverInterface
         $this->defaultQueueValueProvider->getConnection();
         $this->config = $config;
         $this->json = $json;
-        $this->storeId = $this->request->getParam('store');
         if ($this->storeId == 0) {
             $this->storeId = $this->storeManager->getDefaultStoreView()->getId();
         }
     }
-
-    protected $order; // Magento\Sales\Model\Order
-
-
+    protected $page;
     public function execute(Observer $observer)
     {
         $data = $observer->getEvent()->getData();
-        if (!isset($data['order'])) {
+        if (!isset($data['object']) || !is_a($data['object'], Page::class)) {
             return false;
         }
-        $this->order = $data['order'];
-        $items = $this->order->getItems();
-        foreach ($items as $item) {
-
-            $rawData = [
-                'action' => 'invalidation',
-                'type' => 'order',
-                'tag' => 'cat_p_'.$item->getProductId(),
-                'reasonType' => 'order',
-                'storeId' => $this->storeId,
-                'reasonEntity' => '#' . $this->order->getId()
-            ];
-            $this->publisher->publish($this->getTopicName(), $this->json->serialize($rawData));
-
+        $this->page = $data['object'];
+        $pageName = $this->page->getTitle();
+        if (!$pageName || $pageName == '') {
+            $pageName = '#' . $this->page->getId();
         }
+        $rawData = [
+            'action' => 'invalidation',
+            'type' => 'page',
+            'tag' => 'cms_p_'.$this->page->getId(),
+            'reasonType' => 'page',
+            'storeId' => $this->storeId,
+            'reasonEntity' => $pageName
+        ];
+
+        $this->publisher->publish($this->getTopicName(), $this->json->serialize($rawData));
+
     }
+
 
     public function getTopicName()
     {

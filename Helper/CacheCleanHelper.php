@@ -8,7 +8,7 @@ use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\StoreManagerInterface;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
 use NitroPack\NitroPack\Api\TaggingServiceInterface;
-use NitroPack\NitroPack\Observer\CacheClearObserver;
+use NitroPack\NitroPack\Observer\DeleteObserver;
 use Psr\Log\LoggerInterface;
 use NitroPack\SDK\PurgeType;
 
@@ -61,27 +61,34 @@ class CacheCleanHelper extends AbstractHelper
 
     public function invalidateCache($tag, $type, $reasonEntity, $storeId)
     {
+        if($storeId>0){
         $this->reloadNitroPack($storeId);
         $reason = sprintf(self::REASON_MANUAL_INVALIDATE_TYPE, $type, $reasonEntity);
         $this->logger->debug(sprintf('Invalidating tag %s because: %s', $tag, $reason));
         try {
             return $this->nitro->getSdk()->invalidateCache(null, $tag, $reason);
         } catch (\Exception $e) {
+
             throw new $e->getMessage();
         }
+        }
+        return  '';
     }
 
     public function purgeTagPageCache($tag, $reasonType, $reasonEntity, $storeId)
     {
-        $this->reloadNitroPack($storeId);
-        $reason = sprintf(self::REASON_MANUAL_INVALIDATE_TYPE, $reasonType, $reasonEntity);
-        $this->logger->debug(sprintf('Purging tag (page cache only) %s because: %s', $tag, $reason));
-        return $this->nitro->getSdk()->purgeCache(null, $tag, PurgeType::PAGECACHE_ONLY, $reason);
+        if($storeId>0) {
+            $this->reloadNitroPack($storeId);
+            $reason = sprintf(self::REASON_MANUAL_INVALIDATE_TYPE, $reasonType, $reasonEntity);
+            $this->logger->debug(sprintf('Purging tag (page cache only) %s because: %s', $tag, $reason));
+            return $this->nitro->getSdk()->purgeCache(null, $tag, PurgeType::PAGECACHE_ONLY, $reason);
+        }
+        return '';
     }
 
     protected function purgeTagComplete($tag, $reasonType, $reasonEntity)
     {
-        $reason = sprintf(CacheClearObserver::REASON_MANUAL_INVALIDATE_TYPE, $reasonType, $reasonEntity);
+        $reason = sprintf(self::REASON_MANUAL_INVALIDATE_TYPE, $reasonType, $reasonEntity);
         $this->logger->debug(sprintf('Purging tag (complete) %s because: %s', $tag, $reason));
         return $this->nitro->getSdk()->purgeCache(null, $tag, PurgeType::COMPLETE, $reason);
     }

@@ -56,7 +56,7 @@ class VarnishHelper extends AbstractHelper
                     return "127.0.0.1";
                 }
                 if($varnishPortConfig!=80)
-                    return $backendValue.":".$varnishPortConfig;
+                return $backendValue.":".$varnishPortConfig;
 
                 return $backendValue;
             }, $backendServer);

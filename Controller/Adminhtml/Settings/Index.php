@@ -59,6 +59,7 @@ class Index extends StoreAwareAction
     {
 
         if (!$this->nitro->isConnected()) {
+
             $resultRedirect = $this->resultRedirectFactory->create();
             $resultRedirect->setUrl($this->getUrlWithStore('NitroPack/connect/index'));
             return $resultRedirect;

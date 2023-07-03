@@ -13,4 +13,5 @@ interface TaggingServiceInterface {
 	public function getPageTag($page);
 	public function getBlockTag($block);
 
+    public function addTag($tag);
 }

@@ -91,6 +91,7 @@ class Save extends StoreAwareAction
         $booleans = array(
             'enabled',
             'cacheWarmup',
+            'safeMode',
             'autoClear-products',
             'autoClear-attributes',
             'autoClear-attributeSets',
@@ -100,7 +101,6 @@ class Save extends StoreAwareAction
             'autoClear-blocks',
             'autoClear-widgets',
             'autoClear-orders',
-
             'pageTypes-home',
             'pageTypes-product',
             'pageTypes-category',

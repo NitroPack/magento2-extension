@@ -2,7 +2,6 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <type name="NitroPack\NitroPack\Api\NitroService" shared="true"></type>
-
     <!-- Check for local cache at the earliest possible time -->
     <type name="Magento\Framework\App\FrontControllerInterface">
         <plugin name="nitropack_before_front_dispatch_intercept"
@@ -30,7 +29,10 @@
         <plugin name="nitropack_webhook_csrf_override" type="NitroPack\NitroPack\Plugin\WebhookValidationPlugin"/>
     </type>
     <type name="Magento\Store\Model\StoreSwitcher">
-        <plugin name="store_switcher_remove" type="NitroPack\NitroPack\Plugin\RemoveGetParam\StoreSwitcher"/>
+        <plugin name="store_switcher_remove" type="NitroPack\NitroPack\Plugin\RemoveGetParam\StoreSwitcher" />
     </type>
-    <preference for="Magento\PageCache\Model\Layout\LayoutPlugin" type="NitroPack\NitroPack\Model\Layout\LayoutPlugin"/>
+
+    <type name="Magento\Framework\Controller\ResultInterface">
+        <plugin name="result-nitropack-cache" type="NitroPack\NitroPack\Model\App\FrontController\NitroPackTagPlugin"/>
+    </type>
 </config>

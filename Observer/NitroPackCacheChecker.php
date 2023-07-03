@@ -65,10 +65,10 @@ class NitroPackCacheChecker implements ObserverInterface
     public function execute(Observer $observer)
     {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-
         $storeRepo = $objectManager->create(\Magento\Store\Api\GroupRepositoryInterface::class);
         $stores = $storeRepo->getList();
         foreach ($stores as $storesData) {
+
             $settingsFilename = $this->apiHelper->getSettingsFilename($storesData->getCode());
             $haveData = $this->apiHelper->readFile($settingsFilename);
             if ($haveData) {

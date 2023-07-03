@@ -8,8 +8,11 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
-class NewOrderObserver implements ObserverInterface
+
+class ProductDeletedObserver implements ObserverInterface
 {
+
+
     protected $storeId = 0;
     /**
      * @var RequestInterface
@@ -48,13 +51,14 @@ class NewOrderObserver implements ObserverInterface
      * @param DeploymentConfig                                     $config
      * */
     public function __construct(
-        RequestInterface $request,
-        StoreManagerInterface $storeManager,
-        \Magento\Framework\MessageQueue\PublisherInterface $publisher,
+        RequestInterface                                     $request,
+        StoreManagerInterface                                $storeManager,
+        \Magento\Framework\MessageQueue\PublisherInterface   $publisher,
         \Magento\Framework\MessageQueue\DefaultValueProvider $defaultQueueValueProvider,
-        \Magento\Framework\Serialize\Serializer\Json $json,
-        DeploymentConfig $config
-    ) {
+        \Magento\Framework\Serialize\Serializer\Json         $json,
+        DeploymentConfig                                     $config
+    )
+    {
 
         $this->request = $request;
         $this->publisher = $publisher;
@@ -64,35 +68,46 @@ class NewOrderObserver implements ObserverInterface
         $this->defaultQueueValueProvider->getConnection();
         $this->config = $config;
         $this->json = $json;
-        $this->storeId = $this->request->getParam('store');
         if ($this->storeId == 0) {
             $this->storeId = $this->storeManager->getDefaultStoreView()->getId();
         }
     }
 
-    protected $order; // Magento\Sales\Model\Order
+
+    protected $product; // Magento\Catalog\Model\Product
 
 
     public function execute(Observer $observer)
     {
         $data = $observer->getEvent()->getData();
-        if (!isset($data['order'])) {
+        if (!isset($data['product'])) {
             return false;
         }
-        $this->order = $data['order'];
-        $items = $this->order->getItems();
-        foreach ($items as $item) {
+        $this->product = $data['product'];
 
+        $productName = $this->product->getName();
+        if (!$productName || $productName == '') {
+            $productName = '#' . $this->product->getId();
+        }
+        $rawData = [
+            'action' => 'purge_tag',
+            'type' => 'product',
+            'tag' => 'cat_p_' . $this->product->getId(),
+            'reasonType' => 'product',
+            'storeId' => $this->storeId,
+            'reasonEntity' => $productName
+        ];
+        $this->publisher->publish($this->getTopicName(), $this->json->serialize($rawData));
+        foreach ($this->product->getCategoryIds() as $catId) {
             $rawData = [
                 'action' => 'invalidation',
-                'type' => 'order',
-                'tag' => 'cat_p_'.$item->getProductId(),
-                'reasonType' => 'order',
+                'type' => 'category',
+                'tag' => 'cat_c_' . $catId,
+                'reasonType' => 'category for',
                 'storeId' => $this->storeId,
-                'reasonEntity' => '#' . $this->order->getId()
+                'reasonEntity' => $productName
             ];
             $this->publisher->publish($this->getTopicName(), $this->json->serialize($rawData));
-
         }
     }
 

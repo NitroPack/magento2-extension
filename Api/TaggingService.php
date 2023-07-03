@@ -48,8 +48,9 @@ class TaggingService implements TaggingServiceInterface {
 	}
 
 	public function onShutdown() {
-		$this->nitro->tagUrl($this->nitro->getUrl(), $this->currentRequestTags);
-	}
+        $this->nitro->tagUrl($this->nitro->getUrl(), $this->currentRequestTags);
+
+    }
 
 	public function getProductTag($product) {
 		if (is_int($product)) {
@@ -59,7 +60,7 @@ class TaggingService implements TaggingServiceInterface {
 			$productId = $product->getId();
 		}
 
-		return 'product:' . $productId;
+		return 'cat_p_' . $productId;
 	}
 
 	public function getCategoryTag($category) {
@@ -70,7 +71,7 @@ class TaggingService implements TaggingServiceInterface {
 			$categoryId = $category->getId();
 		}
 
-		return 'category:' . $categoryId;
+		return 'cat_c_' . $categoryId;
 	}
 
 	public function getPageTag($page) {
@@ -92,7 +93,7 @@ class TaggingService implements TaggingServiceInterface {
 			$blockId = $block->getId();
 		}
 
-		return 'block:' . $blockId;
+		return 'cms_b_' . $blockId;
 	}
 
 	public function tagProduct($product) {
@@ -121,4 +122,7 @@ class TaggingService implements TaggingServiceInterface {
 		}
 	}
 
+    public function addTag($tag){
+        $this->tag($tag);
+    }
 }

@@ -2,13 +2,15 @@
 
 namespace NitroPack\NitroPack\Observer\CacheClear;
 
+use Magento\Framework\App\Cache\Frontend\Pool;
+use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\App\DeploymentConfig;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
-class NewOrderObserver implements ObserverInterface
+class WidgetDeletedObserver implements ObserverInterface
 {
     protected $storeId = 0;
     /**
@@ -37,25 +39,43 @@ class NewOrderObserver implements ObserverInterface
     protected $json;
     protected $defaultQueueValueConnection = null;
 
+
     const TOPIC_NAME_AMQP = 'nitropack.cache.queue.topic';
     const TOPIC_NAME_DB = 'nitropack.cache.queue.topic.db';
     /**
-     * @param RequestInterface   $request
+     * @var ObserverInterface
+     * */
+    protected $objectManager;
+    /**
+     * @var TypeListInterface
+     * */
+    protected $cacheTypeList;
+    /**
+     * @var Pool
+     * */
+    protected $cacheFrontendPool;
+    /**
+     * @param RequestInterface  $request
      * @param StoreManagerInterface $storeManager
      * @param \Magento\Framework\MessageQueue\PublisherInterface   $publisher
      * @param \Magento\Framework\MessageQueue\DefaultValueProvider $defaultQueueValueProvider
      * @param \Magento\Framework\Serialize\Serializer\Json         $json
      * @param DeploymentConfig                                     $config
+     * @param TypeListInterface $cacheTypeList
+     * @param Pool $cacheFrontendPool
      * */
     public function __construct(
-        RequestInterface $request,
-        StoreManagerInterface $storeManager,
-        \Magento\Framework\MessageQueue\PublisherInterface $publisher,
+        RequestInterface                                     $request,
+        StoreManagerInterface                                $storeManager,
+        \Magento\Framework\MessageQueue\PublisherInterface   $publisher,
         \Magento\Framework\MessageQueue\DefaultValueProvider $defaultQueueValueProvider,
-        \Magento\Framework\Serialize\Serializer\Json $json,
-        DeploymentConfig $config
-    ) {
-
+        \Magento\Framework\Serialize\Serializer\Json         $json,
+        DeploymentConfig                                     $config,
+        TypeListInterface $cacheTypeList,
+        Pool              $cacheFrontendPool
+    )
+    {
+        $this->objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $this->request = $request;
         $this->publisher = $publisher;
         $this->storeManager = $storeManager;
@@ -64,35 +84,37 @@ class NewOrderObserver implements ObserverInterface
         $this->defaultQueueValueProvider->getConnection();
         $this->config = $config;
         $this->json = $json;
-        $this->storeId = $this->request->getParam('store');
+        $this->cacheTypeList = $cacheTypeList;
+        $this->cacheFrontendPool = $cacheFrontendPool;
         if ($this->storeId == 0) {
             $this->storeId = $this->storeManager->getDefaultStoreView()->getId();
         }
     }
 
-    protected $order; // Magento\Sales\Model\Order
-
-
     public function execute(Observer $observer)
     {
-        $data = $observer->getEvent()->getData();
-        if (!isset($data['order'])) {
-            return false;
+
+        $widgetInstance = $observer->getData('data_object');
+        $parameter = $widgetInstance->getWidgetParameters();
+            if (isset($parameter['block_id'])) {
+                $blockId = $parameter['block_id'];
+                $blockName = '#' . $blockId;
+                $rawData = [
+                    'action' => 'invalidation',
+                    'type' => 'block',
+                    'tag' => 'cms_b_'.$blockId ,
+                    'reasonType' => 'block',
+                    'storeId' => $this->storeId,
+                    'reasonEntity' => $blockName
+                ];
+                $this->publisher->publish($this->getTopicName(), $this->json->serialize($rawData));
+            }
+        $types = ['block_html','layout'];
+        foreach ($types as $type) {
+            $this->cacheTypeList->cleanType($type);
         }
-        $this->order = $data['order'];
-        $items = $this->order->getItems();
-        foreach ($items as $item) {
-
-            $rawData = [
-                'action' => 'invalidation',
-                'type' => 'order',
-                'tag' => 'cat_p_'.$item->getProductId(),
-                'reasonType' => 'order',
-                'storeId' => $this->storeId,
-                'reasonEntity' => '#' . $this->order->getId()
-            ];
-            $this->publisher->publish($this->getTopicName(), $this->json->serialize($rawData));
-
+        foreach ($this->cacheFrontendPool as $cacheFrontend) {
+            $cacheFrontend->getBackend()->clean();
         }
     }
 
@@ -100,4 +122,5 @@ class NewOrderObserver implements ObserverInterface
     {
         return $this->defaultQueueValueConnection == 'amqp' && $this->config->get('queue/amqp') && count($this->config->get('queue/amqp')) > 0 ? self::TOPIC_NAME_AMQP : self::TOPIC_NAME_DB;
     }
+
 }

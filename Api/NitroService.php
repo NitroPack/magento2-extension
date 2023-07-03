@@ -24,7 +24,8 @@ use Magento\Framework\UrlInterface;
 class NitroService implements NitroServiceInterface
 {
 
-    const EXTENSION_VERSION = '2.2.3';
+    const EXTENSION_VERSION = '2.3.0';
+
     const FULL_PAGE_CACHE_NITROPACK = 'system/full_page_cache/caching_application';
     const FULL_PAGE_CACHE_NITROPACK_VALUE = 3;
     public const XML_VARNISH_PAGECACHE_ACCESS_LIST = 'system/full_page_cache/varnish_nitro/access_list';
@@ -103,6 +104,7 @@ class NitroService implements NitroServiceInterface
      * @var  \Magento\Framework\Encryption\EncryptorInterface
      * */
     protected $encryptor;
+
     /**
      * @param ObjectManagerInterface $objectManager
      * @param State $appState
@@ -118,20 +120,21 @@ class NitroService implements NitroServiceInterface
      * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
      * */
     public function __construct(
-        ObjectManagerInterface $objectManager,
-        State $appState,
-        DirectoryList $directoryList,
-        \Magento\Framework\Filesystem\Driver\File $fileDriver,
+        ObjectManagerInterface                           $objectManager,
+        State                                            $appState,
+        DirectoryList                                    $directoryList,
+        \Magento\Framework\Filesystem\Driver\File        $fileDriver,
         \Magento\Framework\Serialize\SerializerInterface $serializer,
-        LoggerInterface $logger,
-        RedisHelper $redisHelper,
-        ScopeConfigInterface $_scopeConfig,
-        UrlInterface $urlBuilder,
-        \Magento\Store\Model\Store $store,
-        RequestInterface $request,
+        LoggerInterface                                  $logger,
+        RedisHelper                                      $redisHelper,
+        ScopeConfigInterface                             $_scopeConfig,
+        UrlInterface                                     $urlBuilder,
+        \Magento\Store\Model\Store                       $store,
+        RequestInterface                                 $request,
         \Magento\Framework\Encryption\EncryptorInterface $encryptor
 
-    ) {
+    )
+    {
         $this->_scopeConfig = $_scopeConfig;
         $this->logger = $logger;
         $this->objectManager = $objectManager;
@@ -159,50 +162,49 @@ class NitroService implements NitroServiceInterface
                         && $this->_scopeConfig->getValue(
                             self::FULL_PAGE_CACHE_NITROPACK
                         ) == self::FULL_PAGE_CACHE_NITROPACK_VALUE
-                        && isset($_SERVER['HTTP_X_VARNISH'])
-                        &&   !is_null($this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_BACKEND_HOST))
-                    && !is_null($this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_NITRO_ENABLED))
-                    && $this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_NITRO_ENABLED)
+                        && !is_null($this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_BACKEND_HOST))
+                        && !is_null($this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_NITRO_ENABLED))
+                        && $this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_NITRO_ENABLED)
                     ) {
                         // Config url check because the value is reset via configuration
-                        if($this->urlBuilder->getCurrentUrl()!=$this->urlBuilder->getUrl('NitroPack/Webhook/Config/').'?token'.$this->nitroGenerateWebhookToken($this->settings->siteId)){
+                        if ($this->urlBuilder->getCurrentUrl() != $this->urlBuilder->getUrl('NitroPack/Webhook/Config/') . '?token' . $this->nitroGenerateWebhookToken($this->settings->siteId)) {
 
-                        $backendServer = explode(
-                            ',',
-                            $this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_BACKEND_HOST)
-                        );
-                        $varnishPortConfig =$this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_VARNISH_PORT);
-                        $backendServer = array_map(function ($backendValue) use($varnishPortConfig) {
-                            if ($backendValue == "localhost") {
-                                if($varnishPortConfig!=80){
-                                    return "127.0.0.1:".$varnishPortConfig;
+                            $backendServer = explode(
+                                ',',
+                                $this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_BACKEND_HOST)
+                            );
+                            $varnishPortConfig = $this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_VARNISH_PORT);
+                            $backendServer = array_map(function ($backendValue) use ($varnishPortConfig) {
+                                if ($backendValue == "localhost") {
+                                    if ($varnishPortConfig != 80) {
+                                        return "127.0.0.1:" . $varnishPortConfig;
+                                    }
+                                    return "127.0.0.1";
+
                                 }
-                                return "127.0.0.1";
+                                if ($varnishPortConfig != 80) {
+                                    return $backendValue . ':' . $varnishPortConfig;
+                                }
+                                return $backendValue;
 
-                            }
-                            if($varnishPortConfig!=80){
-                            return $backendValue.':'.$varnishPortConfig;
-                            }
-                            return $backendValue;
+                            }, $backendServer);
 
-                        }, $backendServer);
+                            $this->varnish = $this->initializeVarnish();
+                            $url = $this->request->isSecure() ? 'https://' . $this->request->getHttpHost() : 'http://' . $this->request->getHttpHost();
 
-                        $this->varnish = $this->initializeVarnish();
-                        $url = $this->request->isSecure() ? 'https://' . $this->request->getHttpHost(
-                            ) : 'http://' . $this->request->getHttpHost();
-
-                        $this->varnish->configure([
-                            'Servers' => $backendServer,
-                            'PurgeAllUrl' => $url,
-                            'PurgeAllMethod' => 'PURGE',
-                            'PurgeSingleMethod' => 'PURGE',
-                        ]);
-                        $this->varnish->enable();
-                        $this->sdk->setVarnishProxyCacheHeaders([
-                            'X-Magento-Tags-Pattern' => ' .*'
-                        ]);
+                            $this->varnish->configure([
+                                'Servers' => $backendServer,
+                                'PurgeAllUrl' => $url,
+                                'PurgeAllMethod' => 'PURGE',
+                                'PurgeSingleMethod' => 'PURGE',
+                            ]);
+                            $this->varnish->enable();
+                            $this->sdk->setVarnishProxyCacheHeaders([
+                                'X-Magento-Tags-Pattern' => ' .*'
+                            ]);
+                        }
                     }
-                    }}
+                }
             }
             //  $this->sdk->purgeLocalCache(true);
             //exit;
@@ -291,6 +293,15 @@ class NitroService implements NitroServiceInterface
     public function isEnabled()
     {
         return $this->settings->enabled;
+    }
+
+    /**
+     * \NitroPack\NitroPack\Api\NitroServiceInterface::isSafeModeEnabled
+     */
+    public function isSafeModeEnabled()
+    {
+         return isset($this->settings->safeMode) ?  $this->settings->safeMode : false;
+
     }
 
     /**
@@ -415,17 +426,17 @@ class NitroService implements NitroServiceInterface
         if (!(array)$this->settings->pageTypes->custom) {
             $this->settings->pageTypes->custom = new \stdClass();
         }
-        try{
-        if(!is_null($this->settings->pageTypes->custom->{$route}) && $this->settings->pageTypes->custom->{$route} == 0){
-            return  true;
-        }
-        }catch (\Exception $e){
-            return  false;
+        try {
+            if (!is_null($this->settings->pageTypes->custom->{$route}) && $this->settings->pageTypes->custom->{$route} == 0) {
+                return true;
+            }
+        } catch (\Exception $e) {
+            return false;
         }
         if (!isset($this->settings->pageTypes->custom->{$route})) {
             $this->settings->pageTypes->custom->{$route} = "0";
             $this->persistSettings();
-            return  true;
+            return true;
         }
         return $result;
     }
@@ -667,9 +678,10 @@ class NitroService implements NitroServiceInterface
     }
 
 
-    public function nitroGenerateWebhookToken($siteId) {
+    public function nitroGenerateWebhookToken($siteId)
+    {
 
-        return $this->encryptor->hash($this->directoryList->getPath('var'). ":" . $siteId);
+        return $this->encryptor->hash($this->directoryList->getPath('var') . ":" . $siteId);
     }
 
 

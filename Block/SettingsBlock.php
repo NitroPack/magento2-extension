@@ -110,6 +110,10 @@ class SettingsBlock extends Template
         return $this->getBackendUrl('NitroPack/purge');
     }
 
+    public function getSafeModeEnableUrl()
+    {
+        return $this->getBackendUrl('NitroPack/settings/enablesafemode');
+    }
     public function checkVarnishEnable()
     {
         if (

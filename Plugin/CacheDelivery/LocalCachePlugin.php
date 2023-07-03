@@ -73,6 +73,8 @@ class LocalCachePlugin
         RequestInterface                       $request
     )
     {
+
+
         if (headers_sent() || NitroService::isANitroRequest()) {
             return $proceed($request);
         }
@@ -88,10 +90,19 @@ class LocalCachePlugin
             return $proceed($request);
         }
 
+        if($this->nitro->isSafeModeEnabled() && !$request->getParam('testnitro') ){
+
+            header('X-Nitro-Disabled: 1');
+            return $proceed($request);
+        }
+
         header('X-Nitro-Cache: MISS');
         header('X-Nitro-Intergration-Version:' . $this->nitro->extensionVersion());
         header('X-Nitro-Sdk-Version:' . $this->nitro->sdkVersion());
-
+        if($request->getFrontName()=='checkout'){
+            header('X-Nitro-Disabled: 1', true);
+            return $proceed($request);
+        }
         CacheTagObserver::disableObservers();
 
         if (!$this->nitro->isCacheable()) { // Magento specific checks if the request can be cached

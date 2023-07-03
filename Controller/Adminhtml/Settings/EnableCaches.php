@@ -147,5 +147,5 @@ class EnableCaches extends StoreAwareAction
         $this->curlClient->get($url);
         $responseHeaders = $this->curlClient->getHeaders();
         return isset($responseHeaders['X-Magento-Cache-Debug']) && ($responseHeaders['X-Magento-Cache-Debug'] === 'HIT' || $responseHeaders['X-Magento-Cache-Debug'] === 'MISS');
-    }
+   }
 }

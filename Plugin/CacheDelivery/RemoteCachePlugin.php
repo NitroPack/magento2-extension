@@ -96,10 +96,11 @@ class RemoteCachePlugin
             header('X-Nitro-Disabled: 1');
             return $returnValue;
         }
-
-
-
-        if (!$this->nitro->isCachableRoute($route)) {
+        if($this->nitro->isSafeModeEnabled() && !$this->request->getParam('testnitro') ){
+            header('X-Nitro-Disabled: 1');
+            return $returnValue;
+        }
+        if ($this->request->getFrontName()=='checkout' ) {
             header('X-Nitro-Disabled: 1', true);
             return $returnValue;
         }
