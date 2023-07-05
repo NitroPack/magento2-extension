@@ -8,6 +8,12 @@ Installation Instructions: https://support.nitropack.io/hc/en-us/articles/127062
 
 # Release Notes
 
+###   2.3.1:
+#### Compatible with Magento Open Source : 2.4
+#### Stability: Stable Build
+#### Description:
+- A new check is added before to clear the tags when NitroPack has been connected.
+
 ###   2.3.0:
 #### Compatible with Magento Open Source : 2.4
 #### Stability: Stable Build

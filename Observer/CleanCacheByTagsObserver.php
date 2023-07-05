@@ -2,6 +2,7 @@
 
 namespace NitroPack\NitroPack\Observer;
 
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\DeploymentConfig;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Event\Observer;
@@ -11,6 +12,7 @@ use Magento\Catalog\Model\ProductFactory;
 use Magento\Catalog\Model\CategoryFactory;
 use Magento\Cms\Model\BlockFactory;
 use Magento\Cms\Model\PageFactory;
+use NitroPack\NitroPack\Helper\ApiHelper;
 
 class CleanCacheByTagsObserver implements ObserverInterface
 {
@@ -66,22 +68,33 @@ class CleanCacheByTagsObserver implements ObserverInterface
      * @var \Magento\Framework\App\Cache\Frontend\Pool
      * */
     protected $cacheFrontendPool;
+    /**
+     * @var ScopeConfigInterface
+     * */
+    protected $_scopeConfig;
+    /**
+     * @var ApiHelper
+     * */
+    protected $apiHelper;
 
     public function __construct(
-        Resolver                                             $cacheTagResolver,
-        \Magento\Framework\MessageQueue\DefaultValueProvider $defaultQueueValueProvider,
-        \Magento\Framework\MessageQueue\PublisherInterface   $publisher,
-        \Magento\Framework\Serialize\Serializer\Json         $json,
-        StoreManagerInterface                                $storeManager,
-        ProductFactory                                       $productFactory,
-        BlockFactory                                         $blockFactory,
-        CategoryFactory                                      $categoryFactory,
-        PageFactory                                          $pageFactory,
-        \Magento\Framework\App\Cache\TypeListInterface       $cacheTypeList,
-        \Magento\Framework\App\Cache\Frontend\Pool           $cacheFrontendPool,
-        DeploymentConfig                                     $config
+        Resolver                                           $cacheTagResolver,
+        \Magento\Framework\MessageQueue\PublisherInterface $publisher,
+        \Magento\Framework\Serialize\Serializer\Json       $json,
+        StoreManagerInterface                              $storeManager,
+        ProductFactory                                     $productFactory,
+        BlockFactory                                       $blockFactory,
+        CategoryFactory                                    $categoryFactory,
+        PageFactory                                        $pageFactory,
+        \Magento\Framework\App\Cache\TypeListInterface     $cacheTypeList,
+        \Magento\Framework\App\Cache\Frontend\Pool         $cacheFrontendPool,
+        ScopeConfigInterface                               $_scopeConfig,
+        ApiHelper $apiHelper,
+        DeploymentConfig                                   $config
     )
     {
+        $this->apiHelper = $apiHelper;
+        $this->_scopeConfig = $_scopeConfig;
         $this->cacheTagResolver = $cacheTagResolver;
         $this->config = $config;
         $this->json = $json;
@@ -93,61 +106,75 @@ class CleanCacheByTagsObserver implements ObserverInterface
         $this->cacheTypeList = $cacheTypeList;
         $this->cacheFrontendPool = $cacheFrontendPool;
         $this->productFactory = $productFactory;
-        $this->defaultQueueValueProvider = $defaultQueueValueProvider;
-        $this->defaultQueueValueProvider->getConnection();
     }
 
     public function execute(Observer $observer)
     {
 
+        if (!is_null(
+                $this->_scopeConfig->getValue(\NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK)
+            ) && $this->_scopeConfig->getValue(
+                \NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK
+            ) == \NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK_VALUE) {
 
-        $object = $observer->getEvent()->getObject();
-        if (!is_object($object)) {
-            return;
-        }
-        $tags = $this->cacheTagResolver->getTags($object);
-        if (!empty($tags) && count($tags)) {
-            $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-            $storeRepo = $objectManager->create(\Magento\Store\Api\GroupRepositoryInterface::class);
-            $stores = $storeRepo->getList();
-            foreach ($stores as $storesData) {
-                $storeId = $storesData->getDefaultStoreId();
-               $tags = array_unique($tags);
-                foreach ($tags as $tag) {
-                    list($tagType, $id) = $this->getTagTypeAndId($tag);
+            $object = $observer->getEvent()->getObject();
+            if (!is_object($object)) {
+                return;
+            }
+            $tags = $this->cacheTagResolver->getTags($object);
+            if (!empty($tags) && count($tags)) {
+                $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+                $storeRepo = $objectManager->create(\Magento\Store\Api\GroupRepositoryInterface::class);
+                $stores = $storeRepo->getList();
+                foreach ($stores as $storesData) {
+                    $storeId = $storesData->getDefaultStoreId();
+                    if ($storeId > 0) {
+                        $settingsFilename = $this->apiHelper->getSettingsFilename($storesData->getCode());
+                        $haveData = $this->apiHelper->readFile($settingsFilename);
+                        //Check The file is readable
+                        if ($haveData) {
+                            $settings = json_decode($haveData);
+                            if (isset($settings->enabled) && $settings->enabled) {
+                                $tags = array_unique($tags);
+                                foreach ($tags as $tag) {
+                                    list($tagType, $id) = $this->getTagTypeAndId($tag);
 
-                    $reasonEntity = $this->getReasonFromType($tagType, $id);
-                    $reasonEntityName = "";
+                                    $reasonEntity = $this->getReasonFromType($tagType, $id);
+                                    $reasonEntityName = "";
 
-                    if (!empty($reasonEntity)) {
-                        $reasonEntityName = $reasonEntity->getName();
-                    }
-                    if ($tagType == 'category_product_page' || $tagType == 'cms_p') {
-                        $rawData = [
-                            'action' => 'purge_tag',
-                            'type' => $tagType,
-                            'tag' => $tag,
-                            'reasonType' => $tagType,
-                            'storeId' => $storeId,
-                            'reasonEntity' => $reasonEntityName
-                        ];
-                        $this->publisher->publish($this->getTopicName(), $this->json->serialize($rawData));
+                                    if (!empty($reasonEntity)) {
+                                        $reasonEntityName = $reasonEntity->getName();
+                                    }
+                                    if (strpos($tagType,'category_product_page') !==false  || strpos($tagType,'page') !==false ) {
+                                        $rawData = [
+                                            'action' => 'purge_tag',
+                                            'type' => $tagType,
+                                            'tag' => $tag,
+                                            'reasonType' => $tagType,
+                                            'storeId' => $storeId,
+                                            'reasonEntity' => $reasonEntityName
+                                        ];
+                                        $this->publisher->publish($this->getTopicName(), $this->json->serialize($rawData));
 
-                    } else {
-                        $rawData = [
-                            'action' => 'invalidation',
-                            'type' => $tagType,
-                            'tag' => $tag,
-                            'reasonType' => $tagType,
-                            'storeId' => $storeId,
-                            'reasonEntity' => $reasonEntityName
-                        ];
-                        $this->publisher->publish($this->getTopicName(), $this->json->serialize($rawData));
-                        if ($tagType == 'product' && !empty($reasonEntity) && $reasonEntity->getId()) {
-                            $this->categoryProductInvalidate($reasonEntity, $storeId, $reasonEntityName, $rawData);
-                            $this->cacheTypeList->cleanType('collections');
-                            foreach ($this->cacheFrontendPool as $cacheFrontend) {
-                                $cacheFrontend->getBackend()->clean();
+                                    } else {
+                                        $rawData = [
+                                            'action' => 'invalidation',
+                                            'type' => $tagType,
+                                            'tag' => $tag,
+                                            'reasonType' => $tagType,
+                                            'storeId' => $storeId,
+                                            'reasonEntity' => $reasonEntityName
+                                        ];
+                                        $this->publisher->publish($this->getTopicName(), $this->json->serialize($rawData));
+                                        if ($tagType == 'product' && !empty($reasonEntity) && $reasonEntity->getId()) {
+                                            $this->categoryProductInvalidate($reasonEntity, $storeId, $reasonEntityName, $rawData);
+                                            $this->cacheTypeList->cleanType('collections');
+                                            foreach ($this->cacheFrontendPool as $cacheFrontend) {
+                                                $cacheFrontend->getBackend()->clean();
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
