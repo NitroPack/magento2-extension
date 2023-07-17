@@ -66,6 +66,7 @@ class Messages implements MessageInterface
             ) || !empty($this->nitroPackConfigHelper->getDisabledCaches())) {
             if (!$this->nitroPackConfigHelper->getFullPageCacheValue(
                 ) && !empty($this->nitroPackConfigHelper->getDisabledCaches())) {
+
                 return __(
                     'Nitropack is disabled due to incompatible Cache setting. NitroPack requires to be set as %1 and %2 enabled',
                     '<a href="' . $this->backendUrl->getUrl(
@@ -75,6 +76,12 @@ class Messages implements MessageInterface
                 );
             }
             if (!$this->nitroPackConfigHelper->getFullPageCacheValue()) {
+                if(!$this->invalidationHelper->checkInvalidationAndPurgeProcess() &&  !$this->invalidationHelper->checkCronJobIsSetup()){
+                    return __(
+                        'NitroPack is disabled due to incompatible CRON settings preventing cache invalidation/purge.Please enable CRON job.'
+                    );
+                }
+
                 return __(
                     'Nitropack is disabled due to incompatible  %1. NitroPack must be selected as a Cache application',
                     '<a href="' . $this->backendUrl->getUrl(
@@ -103,6 +110,7 @@ class Messages implements MessageInterface
 
     public function isDisplayed()
     {
+
         if($this->invalidationHelper->checkHavePreviouslyConnected()){
         if (!$this->nitroPackConfigHelper->getFullPageCacheValue(
             ) || !empty($this->nitroPackConfigHelper->getDisabledCaches())) {

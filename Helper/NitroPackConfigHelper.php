@@ -9,7 +9,11 @@ use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Filesystem\DirectoryList;
+use Magento\Framework\HTTP\Client\Curl;
+use Magento\Framework\ObjectManagerInterface;
+use Magento\Store\Model\Store;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
+use NitroPack\SDK\HealthStatus;
 
 
 class NitroPackConfigHelper extends AbstractHelper
@@ -52,6 +56,17 @@ class NitroPackConfigHelper extends AbstractHelper
      * @var RequestInterface
      * */
     protected $request;
+    /**
+     * @var ObjectManagerInterface
+     * */
+    private $objectManager;
+    /**
+     * @var Curl
+     * */
+    protected $curlClient;
+
+    protected $siteId = null;
+    protected $siteSecret = null;
 
     /**
      * @param Context $context
@@ -60,28 +75,34 @@ class NitroPackConfigHelper extends AbstractHelper
      * @param StateInterface $_cacheState
      * @param DirectoryList $directoryList
      * @param RequestInterface $request
+     * @param ObjectManagerInterface $objectManager
      * @param \Magento\Framework\Filesystem\Driver\File $fileDriver
      * @param ScopeConfigInterface $_scopeConfig
      * @param \Magento\Framework\Serialize\SerializerInterface $serializer
      * */
     public function __construct(
-        Context $context,
-        \Magento\Framework\App\State $state,
-        NitroServiceInterface $nitro,
-        StateInterface $_cacheState,
-        DirectoryList $directoryList,
-        RequestInterface $request,
-        \Magento\Framework\Filesystem\Driver\File $fileDriver,
-        ScopeConfigInterface $_scopeConfig,
+        Context                                          $context,
+        \Magento\Framework\App\State                     $state,
+        NitroServiceInterface                            $nitro,
+        StateInterface                                   $_cacheState,
+        DirectoryList                                    $directoryList,
+        RequestInterface                                 $request,
+        ObjectManagerInterface                           $objectManager,
+        \Magento\Framework\Filesystem\Driver\File        $fileDriver,
+        ScopeConfigInterface                             $_scopeConfig,
+        Curl                                             $curlClient,
         \Magento\Framework\Serialize\SerializerInterface $serializer
-    ) {
+    )
+    {
         parent::__construct($context);
         $this->nitro = $nitro;
+        $this->curlClient = $curlClient;
         $this->_cacheState = $_cacheState;
         $this->directoryList = $directoryList;
         $this->serializer = $serializer;
         $this->state = $state;
         $this->request = $request;
+        $this->objectManager = $objectManager;
         $this->_scopeConfig = $_scopeConfig;
         $this->fileDriver = $fileDriver;
     }
@@ -170,4 +191,40 @@ class NitroPackConfigHelper extends AbstractHelper
     }
 
 
+    public function addVariationCookie($storeGroup, $storeGroupCode)
+    {
+        try {
+            $this->nitro->reload($storeGroupCode);
+            if ($this->nitro->isConnected() && $this->nitro->getSdk()->getHealthStatus() == HealthStatus::HEALTHY) {
+                $store = $this->objectManager->get(Store::class);
+                //Check Add Variation Cookie for Store
+                if (!$store->isUseStoreInUrl()) {
+                    $storeViewCode = [];
+                    $stores = $storeGroup->getStores();
+                    foreach ($stores as $storeValue) {
+                        if ($storeGroup->getDefaultStoreId() != $storeValue->getId()) {
+                            $storeViewCode[] = $storeValue->getCode(); // get store view name
+                        }
+                    }
+
+                    if (count($storeViewCode) > 0) {
+                        $this->nitro->getSdk()->getApi()->setVariationCookie('store', $storeViewCode, 1);
+                    } else {
+                        $this->nitro->getSdk()->getApi()->unsetVariationCookie('store');
+                    }
+                } else {
+                    $this->nitro->getSdk()->getApi()->unsetVariationCookie('store');
+                }
+            }
+        } catch (\Exception $e) {
+
+        }
+    }
+
+    public function isVarnishConfigured($url)
+    {
+        $this->curlClient->get($url);
+        $responseHeaders = $this->curlClient->getHeaders();
+        return isset($responseHeaders['X-Magento-Cache-Debug']) && ($responseHeaders['X-Magento-Cache-Debug'] === 'HIT' || $responseHeaders['X-Magento-Cache-Debug'] === 'MISS');
+    }
 }

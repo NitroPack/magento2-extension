@@ -7,10 +7,20 @@
     <list default="true" id="ec8709bb-0c6d-420a-bbce-0d2f296fb020" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Api/NitroService.php" beforeDir="false" afterPath="$PROJECT_DIR$/Api/NitroService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Observer/CleanCacheByTagsObserver.php" beforeDir="false" afterPath="$PROJECT_DIR$/Observer/CleanCacheByTagsObserver.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Connect/Save.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Connect/Save.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Settings/EnableCaches.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Settings/EnableCaches.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Helper/InvalidationHelper.php" beforeDir="false" afterPath="$PROJECT_DIR$/Helper/InvalidationHelper.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Helper/NitroPackConfigHelper.php" beforeDir="false" afterPath="$PROJECT_DIR$/Helper/NitroPackConfigHelper.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Model/Admin/Alert/Messages.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Admin/Alert/Messages.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Observer/ConfigWebChange.php" beforeDir="false" afterPath="$PROJECT_DIR$/Observer/ConfigWebChange.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Plugin/Config/AdminConfigAfterCheck.php" beforeDir="false" afterPath="$PROJECT_DIR$/Plugin/Config/AdminConfigAfterCheck.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/etc/adminhtml/events.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/adminhtml/events.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/etc/crontab.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/crontab.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/etc/module.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/module.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/view/adminhtml/templates/page/notices.phtml" beforeDir="false" afterPath="$PROJECT_DIR$/view/adminhtml/templates/page/notices.phtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/view/adminhtml/templates/settings.phtml" beforeDir="false" afterPath="$PROJECT_DIR$/view/adminhtml/templates/settings.phtml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -104,7 +114,11 @@
       <workItem from="1688536379456" duration="620000" />
       <workItem from="1688543881005" duration="158000" />
       <workItem from="1688544046024" duration="1332000" />
-      <workItem from="1688571510936" duration="350000" />
+      <workItem from="1688571510936" duration="1340000" />
+      <workItem from="1688628150961" duration="33000" />
+      <workItem from="1688638808437" duration="1194000" />
+      <workItem from="1688643128195" duration="1888000" />
+      <workItem from="1689605464179" duration="640000" />
     </task>
     <servers />
   </component>

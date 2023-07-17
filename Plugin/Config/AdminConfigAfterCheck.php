@@ -43,13 +43,9 @@ class AdminConfigAfterCheck
 
         foreach ($storeGroup as $storeGroupData) {
             $storeGroupCode = $storeGroupData->getCode();
-            $storeViewCode = [];
             $duplicateAliasDomain = [];
-
             foreach ($storeGroupData->getStores() as $storeView) {
                 $defaultStoreView = $this->storeManager->getStore($storeGroupData->getDefaultStoreId());
-
-
                 if ($storeGroupData->getDefaultStoreId() != $storeView->getId()) {
                     $parseStoreUrl = parse_url($storeView->getBaseUrl());
                     $parseDefaultStoreUrl = parse_url($defaultStoreView->getBaseUrl());
@@ -58,26 +54,14 @@ class AdminConfigAfterCheck
                             $duplicateAliasDomain[] = $storeView->getBaseUrl();
                         }
                     }
-                } else {
-                    $storeViewCode[] = $storeView->getCode();
                 }
             }
-
             $this->nitro->reload($storeGroupCode);
             if ($this->nitro->isConnected() && $this->nitro->getSdk()->getHealthStatus() == HealthStatus::HEALTHY) {
-                if (count($storeViewCode) > 0) {
-                    $this->nitro->getSdk()->getApi()->setVariationCookie('store', $storeViewCode, 1);
-                } else {
-                    $this->nitro->getSdk()->getApi()->unsetVariationCookie('store');
-                }
                 $this->nitro->getSdk()->getApi()->disableAdditionalDomains();
-
-
                 //Add Alias Domain
-
                 if (count($duplicateAliasDomain) > 0) {
                     $this->nitro->getSdk()->getApi()->enableAdditionalDomains();
-
                     foreach ($duplicateAliasDomain as $duplicateAlias) {
                         $duplicateAliasUrl = parse_url($duplicateAlias);
                         $this->nitro->getSdk()->getApi()->removeAdditionalDomain($duplicateAliasUrl['host']);

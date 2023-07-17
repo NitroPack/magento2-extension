@@ -1,6 +1,7 @@
 <?php
 
 $nitroPackConfigHelper = $this->helper('NitroPack\NitroPack\Helper\NitroPackConfigHelper');
+$nitroPackInvalidationHelper = $this->helper('NitroPack\NitroPack\Helper\InvalidationHelper');
 $enabledMagentoCaches = $nitroPackConfigHelper->getDisabledCaches();
 $settings = $block->getSettings();
 $saveUrl = $block->getSaveUrl();
@@ -48,59 +49,72 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
         <div class="nitro">
             <?php
 
-            $cacheLabels = $block->getCacheLabels();
-            if (!empty($enabledMagentoCaches) && !$nitroPackConfigHelper->getFullPageCacheValue()) {
-                ?>
-                <div class="row">
-                    <div class="col mb-5">
-                        <div class="message message-warning" id="system-config-caches-warning" role="warning">
-                            <div class="alert-heading">The NitroPack extension is disabled! Incompatible Full Page Cache
-                                and
-                                Caching Application Setting:
-                            </div>
-                            <p class="alert-content">NitroPack requires to be set as <a
-                                    href="<?= $block->getCacheManagementUrl() ?>">Caching Application</a> and <a
-                                    href="<?= $block->getApplicationCacheUrl() ?>">Full Page Caching</a> enabled </p>
-                            <button id="enable-caches" class="btn btn-primary">Apply Fix Automatically</button>
-                        </div>
-                    </div>
-                </div>
+            if (!$nitroPackInvalidationHelper->checkInvalidationAndPurgeProcess() && !$nitroPackInvalidationHelper->checkCronJobIsSetup()) {
 
-
-                <?php
             } else {
-                if (!empty($enabledMagentoCaches)) {
+                $cacheLabels = $block->getCacheLabels();
+                if (!empty($enabledMagentoCaches) && !$nitroPackConfigHelper->getFullPageCacheValue()) {
                     ?>
                     <div class="row">
                         <div class="col mb-5">
-                            <div class="message message-warning" id="system-caches-warning" role="warning">
+                            <div class="message message-warning" id="system-config-caches-warning" role="warning">
                                 <div class="alert-heading">The NitroPack extension is disabled! Incompatible Full Page
-                                    Cache:
+                                    Cache
+                                    and
+                                    Caching Application Setting:
                                 </div>
-                                <p class="alert-content">NitroPack requires Full Page Caching enabled. Go to <a
-                                        href="<?= $block->getCacheManagementUrl() ?>">Full Page Caching settings</a></p>
+                                <p class="alert-content">NitroPack requires to be set as <a
+                                        href="<?= $block->getCacheManagementUrl() ?>">Caching Application</a> and <a
+                                        href="<?= $block->getApplicationCacheUrl() ?>">Full Page Caching</a> enabled
+                                </p>
                                 <button id="enable-caches" class="btn btn-primary">Apply Fix Automatically</button>
                             </div>
                         </div>
                     </div>
+
+
                     <?php
                 } else {
-                    if (!$nitroPackConfigHelper->getFullPageCacheValue()) {
+                    if (!empty($enabledMagentoCaches)) {
                         ?>
                         <div class="row">
                             <div class="col mb-5">
-                                <div class="message message-warning" id="config-caches-warning" role="warning">
-                                    <div class="alert-heading">The NitroPack extension is disabled! Incompatible Caching
-                                        application setting:
+                                <div class="message message-warning" id="system-caches-warning" role="warning">
+                                    <div class="alert-heading">The NitroPack extension is disabled! Incompatible Full
+                                        Page
+                                        Cache:
                                     </div>
-                                    <p class="alert-content">NitroPack must be selected as a Cache Application. Go to <a
-                                            href="<?= $block->getApplicationCacheUrl() ?>">Full Page Caching Application
-                                            settings </a></p>
+                                    <p class="alert-content">NitroPack requires Full Page Caching enabled. Go to <a
+                                            href="<?= $block->getCacheManagementUrl() ?>">Full Page Caching settings</a>
+                                    </p>
                                     <button id="enable-caches" class="btn btn-primary">Apply Fix Automatically</button>
                                 </div>
                             </div>
                         </div>
                         <?php
+                    } else {
+
+                        if (!$nitroPackConfigHelper->getFullPageCacheValue()) {
+                            ?>
+                            <div class="row">
+                                <div class="col mb-5">
+                                    <div class="message message-warning" id="config-caches-warning" role="warning">
+                                        <div class="alert-heading">The NitroPack extension is disabled! Incompatible
+                                            Caching
+                                            application setting:
+                                        </div>
+                                        <p class="alert-content">NitroPack must be selected as a Cache Application. Go
+                                            to <a
+                                                href="<?= $block->getApplicationCacheUrl() ?>">Full Page Caching
+                                                Application
+                                                settings </a></p>
+                                        <button id="enable-caches" class="btn btn-primary">Apply Fix Automatically
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php
+                        }
                     }
                 }
             } ?>
@@ -173,13 +187,14 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
                                     <label class="col-md-8 col-form-label pl-0">
                                         Safe Mode<br>
                                         <small class="text-secondary">Learn more about this feature
-                                            <a href="https://support.nitropack.io/hc/en-us/articles/360060910574-Safe-Mode" target="_blank" rel="noreferrer noopener">here</a>
+                                            <a href="https://support.nitropack.io/hc/en-us/articles/360060910574-Safe-Mode"
+                                               target="_blank" rel="noreferrer noopener">here</a>
                                         </small>
                                     </label>
                                     <div class="col-xs-4 text-right">
                                         <label class="switch">
                                             <input id="safe_mode" type="checkbox"
-                                                   name="safeMode" <?= ( isset($settings->safeMode) && $settings->safeMode ? 'checked' : '') ?>/>
+                                                   name="safeMode" <?= (isset($settings->safeMode) && $settings->safeMode ? 'checked' : '') ?>/>
                                             <span class="slider round"></span>
                                         </label>
                                     </div>
@@ -386,7 +401,7 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
         </div>
     </div>
     <div id="tab2_content">
-  <?php echo $this->getChildHtml('DiagnosticsBlock'); ?>
+        <?php echo $this->getChildHtml('DiagnosticsBlock'); ?>
     </div>
 </div>
 
@@ -400,7 +415,7 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
             });
         });
     });
-    require(['jquery', 'Magento_Ui/js/modal/alert','NitroPack_NitroPack/js/overlay'], function ($, magentoAlert,cardOverlay) {
+    require(['jquery', 'Magento_Ui/js/modal/alert', 'NitroPack_NitroPack/js/overlay'], function ($, magentoAlert, cardOverlay) {
         $(document).ready(function () {
 
             if ($('.nitro-row-one').height() >= $('.nitro-plan').height()) {
@@ -633,7 +648,6 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
             }
 
 
-
             NitroPack.Optimizations.setPurgeCacheHandler(async function (success, error) {
                 if ($('#status').val() == 1) {
                     purgeCache().then(function () {
@@ -651,7 +665,7 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
         var enableSafemode = () => {
             $.post(safeModeUrl, {
                 action: 'nitropack_enable_safemode'
-            }, function(response) {
+            }, function (response) {
                 var resp = JSON.parse(response);
                 if (resp.type == "success") {
                     Notification.success('Success! Safe mode has been enabled successfully!');
@@ -665,7 +679,7 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
         var disableSafemode = () => {
             $.post(safeModeUrl, {
                 action: 'nitropack_disable_safemode'
-            }, function(response) {
+            }, function (response) {
                 var resp = JSON.parse(response);
                 if (resp.type == "success") {
                     // Success notification
@@ -676,9 +690,10 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
                 }
             });
         }
-        window.closeModalOverlay = function() {
+        window.closeModalOverlay = function () {
             $("#setting-widget").cardOverlay("clear");
         }
+
         function purgeCache() {
             let data = {'cache.purge': 1};
             return $.ajax({
@@ -698,6 +713,7 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
                 }
             });
         }
+
         window.performCachePurge = () => {
             purgeCache();
             closeModalOverlay();

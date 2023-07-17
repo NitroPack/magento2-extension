@@ -6,14 +6,12 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Filesystem\DirectoryList;
-use Magento\Framework\ObjectManagerInterface;
-use Magento\Store\Model\Store;
 use NitroPack\NitroPack\Controller\Adminhtml\StoreAwareAction;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
 use NitroPack\NitroPack\Helper\AdminFrontendUrl;
+use NitroPack\NitroPack\Helper\ApiHelper;
+use NitroPack\NitroPack\Helper\NitroPackConfigHelper;
 use NitroPack\Url\Url as NitropackUrl;
-
-//use \NitroPack\SDK\NitroPack;
 
 class Save extends StoreAwareAction
 {
@@ -36,14 +34,6 @@ class Save extends StoreAwareAction
     protected $siteSecret = null;
     protected $errors = array();
     /**
-     * @var ScopeConfigInterface
-     * */
-    private $_scopeConfig;
-    /**
-     * @var ObjectManagerInterface
-     * */
-    private $objectManager;
-    /**
      * @var \Magento\Framework\Filesystem\Driver\File
      * */
     protected $fileDriver;
@@ -51,32 +41,32 @@ class Save extends StoreAwareAction
      * @var DirectoryList
      * */
     protected $directoryList;
-
     /**
+     * @var NitroPackConfigHelper
+     * */
+    protected $nitroPackConfigHelper;
+      /**
      * @param Context $context
      * @param NitroServiceInterface $nitro
      * @param AdminFrontendUrl $urlHelper
-     * @param ObjectManagerInterface $objectManager
+     * @param ApiHelper $apiHelper
      * @param DirectoryList $directoryList
      * @param \Magento\Framework\Filesystem\Driver\File $fileDriver
-     * @param ScopeConfigInterface $_scopeConfig
      * */
     public function __construct(
         Context                                   $context,
         NitroServiceInterface                     $nitro,
         AdminFrontendUrl                          $urlHelper,
-        ObjectManagerInterface                    $objectManager,
+        NitroPackConfigHelper                     $nitroPackConfigHelper,
         DirectoryList                             $directoryList,
-        \Magento\Framework\Filesystem\Driver\File $fileDriver,
-        ScopeConfigInterface                      $_scopeConfig
+        \Magento\Framework\Filesystem\Driver\File $fileDriver
     )
     {
         parent::__construct($context, $nitro);
         $this->nitro = $nitro;
-        $this->_scopeConfig = $_scopeConfig;
         $this->resultJsonFactory = $this->_objectManager->create(JsonFactory::class);
         $this->urlHelper = $urlHelper;
-        $this->objectManager = $objectManager;
+        $this->nitroPackConfigHelper = $nitroPackConfigHelper;
         $this->request = $this->getRequest();
         $this->fileDriver = $fileDriver;
         $this->directoryList = $directoryList;
@@ -84,7 +74,7 @@ class Save extends StoreAwareAction
 
     public function nitroExecute()
     {
-        $store = $this->objectManager->get(Store::class);
+
         if ($this->validateSiteCredentials()) {
             try {
                 $this->saveSettings();
@@ -103,22 +93,7 @@ class Save extends StoreAwareAction
                 $eventUrl = $this->nitro->integrationUrl('extensionEvent');
                 $this->nitro->nitroEvent('connect', $eventUrl, $this->storeGroup);
                 $eventSent = $this->nitro->nitroEvent('enable_extension', $eventUrl, $this->storeGroup);
-                //Check Add Variation Cookie for Store
-                if (!$store->isUseStoreInUrl()) {
-                    $storeViewCode = [];
-                    foreach ($this->getStoreGroup()->getStores() as $store) {
-                        if ($this->getStoreGroup()->getDefaultStoreId() != $store->getId()) {
-                            $storeViewCode[] = $store->getCode(); // get store view name
-                        }
-                    }
-                    if (count($storeViewCode) > 0) {
-                        $this->nitro->getSdk()->getApi()->setVariationCookie('store', $storeViewCode, 1);
-                    } else {
-                        $this->nitro->getSdk()->getApi()->unsetVariationCookie('store');
-                    }
-                } else {
-                    $this->nitro->getSdk()->getApi()->unsetVariationCookie('store');
-                }
+                $this->nitroPackConfigHelper->addVariationCookie($this->getStoreGroup(), $this->getStoreGroup()->getCode());
 
                 return $this->resultJsonFactory->create()->setData(array(
                     'connected' => true,

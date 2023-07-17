@@ -1,11 +1,9 @@
 <?xml version="1.0" ?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
     <group id="default">
-        <job instance="NitroPack\NitroPack\Cron\BacklogStaleCache" method="execute" name="nitropack_cron_stale_cache">
+        <job instance="NitroPack\NitroPack\Cron\ProcessCron" method="execute" name="nitropack_cron_for_health_and_stale_cleanup">
             <schedule>*/5 * * * *</schedule>
-        </job>
-        <job instance="NitroPack\NitroPack\Cron\HealthStatus" method="execute" name="nitropack_cron_health_status">
-            <schedule>*/1 * * * *</schedule>
+
         </job>
     </group>
     <group id="consumers">

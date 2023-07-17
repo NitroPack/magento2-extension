@@ -43,7 +43,8 @@ class ConfigWebChange implements \Magento\Framework\Event\ObserverInterface
     public function execute(EventObserver $observer)
     {
         $groupParams = $this->request->getParam('groups');
-        $storeCodeChange = isset($groupParams['url']['fields']['use_store']) ? $groupParams['url']['fields']['use_store']['value'] : false;
+
+        $storeCodeChange = isset($groupParams['url']['fields']['use_store']) &&  isset($groupParams['url']['fields']['use_store']['value']) ? $groupParams['url']['fields']['use_store']['value'] : false;
         //Check Add Variation Cookie for Store
         $storeViewCode = [];
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();

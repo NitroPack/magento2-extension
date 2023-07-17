@@ -2,11 +2,19 @@ The NitroPack extension for Magento brings the ultimate site speed and performan
 
 Sign up today and get best-in-class caching, advanced image and code optimization, built-in CDN, lazy loading, and more.
 
-NitroPack Homepage: www.nitropack.io 
+NitroPack Homepage: www.nitropack.io
 
 Installation Instructions: https://support.nitropack.io/hc/en-us/articles/12706205048081
 
 # Release Notes
+
+###   2.3.3:
+#### Compatible with Magento Open Source : 2.4
+#### Stability: Stable Build
+#### Description:
+- Improved Store View optimization: new observers have been incorporated to enhance the handling of cookie variations for store groups containing multiple store views. This observer ensures that the appropriate cookie variations are added based on the specific store view being accessed. 
+- Improved NitroPack behavior according to different Crons statuses
+
 
 ###   2.3.1:
 #### Compatible with Magento Open Source : 2.4
@@ -22,7 +30,7 @@ Installation Instructions: https://support.nitropack.io/hc/en-us/articles/127062
 - Tagging System Improvements: The new version of NitroPack includes improvements to the tagging system, specifically implementing Magento native tags. This enhancement allows for better management and control of caching based on Magento's native tagging system.
 - Improved Varnish Compatibility: URLs excluded from NitroPack caching (by using the NitroPack Exclude URLs feature) are now cacheable by Varnish. This improvement ensures more seamless integration between NitroPack and Varnish caching.
 - Improved Varnish Compatibility: Varnish invalidation process updated. With this update, the Varnish invalidation process now depends on the system configuration, allowing it to work seamlessly based on the specific configuration settings. This ensures more accurate and effective invalidation of the Varnish cache when necessary.
-- NitroPack Safe Mode Integration: The new version introduces the integration of NitroPack Safe Mode. Safe Mode is a feature that allows users to easily enable or disable NitroPack optimization functionality without affecting the website's performance. This integration gives users greater flexibility and control over NitroPack caching and optimization features. 
+- NitroPack Safe Mode Integration: The new version introduces the integration of NitroPack Safe Mode. Safe Mode is a feature that allows users to easily enable or disable NitroPack optimization functionality without affecting the website's performance. This integration gives users greater flexibility and control over NitroPack caching and optimization features.
 - Cacheable Third-Party Custom URLs: The new version of NitroPack introduces the ability to cache all third-party custom URLs. This enhancement allows NitroPack to effectively cache and optimize not only the website's own content but also custom URLs from third-party integrations, providing a more comprehensive caching solutio
 
 ###   2.2.3:
