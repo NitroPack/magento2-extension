@@ -76,7 +76,7 @@ class Index extends Action implements HttpPostActionInterface
         $this->nitro->reload($storeGroupCode, $url);
         $setting = $this->nitro->getSettings();
         if ($setting->siteId && $setting->siteSecret) {
-            if ($this->request->getFrontName()=='checkout') {
+            if ($this->request->getFrontName()=='checkout' || $this->request->getFrontName()=='customer'){
                 header('X-Nitro-Disabled: 1', true);
                 return false;
             }

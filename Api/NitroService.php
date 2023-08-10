@@ -191,17 +191,20 @@ class NitroService implements NitroServiceInterface
 
                             $this->varnish = $this->initializeVarnish();
                             $url = $this->request->isSecure() ? 'https://' . $this->request->getHttpHost() : 'http://' . $this->request->getHttpHost();
-
-                            $this->varnish->configure([
-                                'Servers' => $backendServer,
-                                'PurgeAllUrl' => $url,
-                                'PurgeAllMethod' => 'PURGE',
-                                'PurgeSingleMethod' => 'PURGE',
-                            ]);
-                            $this->varnish->enable();
-                            $this->sdk->setVarnishProxyCacheHeaders([
-                                'X-Magento-Tags-Pattern' => ' .*'
-                            ]);
+                            try {
+                                $this->varnish->configure([
+                                    'Servers' => $backendServer,
+                                    'PurgeAllUrl' => $url,
+                                    'PurgeAllMethod' => 'PURGE',
+                                    'PurgeSingleMethod' => 'PURGE',
+                                ]);
+                                $this->varnish->enable();
+                                $this->sdk->setVarnishProxyCacheHeaders([
+                                    'X-Magento-Tags-Pattern' => ' .*'
+                                ]);
+                            } catch (\Exception $e) {
+                                $this->logger->debug('Varnish exception:' . $e->getMessage());
+                            }
                         }
                     }
                 }
@@ -619,7 +622,13 @@ class NitroService implements NitroServiceInterface
                 )
             );
         }
-        return new NitroPack($this->settings->siteId, $this->settings->siteSecret, null, $url, $cachePath);
+
+        try {
+            return new NitroPack($this->settings->siteId, $this->settings->siteSecret, null, $url, $cachePath);
+        }catch (\Exception $e){
+
+            return null;
+        }
     }
 
     public function nitroEvent($event, $integrationUrl, $storeGroup = null, $additional_meta_data = null)
@@ -669,9 +678,9 @@ class NitroService implements NitroServiceInterface
         return new NitroPackVarnish($this->settings->siteId, $this->settings->siteSecret);
     }
 
-    public function isCheckCartRoute($route)
+    public function isCheckCartOrCustomerRoute($route)
     {
-        if (strpos(strtolower($route), '/checkout') !== false) {
+        if (strpos(strtolower($route), '/checkout') !== false || strpos(strtolower($route), '/customer') !== false) {
             return true;
         }
         return false;

@@ -55,7 +55,7 @@ class RemoteCachePlugin
 
         $route = $this->request->getFullActionName();
 
-        if($this->nitro->isCheckCartRoute($this->request->getPathInfo())){
+        if($this->nitro->isCheckCartOrCustomerRoute($this->request->getPathInfo())){
             CacheTagObserver::enableObservers();
             return $returnValue;
         }

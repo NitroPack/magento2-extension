@@ -7,20 +7,11 @@
     <list default="true" id="ec8709bb-0c6d-420a-bbce-0d2f296fb020" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Api/NitroService.php" beforeDir="false" afterPath="$PROJECT_DIR$/Api/NitroService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Connect/Save.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Connect/Save.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Settings/EnableCaches.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Settings/EnableCaches.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Helper/InvalidationHelper.php" beforeDir="false" afterPath="$PROJECT_DIR$/Helper/InvalidationHelper.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Helper/NitroPackConfigHelper.php" beforeDir="false" afterPath="$PROJECT_DIR$/Helper/NitroPackConfigHelper.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Admin/Alert/Messages.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Admin/Alert/Messages.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Observer/ConfigWebChange.php" beforeDir="false" afterPath="$PROJECT_DIR$/Observer/ConfigWebChange.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Plugin/Config/AdminConfigAfterCheck.php" beforeDir="false" afterPath="$PROJECT_DIR$/Plugin/Config/AdminConfigAfterCheck.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Api/NitroServiceInterface.php" beforeDir="false" afterPath="$PROJECT_DIR$/Api/NitroServiceInterface.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/Remote/Index.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Remote/Index.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Plugin/CacheDelivery/RemoteCachePlugin.php" beforeDir="false" afterPath="$PROJECT_DIR$/Plugin/CacheDelivery/RemoteCachePlugin.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/etc/adminhtml/events.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/adminhtml/events.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/etc/crontab.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/crontab.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/etc/module.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/module.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/adminhtml/templates/page/notices.phtml" beforeDir="false" afterPath="$PROJECT_DIR$/view/adminhtml/templates/page/notices.phtml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/adminhtml/templates/settings.phtml" beforeDir="false" afterPath="$PROJECT_DIR$/view/adminhtml/templates/settings.phtml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,20 +33,20 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;//wsl$/Ubuntu-20.04/var/www/html/magento2-extension&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "//wsl$/Ubuntu-20.04/var/www/html/submitted-extension-2.3.4",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="\\wsl$\Ubuntu-20.04\var\www\html\magento2-extension" />
@@ -119,6 +110,10 @@
       <workItem from="1688638808437" duration="1194000" />
       <workItem from="1688643128195" duration="1888000" />
       <workItem from="1689605464179" duration="640000" />
+      <workItem from="1689662621290" duration="582000" />
+      <workItem from="1689674247623" duration="575000" />
+      <workItem from="1691652564085" duration="993000" />
+      <workItem from="1691654259265" duration="1698000" />
     </task>
     <servers />
   </component>
