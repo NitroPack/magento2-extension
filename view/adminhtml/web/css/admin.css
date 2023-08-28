@@ -150,7 +150,7 @@ input:checked + .slider:before {
 
 /* Rounded sliders */
 .slider.round {
-  border-radius: 34px;
+  border-radius: 30px;
 }
 
 .slider.round:before {

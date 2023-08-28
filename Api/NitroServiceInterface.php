@@ -12,7 +12,8 @@ interface NitroServiceInterface {
 	public function isConnected();
 	public function isEnabled();
 	public function isSafeModeEnabled();
-	public function isCacheable(); // checks that can be done before the layout is known
+	public function isCustomerLogin(); // checks that can be done before the layout is known
+	public function isCustomerLoginEnable(); // checks that can be done before the layout is known
 	public function isCachableRoute($route); // checks that can only be done after the request has been routed, $route is the ->getFullActionName() of the Magento\Framework\App\Request\Http that is about to be executed, typically module_controller_action
     public function isCheckCartOrCustomerRoute($route); // checks that can only be done after the request has been routed,$route is the ->getFullActionName() of the Magento\Framework\App\Request\Http that is about to be executed, typically module_controller_action
 	public function getSettings();
@@ -21,6 +22,9 @@ interface NitroServiceInterface {
 
 	public function getSiteId();
 	public function setSiteId($newSiteId);
+
+    public function getXMagentoVary();
+    public function setXMagentoVary($data);
 
 	public function getSiteSecret();
 	public function setSiteSecret($newSiteSecret);

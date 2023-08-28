@@ -22,7 +22,7 @@ class TaggingService implements TaggingServiceInterface {
 
 	protected function initialize() {
 		// We separate the initialization and check it before tagging, since calling isCacheable in the constructor will lead to a dependency loop
-		$this->enabled = (!$this->doNotPush && $this->nitro->isConnected() && $this->nitro->isEnabled() && $this->nitro->isCacheable());
+		$this->enabled = (!$this->doNotPush && $this->nitro->isConnected() && $this->nitro->isEnabled());
 
 		$this->initialized = true;
 

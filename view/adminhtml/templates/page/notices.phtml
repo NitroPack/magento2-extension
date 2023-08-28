@@ -16,7 +16,7 @@ if (!$InvalidationHelper->checkInvalidationAndPurgeProcess() && !$InvalidationHe
     </div>
 
     <?php
-}else if (!$InvalidationHelper->checkCronJobIsSetup(120)){
+}else if (!$InvalidationHelper->checkCronJobIsSetup(120) && !$InvalidationHelper->checkInvalidationAndPurgeProcess() ){
 ?>
     <div class="messages">
         <div class="message message-warning message-demo-mode">

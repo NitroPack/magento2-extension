@@ -64,28 +64,6 @@ class Index extends StoreAwareAction
             $resultRedirect->setUrl($this->getUrlWithStore('NitroPack/connect/index'));
             return $resultRedirect;
         }
-        /** @var Store $store */
-        $store = $this->objectManager->get(Store::class);
-        if ($this->nitro->getSdk()->getHealthStatus() == HealthStatus::HEALTHY) {
-            if (!$store->isUseStoreInUrl()) {
-                $storeViewCode = [];
-                foreach ($this->getStoreGroup()->getStores() as $store) {
-                    if ($this->getStoreGroup()->getDefaultStoreId() != $store->getId()) {
-                        $storeViewCode[] = $store->getCode(); // get store view name
-                    }
-                }
-
-                if (count($storeViewCode) > 0) {
-                    $this->nitro->getSdk()->getApi()->setVariationCookie('store', $storeViewCode, 1);
-                } else {
-                    $this->nitro->getSdk()->getApi()->unsetVariationCookie('store');
-                }
-            } else {
-                $this->nitro->getSdk()->getApi()->unsetVariationCookie('store');
-            }
-        }
-        $page = $this->resultPageFactory->create();
-
-        return $page;
+       return $this->resultPageFactory->create();
     }
 }

@@ -30,7 +30,8 @@ class StoreViewObserver implements ObserverInterface
         $storeGroup = $storeRepo->getList();
         foreach ($storeGroup as $storeGroupData) {
             $storeGroupCode = $storeGroupData->getCode();
-            $this->nitroPackConfigHelper->addVariationCookie($storeGroupData, $storeGroupCode);
+
+            $this->nitroPackConfigHelper->xMagentoVaryAdd($storeGroupData);
         }
     }
 

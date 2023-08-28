@@ -24,7 +24,7 @@ use Magento\Framework\UrlInterface;
 class NitroService implements NitroServiceInterface
 {
 
-    const EXTENSION_VERSION = '2.3.3';
+    const EXTENSION_VERSION = '2.4.0';
 
     const FULL_PAGE_CACHE_NITROPACK = 'system/full_page_cache/caching_application';
     const FULL_PAGE_CACHE_NITROPACK_VALUE = 3;
@@ -154,7 +154,9 @@ class NitroService implements NitroServiceInterface
             if (!$this->readSettings($this->loadedStoreCode)) {
                 $this->settings = static::defaultSettings();
             } else {
+
                 $this->sdk = $this->initializeSdk();
+
                 if (!is_null($this->sdk)) {
 
                     if (
@@ -202,15 +204,17 @@ class NitroService implements NitroServiceInterface
                                 $this->sdk->setVarnishProxyCacheHeaders([
                                     'X-Magento-Tags-Pattern' => ' .*'
                                 ]);
-                            } catch (\Exception $e) {
+                            }catch (\Exception $e){
                                 $this->logger->debug('Varnish exception:' . $e->getMessage());
                             }
+
                         }
                     }
                 }
             }
             //  $this->sdk->purgeLocalCache(true);
             //exit;
+
         } catch (\Exception $e) {
             $this->logger->debug('SDK exception:' . $e->getMessage());
             throw $e;
@@ -299,6 +303,15 @@ class NitroService implements NitroServiceInterface
     }
 
     /**
+     * \NitroPack\NitroPack\Api\NitroServiceInterface::isCustomerLoginEnable
+     */
+    public function isCustomerLoginEnable()
+    {
+        return isset($this->settings->cache_to_login_customer) ?  $this->settings->cache_to_login_customer : false;
+    }
+
+
+    /**
      * \NitroPack\NitroPack\Api\NitroServiceInterface::isSafeModeEnabled
      */
     public function isSafeModeEnabled()
@@ -306,7 +319,6 @@ class NitroService implements NitroServiceInterface
          return isset($this->settings->safeMode) ?  $this->settings->safeMode : false;
 
     }
-
     /**
      * \NitroPack\NitroPack\Api\NitroServiceInterface::getSettings
      */
@@ -352,6 +364,13 @@ class NitroService implements NitroServiceInterface
     {
         return $this->settings->siteSecret;
     }
+    /**
+     * \NitroPack\NitroPack\Api\NitroServiceInterface::getXMagentoVary
+     */
+    public function getXMagentoVary()
+    {
+        return $this->settings->x_magento_vary;
+    }
 
     /**
      * \NitroPack\NitroPack\Api\NitroServiceInterface::getSdk
@@ -367,6 +386,13 @@ class NitroService implements NitroServiceInterface
     public function setSiteId($newSiteId)
     {
         $this->settings->siteId = $newSiteId;
+    }
+    /**
+     * \NitroPack\NitroPack\Api\NitroServiceInterface::setXMagentoVary
+     */
+    public function setXMagentoVary($data)
+    {
+        $this->settings->x_magento_vary = $data;
     }
 
     /**
@@ -401,9 +427,9 @@ class NitroService implements NitroServiceInterface
     }
 
     /**
-     * \NitroPack\NitroPack\Api\NitroServiceInterface::isCacheable
+     * \NitroPack\NitroPack\Api\NitroServiceInterface::isCustomerLogin
      */
-    public function isCacheable()
+    public function isCustomerLogin()
     {
         if (!$this->session) {
             $this->session = $this->objectManager->get(Session::class);
@@ -575,7 +601,6 @@ class NitroService implements NitroServiceInterface
         } catch (\Magento\Framework\Exception\FileSystemException $e) {
             // fallback to using the module directory
         }
-
         if ($storeName === null) {
             // check if in admin or frontend
             $area = $this->appState->getAreaCode();
@@ -591,7 +616,6 @@ class NitroService implements NitroServiceInterface
         }
         return $rootPath . 'nitro_settings_' . $storeName . '.json';
     }
-
     protected function initializeSdk($url = null)
     {
         if (!$this->settings->siteId || !$this->settings->siteSecret) {

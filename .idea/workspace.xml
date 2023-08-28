@@ -6,12 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="ec8709bb-0c6d-420a-bbce-0d2f296fb020" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Api/NitroService.php" beforeDir="false" afterPath="$PROJECT_DIR$/Api/NitroService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Api/NitroServiceInterface.php" beforeDir="false" afterPath="$PROJECT_DIR$/Api/NitroServiceInterface.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controller/Remote/Index.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Remote/Index.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Plugin/CacheDelivery/RemoteCachePlugin.php" beforeDir="false" afterPath="$PROJECT_DIR$/Plugin/CacheDelivery/RemoteCachePlugin.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,6 +22,7 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
+  <component name="PhpWorkspaceProjectConfiguration" interpreter_name="PHP" />
   <component name="ProjectId" id="2MmQtA7ZIKmp5L8qeRck7Tj2Gmk" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -38,7 +33,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "//wsl$/Ubuntu-20.04/var/www/html/submitted-extension-2.3.4",
+    "last_opened_file_path": "//wsl$/Ubuntu-20.04/var/www/html/m246-check",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -113,7 +108,8 @@
       <workItem from="1689662621290" duration="582000" />
       <workItem from="1689674247623" duration="575000" />
       <workItem from="1691652564085" duration="993000" />
-      <workItem from="1691654259265" duration="1698000" />
+      <workItem from="1691654259265" duration="5230000" />
+      <workItem from="1692687452579" duration="16000" />
     </task>
     <servers />
   </component>

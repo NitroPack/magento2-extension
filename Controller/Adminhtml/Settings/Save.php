@@ -6,6 +6,7 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 
+use Magento\Store\Model\Store;
 use NitroPack\NitroPack\Controller\Adminhtml\StoreAwareAction;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
 
@@ -106,7 +107,7 @@ class Save extends StoreAwareAction
             'pageTypes-category',
             'pageTypes-info',
             'pageTypes-contact',
-
+            'cache_to_login_customer',
             'warmupTypes-home',
             'warmupTypes-product',
             'warmupTypes-category',
@@ -122,6 +123,8 @@ class Save extends StoreAwareAction
         $additional_meta_data = [];
         foreach ($booleans as $option) {
             if (($value = $this->request->getPostValue($option, null)) !== null) {
+              //
+
                 if ($option === 'enabled') {
                     $event = $value ? 'enable_extension' : 'disable_extension';
                     $eventUrl = $this->nitro->integrationUrl('extensionEvent');
@@ -135,9 +138,11 @@ class Save extends StoreAwareAction
                 }
                 //EVENT TRIGGER
                 $this->nitroPackConfigHelper->setBoolean('previous_extension_status', $value);
+
                 $this->nitroPackConfigHelper->setBoolean($option, $value);
                 $shouldSave = true;
             }
+
         }
 
         foreach ($arrays as $option) {
@@ -169,9 +174,7 @@ class Save extends StoreAwareAction
         if (empty($errors) && $shouldSave) {
             $event = 'configure';
             $this->triggerConfigureEvent($event, $additional_meta_data);
-
             $this->nitro->persistSettings();
-
             $newSettings = (array)$this->nitro->getSettings();
 
             if (!$oldSettings['cacheWarmup'] && $newSettings['cacheWarmup']) {
@@ -180,7 +183,7 @@ class Save extends StoreAwareAction
                     $this->getStoreGroup()->getCode(),
                     $this->nitro
                 );
-
+                $this->nitro->getApi()->setWarmupHomepage($this->getStoreUrl());
                 $this->nitro->getApi()->setWarmupSitemap($sitemapUrl);
                 $this->nitro->getApi()->enableWarmup();
                 $this->nitro->getApi()->resetWarmup();
@@ -221,4 +224,16 @@ class Save extends StoreAwareAction
         return $this->sitemapHelper->getSiteMapPath($storeGroupId, $storeGroupCode, $nitro);
     }
 
+    public function getStoreUrl()
+    {
+        $url = '';
+        $store = $this->_objectManager->get(Store::class);
+        $defaultStoreView = $this->storeManager->getStore($this->storeGroup->getDefaultStoreId());
+        $url = $store->isUseStoreInUrl() ? str_replace(
+            $defaultStoreView->getCode() . '/',
+            '',
+            $defaultStoreView->getBaseUrl()
+        ) : $defaultStoreView->getBaseUrl(); // get store view name
+        return $url;
+    }
 }

@@ -4257,14 +4257,14 @@ ol.nitro {
 .nitro .form-group {
     padding-top: 0;
     padding-bottom: 0;
-    margin-bottom: 1.25em;
+    margin-bottom: 0.9em;
 }
 
 .nitro .col-form-label {
     padding-top: calc(0.375rem + 1px);
     padding-bottom: calc(0.375rem + 1px);
     margin-bottom: 0;
-    font-size: 16px;
+    font-size: 14px;
     line-height: 1.5;
 }
 
@@ -4474,7 +4474,7 @@ ol.nitro {
 .nitro label {
     display: inline-block;
     font-weight: normal;
-    margin-bottom: 8px;
+    margin-bottom: 0px;
 }
 
 .nitro .form-control {

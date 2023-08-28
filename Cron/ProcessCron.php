@@ -10,28 +10,23 @@ use Psr\Log\LoggerInterface;
 class ProcessCron
 {
     /**
-     * @var NitroServiceInterface
+     * @var NitroServiceInterface $nitro
      * */
     protected $nitro;
     /**
-     * @var  \Magento\Framework\Filesystem\Driver\File
+     * @var  \Magento\Framework\Filesystem\Driver\File $directoryList
      * */
     protected $directoryList;
-
-    protected $store = null;
-
     /**
-     * @var StoreManagerInterface
+     * @var StoreManagerInterface $storeManager
      * */
     protected $storeManager;
-
-    protected $usedDefaultStore = false;
     /**
-     * @var RedisHelper
+     * @var RedisHelper $redisHelper
      * */
     protected $redisHelper;
     /**
-     * @var LoggerInterface
+     * @var LoggerInterface $logger
      * */
     protected $logger;
 
@@ -44,18 +39,20 @@ class ProcessCron
     public function __construct(
         NitroServiceInterface $nitro,
         StoreManagerInterface $storeManager,
-        RedisHelper $redisHelper,
-        LoggerInterface $logger
-    ) {
+        RedisHelper           $redisHelper,
+        LoggerInterface       $logger
+    )
+    {
         $this->logger = $logger;
         $this->nitro = $nitro;
         $this->redisHelper = $redisHelper;
         $this->storeManager = $storeManager;
     }
-
+    /**
+     * @return $this NitroPack\NitroPack\Cron\ProcessCron
+     * */
     public function execute()
     {
-        //Load NitroPack Library to set credential
         //Load NitroPack Library to set credential
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $storeRepo = $objectManager->create(\Magento\Store\Api\GroupRepositoryInterface::class);
@@ -80,7 +77,7 @@ class ProcessCron
     }
 
     /**
-     * Cleanup Local Stale cache directory
+     * @return bool Cleanup Local Stale cache directory
      * */
     public function cleanupStaleCache()
     {
@@ -111,8 +108,7 @@ class ProcessCron
                         }
                     }
 
-                    if (stripos($entry, '.stale.') !== false && !\NitroPack\SDK\Filesystem::getStorageDriver(
-                        )->isDirEmpty(
+                    if (stripos($entry, '.stale.') !== false && !\NitroPack\SDK\Filesystem::getStorageDriver()->isDirEmpty(
                             $entry
                         ) && !$in_dirs) {
                         $dirs[] = $entry;

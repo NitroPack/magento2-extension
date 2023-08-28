@@ -6,7 +6,6 @@ $enabledMagentoCaches = $nitroPackConfigHelper->getDisabledCaches();
 $settings = $block->getSettings();
 $saveUrl = $block->getSaveUrl();
 $varnishPurgeUrl = $block->getVarnishPurgeUrl();
-
 $purgeUrl = $block->getCachePurgeUrl();
 $warmupSaveUrl = $block->getCacheWarmupSaveUrl();
 $warmupStartUrl = $block->getStartWarmupUrl();
@@ -14,15 +13,11 @@ $warmupConfig = $block->getWarmupConfig();
 $warmupPauseUrl = $block->getPauseWarmupUrl();
 $enableCachesUrl = $block->getEnableCachesUrl();
 $safeModeEnableUrl = $block->getSafeModeEnableUrl();
-
 $storeCurrencies = $block->getAvailableCurrencies();
 $storeLocales = $block->getAvailableLocales();
 $builtInPageRoutes = $block->getBuiltInPageTypeRoutes();
 $builtInPageTypes = array_keys($builtInPageRoutes);
 
-// if ($settings->cacheWarmup) {
-//	$warmupStats = $block->getWarmupStats();
-// }
 ?>
 <div id="tab_element">
     <ul class="tabs-horiz">
@@ -140,11 +135,11 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
                                 <h5 class="card-title">General Settings</h5>
                                 <div class="form-group row">
 
-                                    <label class="col-md-8 col-form-label pl-0">
+                                    <label class="col-md-10 col-form-label pl-0">
                                         Extension Status<br>
                                         <small class="text-secondary">Master ON/OFF switch for the extension.</small>
                                     </label>
-                                    <div class="col-xs-4 text-right">
+                                    <div class="col-xs-2 text-right">
                                         <label class="switch">
                                             <input id="status" type="checkbox" name="enabled"<?php
                                             if (!empty($enabledMagentoCaches) || !$nitroPackConfigHelper->getFullPageCacheValue()) {
@@ -169,12 +164,12 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
                                     <?php
                                 } ?>
                                 <div class="form-group row">
-                                    <label class="col-md-8 col-form-label pl-0">
+                                    <label class="col-md-10 col-form-label pl-0">
                                         Cache Warmup<br>
                                         <small class="text-secondary">Automatically re-optimizes purged/invalidated
                                             pages.</small>
                                     </label>
-                                    <div class="col-xs-4 text-right">
+                                    <div class="col-xs-2 text-right">
 
                                         <label class="switch">
                                             <input id="cache_warmup" type="checkbox"
@@ -184,14 +179,26 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-md-8 col-form-label pl-0">
+                                    <label class="col-md-10 col-form-label pl-0">Enhanced Caching With Caching Variation<br>
+                                        <small class="text-secondary">Cache different versions of a page based on customer group, selected store, currency, language, and customer logged in or not .</small>
+                                    </label>
+                                    <div class="col-xs-2 text-right">
+                                        <label class="switch">
+                                            <input id="cache_to_customer_login" type="checkbox"
+                                                   name="cache_to_login_customer" <?= (isset($settings->cache_to_login_customer) && $settings->cache_to_login_customer ? 'checked' : '') ?>/>
+                                            <span class="slider round"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-md-10 col-form-label pl-0">
                                         Safe Mode<br>
                                         <small class="text-secondary">Learn more about this feature
                                             <a href="https://support.nitropack.io/hc/en-us/articles/360060910574-Safe-Mode"
                                                target="_blank" rel="noreferrer noopener">here</a>
                                         </small>
                                     </label>
-                                    <div class="col-xs-4 text-right">
+                                    <div class="col-xs-2 text-right">
                                         <label class="switch">
                                             <input id="safe_mode" type="checkbox"
                                                    name="safeMode" <?= (isset($settings->safeMode) && $settings->safeMode ? 'checked' : '') ?>/>
@@ -566,7 +573,6 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
                     success: function (response) {
                         // @TODO proper response handling
                         if (response.paused) {
-                            console.log('Successfully paused warmup', response);
                             $('#pause-warmup').css('display', 'none').attr('disabled', true);
                             $('#start-warmup').css('display', 'block').attr('disabled', false);
                         } else {
@@ -627,6 +633,7 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
             });
 
 
+
             function setCacheWarmupTypes(enabled) {
                 $('[name^="warmupTypes-"]').attr('disabled', !enabled);
             }
@@ -662,6 +669,7 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
 
         });
         var safeModeUrl = "<?= $safeModeEnableUrl; ?>";
+
         var enableSafemode = () => {
             $.post(safeModeUrl, {
                 action: 'nitropack_enable_safemode'
@@ -676,7 +684,7 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
             });
         }
 
-        var disableSafemode = () => {
+        var disableSafeMode = () => {
             $.post(safeModeUrl, {
                 action: 'nitropack_disable_safemode'
             }, function (response) {
@@ -690,6 +698,10 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
                 }
             });
         }
+
+
+
+
         window.closeModalOverlay = function () {
             $("#setting-widget").cardOverlay("clear");
         }

@@ -45,7 +45,8 @@ class Save extends StoreAwareAction
      * @var NitroPackConfigHelper
      * */
     protected $nitroPackConfigHelper;
-      /**
+
+    /**
      * @param Context $context
      * @param NitroServiceInterface $nitro
      * @param AdminFrontendUrl $urlHelper
@@ -93,8 +94,9 @@ class Save extends StoreAwareAction
                 $eventUrl = $this->nitro->integrationUrl('extensionEvent');
                 $this->nitro->nitroEvent('connect', $eventUrl, $this->storeGroup);
                 $eventSent = $this->nitro->nitroEvent('enable_extension', $eventUrl, $this->storeGroup);
-                $this->nitroPackConfigHelper->addVariationCookie($this->getStoreGroup(), $this->getStoreGroup()->getCode());
-
+                $this->nitroPackConfigHelper->xMagentoVaryAdd($this->getStoreGroup());
+                $this->nitroPackConfigHelper->setBoolean('cache_to_login_customer', true);
+                $this->nitroPackConfigHelper->persistSettings($this->getStoreGroup()->getCode());
                 return $this->resultJsonFactory->create()->setData(array(
                     'connected' => true,
                     'redirect' => $this->getUrlWithStore('NitroPack/settings/index', array(
@@ -194,5 +196,7 @@ class Save extends StoreAwareAction
 
         return $urls;
     }
+
+
 
 }

@@ -92,7 +92,7 @@ class MaintenanceModeObserver implements ObserverInterface
                         $this->settings->enabled = false;
                     }
                 } else {
-                    $this->settings->enabled = !is_null($this->settings->previous_extension_status) ? $this->settings->previous_extension_status : true ;
+                    $this->settings->enabled = !empty($this->settings->previous_extension_status) && !is_null($this->settings->previous_extension_status) ? $this->settings->previous_extension_status : true ;
                 }
 
                 try {

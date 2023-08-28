@@ -8,14 +8,12 @@ Installation Instructions: https://support.nitropack.io/hc/en-us/articles/127062
 
 # Release Notes
 
-###   2.3.4:
-#### Compatible with Magento Open Source: 2.4
+###   2.4.0:
+#### Compatible with Magento Open Source : 2.4
 #### Stability: Stable Build
 #### Description:
-Improvements and fixes
-- Improved Error Handling when the NitroPack API service is down
-- Customer Pages (ones with a customer path) will not be cached
 
+-  New feature: Enhanced caching with caching variations - NitroPack will cache different versions of a page based on customer group, selected store, currency, language, and customer logged in or not
 ###   2.3.3:
 #### Compatible with Magento Open Source : 2.4
 #### Stability: Stable Build

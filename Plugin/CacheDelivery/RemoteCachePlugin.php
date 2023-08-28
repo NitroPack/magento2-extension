@@ -60,7 +60,6 @@ class RemoteCachePlugin
             return $returnValue;
         }
         if ($returnValue === null ||
-            !$this->nitro->isCacheable() || // Magento specific checks if the request can be cached
             (!is_bool($returnValue) && get_class(
                     $returnValue
                 ) == self::class) || // if a router just wraps around another one and calls its match method, we'll get an object with the same class name as a return value
@@ -75,16 +74,11 @@ class RemoteCachePlugin
 
             return $returnValue;
         }
-
         $store = $this->storeManager->getStore();
         $storeViewId = $store->getId();
         $storeId = $store->getStoreGroupId();
         $websiteId = $store->getWebsiteId();
-
-
-
         $layout = $websiteId . '_' . $storeId . '_' . $storeViewId . '_' . $route;
-
         if (defined('NITROPACK_DEBUG') && NITROPACK_DEBUG) {
             header('X-Nitro-Layout: ' . $layout);
         }
@@ -112,9 +106,7 @@ class RemoteCachePlugin
             header('X-Nitro-Disabled: 1', true);
             return $returnValue;
         }
-
         CacheTagObserver::enableObservers();
-
         return $returnValue;
     }
 

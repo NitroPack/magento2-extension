@@ -78,8 +78,6 @@ class LocalCachePlugin
         if (headers_sent() || NitroService::isANitroRequest()) {
             return $proceed($request);
         }
-
-
         if (!$this->nitro->isConnected() || !$this->nitro->isEnabled() || is_null(
                 $this->_scopeConfig->getValue(\NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK)
             ) || $this->_scopeConfig->getValue(
@@ -105,14 +103,16 @@ class LocalCachePlugin
         }
         CacheTagObserver::disableObservers();
 
-        if (!$this->nitro->isCacheable()) { // Magento specific checks if the request can be cached
+        if ($this->nitro->isCustomerLogin() && !$this->nitro->isCustomerLoginEnable() ) { // Magento specific checks if the request can be cached
 
             header('X-Nitro-Disabled: 1', true);
             CacheTagObserver::enableObservers();
             return $proceed($request);
         }
+
         try {
             if ($request->isGet() || $request->isHead()) {
+
                 if ($this->nitro->hasLocalCache()) {
                     header('X-Nitro-Cache: HIT', true);
 
@@ -128,11 +128,13 @@ class LocalCachePlugin
                         header('cache-control: max-age=' . $pageCacheTTL . ', public, s-maxage=' . $pageCacheTTL, true);
                         header('x-magento-tags: ', true);
                     }
+
                     $content = $this->nitro->pageCache->returnCacheFileContent();
+
                     $responseData = [
                         'content' => $content[1],
                         'status_code' => 200,
-                        'headers' =>  [],
+                        'headers' =>  $content[0],
                         'context' => $this->context->toArray()
 
                     ];
@@ -185,12 +187,13 @@ class LocalCachePlugin
         );
         $response->setStatusCode(200);
         $response->setContent($responseData['content']);
-//        echo '<pre>';
-//        print_r($responseData['headers']);
-//        exit();
+
         foreach ($responseData['headers'] as $headerKey => $headerValue) {
-            $response->setHeader($headerKey, $headerValue, true);
+
+                $response->setHeader($headerValue['name'], $headerValue['value'], true);
+
         }
+
 
         return $response;
     }

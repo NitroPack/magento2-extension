@@ -18,4 +18,11 @@
     <event name="clean_cache_by_tags">
         <observer name="nitropack_clean_cache_by_tags_observer" instance="NitroPack\NitroPack\Observer\CleanCacheByTagsObserver" />
     </event>
+    <event name="customer_group_save_commit_after">
+        <observer name="custom_customer_group_save_after_observer" instance="NitroPack\NitroPack\Observer\Customer\CustomerGroupSaveAfter" />
+    </event>
+    <event name="controller_action_postdispatch_customer_group_delete">
+        <observer name="controller_action_postdispatch_customer_group_delete_observer" instance="NitroPack\NitroPack\Observer\Customer\CustomerGroupSaveAfter" />
+    </event>
+
 </config>

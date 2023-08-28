@@ -158,7 +158,8 @@ class InvalidationHelper extends AbstractHelper
         } catch (\Exception $exception) {
             $output = "";
         }
-        if (strpos($output, "php bin/magento queue:consumers:start nitropack.cache.queue.consumer") !== false) {
+
+        if (strpos($output, "queue:consumers:start nitropack.cache.queue.consumer") !== false) {
             return true;
         }
         return false;

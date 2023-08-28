@@ -114,6 +114,11 @@ class SettingsBlock extends Template
     {
         return $this->getBackendUrl('NitroPack/settings/enablesafemode');
     }
+
+    public function getCacheToCustomerLogin()
+    {
+        return $this->getBackendUrl('NitroPack/settings/enablecachetocustomerlogin');
+    }
     public function checkVarnishEnable()
     {
         if (
