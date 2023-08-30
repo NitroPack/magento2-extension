@@ -33,7 +33,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "//wsl$/Ubuntu-20.04/var/www/html/m246-check",
+    "last_opened_file_path": "//wsl$/Ubuntu-20.04/var/www/html/magento2-extension",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -110,6 +110,7 @@
       <workItem from="1691652564085" duration="993000" />
       <workItem from="1691654259265" duration="5230000" />
       <workItem from="1692687452579" duration="16000" />
+      <workItem from="1693229390792" duration="734000" />
     </task>
     <servers />
   </component>

@@ -64,7 +64,6 @@ class ProcessCron
                 if ($this->nitro->isConnected()) {
                     //HEALTH CHECK
                     $this->nitro->checkHealthStatus();
-
                     $this->nitro->getSdk()->backlog->replay();
                     // clean up the stale Cache for filesystem and redis If Configure
                     $this->cleanupStaleCache();

@@ -21,88 +21,81 @@
                        showInWebsite="0" showInStore="0">
                     <label>Varnish Enable</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="caching_application">3</field>
+                    </depends>
+                </field>
+                <field id="varnish_servers" translate="label" type="text" sortOrder="2" showInDefault="1"
+                       showInWebsite="0" showInStore="0">
+                    <label>Reverse Proxy Server(s) IPs</label>
+                    <backend_model>NitroPack\NitroPack\Model\System\Backend\VarnishNitroPackConfig</backend_model>
+                    <comment>List the IPs of reverse proxy servers to be connected to NitroPack.Format:  &#8826;ip&#8827;:&#8826;port&#8827;.The port can be ommited, in which case port 80 will be used </comment>
+                    <depends>
+                        <field id="caching_application">3</field>
+                        <field id="varnish_enable">1</field>
+                    </depends>
                 </field>
                 <group id="varnish_nitro" translate="label" showInDefault="1" sortOrder="605">
                     <label>Varnish Configuration</label>
-
                     <field id="access_list" type="text" translate="label comment" sortOrder="15" showInDefault="1">
                         <label>Access list</label>
-                        <comment>IPs access list separated with ',' that can purge Varnish configuration for config file
-                            generation.
-                            If field is empty default value localhost will be saved.
-                        </comment>
+                        <comment>IPs access list separated with ',' that can purge Varnish configuration for config file generation.
+                            If field is empty default value localhost will be saved.</comment>
                         <backend_model>Magento\PageCache\Model\System\Config\Backend\AccessList</backend_model>
                         <depends>
-                            <field id="caching_application">3</field>
+                            <field id="caching_application">1</field>
                         </depends>
                     </field>
                     <field id="backend_host" type="text" translate="label comment" sortOrder="20" showInDefault="1">
                         <label>Backend host</label>
-                        <comment>Specify backend host for config file generation. If field is empty default value
-                            localhost will be saved.
-                        </comment>
+                        <comment>Specify backend host for config file generation. If field is empty default value localhost will be saved.</comment>
                         <backend_model>Magento\PageCache\Model\System\Config\Backend\Varnish</backend_model>
                         <depends>
-                            <field id="caching_application">3</field>
+                            <field id="caching_application">1</field>
                         </depends>
                     </field>
                     <field id="backend_port" type="text" translate="label comment" sortOrder="25" showInDefault="1">
                         <label>Backend port</label>
-                        <comment>Specify backend port for config file generation. If field is empty default value 8080
-                            will be saved.
-                        </comment>
+                        <comment>Specify backend port for config file generation. If field is empty default value 8080 will be saved.</comment>
                         <backend_model>Magento\PageCache\Model\System\Config\Backend\Varnish</backend_model>
                         <depends>
-                            <field id="caching_application">3</field>
-                        </depends>
-                    </field>
-                    <field id="varnish_port" type="text" translate="label comment" sortOrder="20" showInDefault="1" >
-                        <label>Varnish Port</label>
-                        <comment>Varnish Port If field is empty default value 80 will be saved.
-                        </comment>
-                        <backend_model>NitroPack\NitroPack\Model\System\Backend\VarnishNitroPackConfig</backend_model>
-                        <depends>
-                            <field id="caching_application">3</field>
+                            <field id="caching_application">1</field>
                         </depends>
                     </field>
                     <field id="grace_period" type="text" translate="label comment" sortOrder="30" showInDefault="1">
                         <label>Grace period</label>
-                        <comment>Specify grace period in seconds for config file generation. If field is empty default
-                            value 300 will be saved. This grace period will be used to serve cached content when the
-                            server is healthy. If the server is not healthy, cached content will be served for 3 days
-                            before failing.
-                        </comment>
+                        <comment>Specify grace period in seconds for config file generation. If field is empty default value 300 will be saved. This grace period will be used to serve cached content when the server is healthy. If the server is not healthy, cached content will be served for 3 days before failing.</comment>
                         <backend_model>Magento\PageCache\Model\System\Config\Backend\Varnish</backend_model>
                         <depends>
-                            <field id="caching_application">3</field>
+                            <field id="caching_application">1</field>
                         </depends>
                     </field>
                     <field id="export_button_version4" translate="label" type="button" sortOrder="35" showInDefault="1">
                         <label>Export Configuration</label>
                         <frontend_model>Magento\PageCache\Block\System\Config\Form\Field\Export\Varnish4</frontend_model>
                         <depends>
-                            <field id="caching_application">3</field>
+                            <field id="caching_application">1</field>
                         </depends>
                     </field>
                     <field id="export_button_version5" type="button" sortOrder="40" showInDefault="1">
                         <frontend_model>Magento\PageCache\Block\System\Config\Form\Field\Export\Varnish5</frontend_model>
                         <depends>
-                            <field id="caching_application">3</field>
+                            <field id="caching_application">1</field>
                         </depends>
                     </field>
                     <field id="export_button_version6" type="button" sortOrder="40" showInDefault="1">
                         <frontend_model>Magento\PageCache\Block\System\Config\Form\Field\Export\Varnish6</frontend_model>
                         <depends>
-                            <field id="caching_application">3</field>
+                            <field id="caching_application">1</field>
                         </depends>
                     </field>
                     <depends>
-
-                        <field id="varnish_enable">1</field>
                         <field id="caching_application">3</field>
+                        <field id="varnish_enable">1</field>
                     </depends>
                 </group>
             </group>
+
         </section>
     </system>
 </config>

@@ -49,36 +49,36 @@ class VarnishConfigAfter
 
 
 
-            $accessList = $this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_ACCESS_LIST);
-            $designExceptions = $this->_scopeConfig->getValue(
-                Config::XML_VARNISH_PAGECACHE_DESIGN_THEME_REGEX,
-                \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-            );
-            switch ($vclTemplatePath) {
-                case Config::VARNISH_6_CONFIGURATION_PATH:
-                    $version = 6;
-                    break;
-                case Config::VARNISH_5_CONFIGURATION_PATH:
-                    $version = 5;
-                    break;
-                default:
-                    $version = 4;
-            }
-            $sslOffloadedHeader = $this->_scopeConfig->getValue(
-                Request::XML_PATH_OFFLOADER_HEADER
-            );
+        $accessList = $this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_ACCESS_LIST);
+        $designExceptions = $this->_scopeConfig->getValue(
+            Config::XML_VARNISH_PAGECACHE_DESIGN_THEME_REGEX,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+        switch ($vclTemplatePath) {
+            case Config::VARNISH_6_CONFIGURATION_PATH:
+                $version = 6;
+                break;
+            case Config::VARNISH_5_CONFIGURATION_PATH:
+                $version = 5;
+                break;
+            default:
+                $version = 4;
+        }
+        $sslOffloadedHeader = $this->_scopeConfig->getValue(
+            Request::XML_PATH_OFFLOADER_HEADER
+        );
 
-            $vclGenerator = $this->vclGeneratorFactory->create(
-                [
-                    'backendHost' => $this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_BACKEND_HOST),
-                    'backendPort' => $this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_BACKEND_PORT),
-                    'accessList' => $accessList ? explode(',', $accessList) : [],
-                    'designExceptions' => $designExceptions ? $this->serializer->unserialize($designExceptions) : [],
-                    'sslOffloadedHeader' => $sslOffloadedHeader,
-                    'gracePeriod' => $this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_GRACE_PERIOD)
-                ]
-            );
-            return $vclGenerator->generateVcl($version);
+        $vclGenerator = $this->vclGeneratorFactory->create(
+            [
+                'backendHost' => $this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_BACKEND_HOST),
+                'backendPort' => $this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_BACKEND_PORT),
+                'accessList' => $accessList ? explode(',', $accessList) : [],
+                'designExceptions' => $designExceptions ? $this->serializer->unserialize($designExceptions) : [],
+                'sslOffloadedHeader' => $sslOffloadedHeader,
+                'gracePeriod' => $this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_GRACE_PERIOD)
+            ]
+        );
+        return $vclGenerator->generateVcl($version);
 
     }
 

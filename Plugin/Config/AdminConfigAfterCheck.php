@@ -42,7 +42,8 @@ class AdminConfigAfterCheck
         $storeGroup = $storeRepo->getList();
 
         foreach ($storeGroup as $storeGroupData) {
-            $storeGroupCode = $storeGroupData->getCode();
+           $storeGroupCode = $storeGroupData->getCode();
+
             $duplicateAliasDomain = [];
             foreach ($storeGroupData->getStores() as $storeView) {
                 $defaultStoreView = $this->storeManager->getStore($storeGroupData->getDefaultStoreId());
@@ -56,8 +57,10 @@ class AdminConfigAfterCheck
                     }
                 }
             }
+
             $this->nitro->reload($storeGroupCode);
             if ($this->nitro->isConnected() && $this->nitro->getSdk()->getHealthStatus() == HealthStatus::HEALTHY) {
+
                 $this->nitro->getSdk()->getApi()->disableAdditionalDomains();
                 //Add Alias Domain
                 if (count($duplicateAliasDomain) > 0) {
@@ -69,6 +72,7 @@ class AdminConfigAfterCheck
                     }
                 }
             }
+
         }
         return $this;
     }

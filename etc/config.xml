@@ -1,0 +1,13 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <design>
+            <invalid_caches>
+                <full_page/>
+            </invalid_caches>
+        </design>
+        <system>
+            <full_page_cache>
+                <varnish_servers>127.0.0.1</varnish_servers>
+            </full_page_cache>
+        </system></default>
+</config>

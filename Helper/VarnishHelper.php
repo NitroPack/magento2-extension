@@ -46,20 +46,19 @@ class VarnishHelper extends AbstractHelper
                 ',',
                 $this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_BACKEND_HOST)
             );
-            $varnishPortConfig =$this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_VARNISH_PORT);
-            $backendServer = array_map(function ($backendValue) use($varnishPortConfig) {
-                if ($backendValue == "localhost") {
-                    if($varnishPortConfig!=80)
-
-                        return "127.0.0.1:".$varnishPortConfig;
-
-                    return "127.0.0.1";
+            $backendServer = array_map(function ($backendValue) {
+                $backendHostAndPort = explode(":", $backendValue);
+                if ($backendHostAndPort[0] == "localhost" || $backendHostAndPort[0] == '127.0.0.1') {
+                    if (isset($backendHostAndPort[1]) && $backendHostAndPort[1] == 80) {
+                        return "127.0.0.1";
+                    }
+                    if (isset($backendHostAndPort[1])) {
+                        return "127.0.0.1:" . $backendHostAndPort[1];
+                    }
                 }
-                if($varnishPortConfig!=80)
-                return $backendValue.":".$varnishPortConfig;
-
                 return $backendValue;
             }, $backendServer);
+
             $url = 'http://' . isset($backendServer[0]) ? $backendServer[0] : '';
             $url = !empty($url) ? isset($urlValue['path']) ? 'http://' . $url . $urlValue['path'] : '' : '';
 
@@ -68,6 +67,7 @@ class VarnishHelper extends AbstractHelper
                 'PURGE',
                 ['X-Magento-Tags-Pattern' => '.*']
             );
+
             try {
                 $reverseProxy->purge($url);
             } catch (\Exception $e) {

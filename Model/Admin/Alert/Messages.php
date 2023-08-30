@@ -78,7 +78,7 @@ class Messages implements MessageInterface
             if (!$this->nitroPackConfigHelper->getFullPageCacheValue()) {
                 if(!$this->invalidationHelper->checkInvalidationAndPurgeProcess() &&  !$this->invalidationHelper->checkCronJobIsSetup()){
                     return __(
-                        'NitroPack is disabled due to incompatible CRON settings preventing cache invalidation/purge.Please enable CRON job.'
+                        'NitroPack has been disabled and the initial system settings have been restored due to incompatible Cron settings preventing cache invalidation/purge. Run the following command to fix the problem: php bin/magento queue:consumers:start nitropack.cache.queue.comsumer &'
                     );
                 }
 

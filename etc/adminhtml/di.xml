@@ -46,7 +46,6 @@
         <plugin name="varnish_config_after_cache_checker"
                 type="NitroPack\NitroPack\Plugin\PageCache\Config\VarnishConfigAfter"/>
     </type>
-
     <type name="Magento\Config\Model\Config">
         <plugin name="admin_system_config_save_plugin" type="NitroPack\NitroPack\Plugin\Config\AdminConfigAfterCheck"/>
     </type>

@@ -8,12 +8,20 @@ Installation Instructions: https://support.nitropack.io/hc/en-us/articles/127062
 
 # Release Notes
 
+###   2.4.1:
+#### Compatible with Magento Open Source : 2.4
+#### Stability: Stable Build
+#### Description: Improvements:
+-  Improved proxy server configuration process with new setting fields, error detection, and improved communication with the main NitroPack App
+-  Automatic CRON execution in case of cache purge
+-  Additional notifications in different cases related to NitroPack automatic or manual  disabling
+
 ###   2.4.0:
 #### Compatible with Magento Open Source : 2.4
 #### Stability: Stable Build
 #### Description:
-
 -  New feature: Enhanced caching with caching variations - NitroPack will cache different versions of a page based on customer group, selected store, currency, language, and customer logged in or not
+
 ###   2.3.3:
 #### Compatible with Magento Open Source : 2.4
 #### Stability: Stable Build

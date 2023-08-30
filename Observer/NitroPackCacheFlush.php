@@ -12,6 +12,8 @@ use NitroPack\NitroPack\Helper\ApiHelper;
 use NitroPack\NitroPack\Helper\RedisHelper;
 use NitroPack\NitroPack\Helper\VarnishHelper;
 use NitroPack\SDK\NitroPack;
+use Magento\Cron\Model\Config;
+use Magento\Cron\Model\Schedule;
 
 class NitroPackCacheFlush implements ObserverInterface
 {
@@ -39,25 +41,41 @@ class NitroPackCacheFlush implements ObserverInterface
      * @var VarnishHelper
      * */
     protected $varnishHelper;
-
+    /**
+     * @var Config
+     * */
+    protected $cronConfig;
+    /**
+     * @var Schedule
+     * */
+    protected $cronSchedule;
     /**
      * @param DirectoryList $directoryList
      * @param ApiHelper $apiHelper
      * @param ScopeConfigInterface $scopeConfig
      * @param VarnishHelper $varnishHelper
+     * @param RedisHelper $redisHelper
+     * @param Config $cronConfig
+     * @param Schedule $cronSchedule
      * */
     public function __construct(
         DirectoryList $directoryList,
         ApiHelper $apiHelper,
         VarnishHelper $varnishHelper,
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        RedisHelper $redisHelper,
+        Config $cronConfig,
+        Schedule $cronSchedule
 
     ) {
+        $this->cronSchedule =  $cronSchedule;
+        $this->redisHelper =$redisHelper;
         $this->apiHelper = $apiHelper;
         $this->varnishHelper = $varnishHelper;
         $this->_scopeConfig = $scopeConfig;
         $this->directoryList = $directoryList;
-    }
+        $this->cronConfig = $cronConfig;
+   }
 
     public function execute(Observer $observer)
     {
@@ -83,6 +101,7 @@ class NitroPackCacheFlush implements ObserverInterface
                     $this->sdk = new NitroPack(
                         $this->settings->siteId, $this->settings->siteSecret, null, null, $cachePath
                     );
+
                     if ($this->settings->enabled) {
                         $this->sdk->purgeCache(
                             null,
@@ -100,6 +119,13 @@ class NitroPackCacheFlush implements ObserverInterface
                             $this->varnishHelper->purgeVarnish();
                         }
                     }
+
+                        //HEALTH CHECK
+                        $this->sdk->checkHealthStatus();
+                        $this->sdk->backlog->replay();
+                        // clean up the stale Cache for filesystem and redis If Configure
+                        $this->cleanupStaleCache();
+                        $this->runCronRecord();
                 } catch (\Exception $e) {
                     $file = $objectManager->create('\Magento\Framework\Filesystem\Driver\File');
                     $cachePath = $rootPath . 'nitro_cache' . DIRECTORY_SEPARATOR . $this->settings->siteId;
@@ -108,6 +134,89 @@ class NitroPackCacheFlush implements ObserverInterface
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * @return bool Cleanup Local Stale cache directory
+     * */
+    public function cleanupStaleCache()
+    {
+        // Validate the Storage Driver
+        $checkRedisConfigure = $this->redisHelper->validatedRedisConnection();
+        if ($checkRedisConfigure) {
+            \NitroPack\SDK\Filesystem::setStorageDriver(
+                new \NitroPack\SDK\StorageDriver\Redis(
+                    $checkRedisConfigure['host'],
+                    $checkRedisConfigure['port'],
+                    $checkRedisConfigure['pass'],
+                    $checkRedisConfigure['db']
+                )
+            );
+        }
+
+        $cacheDirectoryForStale = str_replace('/pagecache', '', $this->sdk->getCacheDir());
+        if (!\NitroPack\SDK\Filesystem::getStorageDriver()->isDirEmpty($cacheDirectoryForStale)) {
+            try {
+                $dirs = array();
+                $this->recursiveDirIteration($cacheDirectoryForStale, function ($entry) use (&$dirs) {
+                    $in_dirs = false;
+
+                    foreach ($dirs as $dir) {
+                        if (stripos($entry, $dir) !== false) {
+                            $in_dirs = true;
+                            break;
+                        }
+                    }
+
+                    if (stripos($entry, '.stale.') !== false && !\NitroPack\SDK\Filesystem::getStorageDriver()->isDirEmpty(
+                            $entry
+                        ) && !$in_dirs) {
+                        $dirs[] = $entry;
+                    }
+                });
+
+                foreach ($dirs as $dir) {
+                    \NitroPack\SDK\Filesystem::getStorageDriver()->deleteDir($dir);
+                }
+
+                return !empty($dirs);
+            } catch (\Magento\Framework\Exception\FileSystemException $e) {
+                throw new \Exception($e->getMessage());
+            }
+        }
+    }
+
+
+    public static function recursiveDirIteration($dir, $callback)
+    {
+        \NitroPack\SDK\Filesystem::getStorageDriver()->dirForeach($dir, function ($entry) use (&$callback) {
+            call_user_func($callback, $entry);
+
+            if (!\NitroPack\SDK\Filesystem::getStorageDriver()->isDirEmpty($entry)) {
+                self::recursiveDirIteration($entry, $callback);
+            } else {
+                if (stripos($entry, '.stale.') !== false && \NitroPack\SDK\Filesystem::getStorageDriver()->isDirEmpty(
+                        $entry
+                    )) {
+                    \NitroPack\SDK\Filesystem::getStorageDriver()->deleteDir($entry);
+                }
+            }
+        });
+    }
+
+    public function runCronRecord(){
+        $specificJobCode = 'nitropack_cron_for_health_and_stale_cleanup'; // Replace with your job code
+        $jobs = $this->cronConfig->getJobs();
+        if (isset($jobs['default']) && isset($jobs['default'][$specificJobCode])) {
+
+            $jobConfig = $jobs['default'][$specificJobCode];
+            $this->cronSchedule->setJobCode($specificJobCode)
+                ->setCreatedAt(date('Y-m-d H:i:s'))
+                ->setScheduledAt(date('Y-m-d H:i:s'))
+                ->setExecutedAt(date('Y-m-d H:i:s'))
+                ->setStatus(Schedule::STATUS_SUCCESS)
+                ->save();
         }
     }
 }

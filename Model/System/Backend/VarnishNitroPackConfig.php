@@ -34,7 +34,7 @@ class VarnishNitroPackConfig extends \Magento\Framework\App\Config\Value
         \Magento\Framework\App\Cache\TypeListInterface          $cacheTypeList,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb           $resourceCollection = null,
-        \Magento\Framework\Message\ManagerInterface $messageManager,
+        \Magento\Framework\Message\ManagerInterface             $messageManager,
         array                                                   $data = []
     )
     {
@@ -52,77 +52,53 @@ class VarnishNitroPackConfig extends \Magento\Framework\App\Config\Value
      */
     public function beforeSave()
     {
-        $data = $this->_getDefaultValues();
         $currentValue = $this->getValue();
 
         if (!$currentValue) {
             $replaceValue = isset($data[$this->getField()]) ? $data[$this->getField()] : false;
             $this->setValue($replaceValue);
         }
-        $host = $this->_config->getValue('system/full_page_cache/varnish_nitro/backend_host', $scopeType = ScopeConfigInterface::SCOPE_TYPE_DEFAULT, $scopeCode = null);
-        if(!is_null($host)){
-        $url = 'http://' . $host . ':' . $currentValue;
-        $httpMulti = new HttpClientMulti();
-        $client = new HttpClient($url);
-        $client->hostOverride($client->host, $host);
-        $client->doNotDownload = true;
-        $client->setHeader('X-Magento-Tags-Pattern:', '.*');
-        $httpMulti->push($client);
-        $res = $httpMulti->fetchAll(true, 'purge');
-        if(isset($res[1])){
-        foreach ($res[1] as $failedRequest) {
-            $exception = $failedRequest[1];
-            if ($exception instanceof SocketReadTimedOutException) {
-                continue; // Ignore read timeouts
-            } else {
-                if ($exception instanceof \NitroPack\HttpClient\Exceptions\SocketWriteException) {
-                    $this->messageManager->addError( __("Reverted the assign port to port 80.  ".$exception->getMessage()) );
-                    $this->setValue(80);
-                    return false;
-                }else{
-                $this->messageManager->addError( __($exception->getMessage()) );
-                return false;
+        $data = explode(':', $currentValue);
+        if (isset($data[0])) {
+
+            if (isset($data[1]))
+                $url = 'http://' . $data[0] . ':' . $data[1];
+            else
+                $url = 'http://' . $data[0];
+
+            if (isset($data[1]) && $data[1] == 80) {
+                $currentValue = $data[0];
+            }
+
+            $httpMulti = new HttpClientMulti();
+            $client = new HttpClient($url);
+
+            $client->hostOverride($client->host, $data[0]);
+            $client->doNotDownload = true;
+            $client->setHeader('X-Magento-Tags-Pattern:', '.*');
+            $httpMulti->push($client);
+            $res = $httpMulti->fetchAll(true, 'purge');
+            if (isset($res[1])) {
+                foreach ($res[1] as $failedRequest) {
+                    $exception = $failedRequest[1];
+                    if ($exception instanceof SocketReadTimedOutException) {
+                        continue; // Ignore read timeouts
+                    } else {
+                        if ($exception instanceof \NitroPack\HttpClient\Exceptions\SocketWriteException) {
+                            $this->messageManager->addError(__("The provided Reverse Proxy settings are not correct. They are saved but NitroPack may not work correctly. Please check them again."));
+                            $this->setValue($currentValue);
+                            return false;
+                        } else {
+                            $this->messageManager->addError(__("The provided Reverse Proxy settings are not correct. They are saved but NitroPack may not work correctly. Please check them again."));
+                            $this->setValue($currentValue);
+                            return false;
+                        }
+                    }
                 }
             }
-        }
-        }
-        $this->setValue($currentValue);
+            $this->setValue($currentValue);
         }
         return $this;
     }
 
-    /**
-     * Get Default Config Values
-     *
-     * @return array
-     */
-    protected function _getDefaultValues()
-    {
-        if (!$this->defaultValues) {
-            $this->defaultValues = ['varnish_port' => 80];
-        }
-
-        return $this->defaultValues;
-    }
-
-    /**
-     * If fields are empty fill them with default data
-     *
-     * @return $this|\Magento\Framework\Model\AbstractModel
-     */
-    protected function _afterLoad()
-    {
-        $data = $this->_getDefaultValues();
-        $currentValue = $this->getValue();
-        if (!$currentValue) {
-            foreach ($data as $field => $value) {
-                if (is_string($this->getPath()) && strstr($this->getPath(), (string)$field)) {
-                    $this->setValue($value);
-                    $this->save();
-                    break;
-                }
-            }
-        }
-        return $this;
-    }
 }

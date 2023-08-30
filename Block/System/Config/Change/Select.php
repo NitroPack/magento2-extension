@@ -18,8 +18,10 @@ class Select extends \Magento\Config\Block\System\Config\Form\Field
         $html .= '<script type="text/javascript">function checkNitroPack(self){ if(self.value!=3){  require(["Magento_Ui/js/modal/alert","jquery"], function(alert, $) { '.
             ' alert({modalClass: "popup",title: $.mage.__("NitroPack requies to be selected as a Full Page Cache Application"),'.
             'content: $.mage.__("<br>Choosing an other option will disable the NitroPack. Are you sure want to proceed ?"),'.
-            'buttons: [{ text: $.mage.__("Ok"), class: "action-primary action-accept" ,click: function () { this.closeModal(true); } },{ text: $.mage.__("Cancel"), class:"action-secondary action-new",click: function () { self.value=3; this.closeModal(true); }  }] }) })'.
+            'buttons: [{ text: $.mage.__("Ok"), class: "action-primary action-accept" ,click: function () { this.closeModal(true); } },{ text: $.mage.__("Cancel"), class:"action-secondary action-new",click: function () { self.value = 3; self.dispatchEvent(new Event("change"));  this.closeModal(true); }  }] }) })'.
             '   } }</script>';
         return $html;
     }
 }
+
+

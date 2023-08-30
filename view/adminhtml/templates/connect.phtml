@@ -221,7 +221,8 @@
             $(this).text($(this).attr('data-loading-text'));
         });
         let connectPopup = null;
-        let homePageUrl = "<?= $block->getStoreUrl() ?>";
+        let homePageUrl = encodeURIComponent("<?= $block->getStoreUrl() ?>");
+        let storeName = "<?= $block->getStoreName() ?>";
         $("#api-details-form-submit").on("click", function (e) {
             let siteId = $("#nitro_site_id").val();
             let siteSecret = $("#nitro_site_secret").val();
@@ -232,8 +233,7 @@
                 let windowHeight = 700;
                 let leftPos = window.top.outerWidth / 2 + window.top.screenX - (windowWidth / 2);
                 let topPos = window.top.outerHeight / 2 + window.top.screenY - (windowHeight / 2);
-
-                connectPopup = window.open("https://nitropack.io/auth?website=" + homePageUrl, "QuickConnect", "width=" + windowWidth + ",height=" + windowHeight + ",left=" + leftPos + ",top=" + topPos);
+                connectPopup = window.open("https://auth.nitropack.io/auth/integration?intent=integration&integration_url=" + homePageUrl+"&integration_platform=magento&integration_name="+storeName, "QuickConnect", "width=" + windowWidth + ",height=" + windowHeight + ",left=" + leftPos + ",top=" + topPos);
             } else if (connectPopup && connectPopup.window) {
                 connectPopup.focus();
             }
