@@ -55,7 +55,7 @@ class Config extends WebhookController
                 $configFileName = $nitroDataDir . '/' . $settings->siteId . '-config.json';
                 if ($this->fileDriver->isExists($configFileName)) {
                     $info = json_decode(file_get_contents($configFileName), true);
-                    if ($info['CacheIntegrations']['Varnish']['Servers']) {
+                    if (isset($info['CacheIntegrations']) && isset($info['CacheIntegrations']['Varnish']) && isset($info['CacheIntegrations']['Varnish']['Servers']) && $info['CacheIntegrations']['Varnish']['Servers'] ) {
                         if ($this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_BACKEND_HOST) != implode(',', $info['CacheIntegrations']['Varnish']['Servers'])) {
                             $this->configWriter->save(NitroService::XML_VARNISH_PAGECACHE_BACKEND_HOST, implode(',', $info['CacheIntegrations']['Varnish']['Servers']), 'default', 0);
                         }
