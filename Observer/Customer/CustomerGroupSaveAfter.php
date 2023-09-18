@@ -70,10 +70,12 @@ class CustomerGroupSaveAfter implements ObserverInterface
             ) && $this->_scopeConfig->getValue(
                 'system/full_page_cache/caching_application'
             ) == NitroService::FULL_PAGE_CACHE_NITROPACK_VALUE && $this->_cacheState->isEnabled('full_page')) {
+
             foreach ($storeGroup as $storesData) {
                     if ($eventName == 'controller_action_postdispatch_customer_group_delete') {
                         $this->nitroPackConfigHelper->xMagentoVaryDelete($storesData->getCode());
                     } else {
+
                         $this->nitroPackConfigHelper->xMagentoVaryAdd($storesData);
                     }
 

@@ -20,9 +20,10 @@ class AdminConfigAfterCheck
     protected $nitro;
 
     public function __construct(
-        NitroServiceInterface $nitro,
+        NitroServiceInterface                      $nitro,
         \Magento\Store\Model\StoreManagerInterface $storeManager
-    ) {
+    )
+    {
         $this->nitro = $nitro;
         $this->storeManager = $storeManager;
     }
@@ -42,7 +43,7 @@ class AdminConfigAfterCheck
         $storeGroup = $storeRepo->getList();
 
         foreach ($storeGroup as $storeGroupData) {
-           $storeGroupCode = $storeGroupData->getCode();
+            $storeGroupCode = $storeGroupData->getCode();
 
             $duplicateAliasDomain = [];
             foreach ($storeGroupData->getStores() as $storeView) {
@@ -57,20 +58,23 @@ class AdminConfigAfterCheck
                     }
                 }
             }
+            try {
+                $this->nitro->reload($storeGroupCode);
+                if ($this->nitro->isConnected() && $this->nitro->getSdk()->getHealthStatus() == HealthStatus::HEALTHY) {
 
-            $this->nitro->reload($storeGroupCode);
-            if ($this->nitro->isConnected() && $this->nitro->getSdk()->getHealthStatus() == HealthStatus::HEALTHY) {
-
-                $this->nitro->getSdk()->getApi()->disableAdditionalDomains();
-                //Add Alias Domain
-                if (count($duplicateAliasDomain) > 0) {
-                    $this->nitro->getSdk()->getApi()->enableAdditionalDomains();
-                    foreach ($duplicateAliasDomain as $duplicateAlias) {
-                        $duplicateAliasUrl = parse_url($duplicateAlias);
-                        $this->nitro->getSdk()->getApi()->removeAdditionalDomain($duplicateAliasUrl['host']);
-                        $this->nitro->getSdk()->getApi()->addAdditionalDomain($duplicateAliasUrl['host']);
+                    $this->nitro->getSdk()->getApi()->disableAdditionalDomains();
+                    //Add Alias Domain
+                    if (count($duplicateAliasDomain) > 0) {
+                        $this->nitro->getSdk()->getApi()->enableAdditionalDomains();
+                        foreach ($duplicateAliasDomain as $duplicateAlias) {
+                            $duplicateAliasUrl = parse_url($duplicateAlias);
+                            $this->nitro->getSdk()->getApi()->removeAdditionalDomain($duplicateAliasUrl['host']);
+                            $this->nitro->getSdk()->getApi()->addAdditionalDomain($duplicateAliasUrl['host']);
+                        }
                     }
                 }
+            } catch (\Exception $e) {
+
             }
 
         }

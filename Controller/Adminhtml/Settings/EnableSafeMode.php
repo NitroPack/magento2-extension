@@ -89,9 +89,10 @@ class EnableSafeMode extends StoreAwareAction
                     $this->varnishHelper->purgeVarnish();
                 }
                 if($enabled){
-                $this->nitro->getSdk()->getApi()->safe_mode->enable();
+                $this->nitro->getSdk()->enableSafeMode();
+                }else{
+                $this->nitro->getSdk()->disableSafeMode();
                 }
-                $this->nitro->getSdk()->getApi()->safe_mode->disable();
                 $setting->safeMode = $enabled;
                 $this->nitro->persistSettings();
             } catch (\Exception $e) {

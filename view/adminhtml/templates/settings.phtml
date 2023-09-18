@@ -623,12 +623,14 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
                 if (isEnabled) {
                     enableSafemode();
                 } else {
+
+
                     let confirmHtml = '<p><strong>Purge Cache?</strong></p>' +
                         '<p>It is recommended to perform a full cache purge so all changes are correctly applied.</p>' +
                         '<p>Would you like to purge the cache now?</p>' +
                         '<p><a href="javascript:void(0);" onclick="closeModalOverlay()" class="btn btn-default btn-sm">No</a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="performCachePurge()" class="btn btn-info btn-sm">Yes (Recommended)</a></p>';
                     $("#setting-widget").cardOverlay("notify", {message: confirmHtml, dismissable: false});
-                    disableSafemode();
+                    disableSafeMode();
                 }
             });
 

@@ -100,14 +100,15 @@ class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
     {
         $groupParams = $this->request->getParam('groups');
         if(!is_null($groupParams)){
-        $varnishEnableKey = $groupParams['full_page_cache']['fields']['varnish_enable']['value'];
-
-        //Check Properly Configure ENABLED && DISABLED
-        if (!is_null(
-                $this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_NITRO_ENABLED)
-            ) && $this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_NITRO_ENABLED) == $varnishEnableKey) {
-            $this->varnishHelper->purgeVarnish();
-        }
+            if(isset($groupParams['full_page_cache']) && isset($groupParams['full_page_cache']['fields']) && isset($groupParams['full_page_cache']['fields']['varnish_enable'])) {
+                $varnishEnableKey = $groupParams['full_page_cache']['fields']['varnish_enable']['value'];
+                //Check Properly Configure ENABLED && DISABLED
+                if (!is_null(
+                        $this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_NITRO_ENABLED)
+                    ) && $this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_NITRO_ENABLED) == $varnishEnableKey) {
+                    $this->varnishHelper->purgeVarnish();
+                }
+         }
         $nitroCacheKey = $groupParams['full_page_cache']['fields']['caching_application']['value'];
         $serviceEnable = true;
         if (!is_null($this->_scopeConfig->getValue(self::FULL_PAGE_CACHE_NITROPACK)) && $this->_scopeConfig->getValue(

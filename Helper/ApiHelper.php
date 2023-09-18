@@ -2,7 +2,6 @@
 
 namespace NitroPack\NitroPack\Helper;
 
-use Magento\Customer\Api\GroupExcludedWebsiteRepositoryInterface;
 use Magento\Customer\Model\Context as CustomerContextConstants;
 use Magento\Framework\App\Area;
 
@@ -58,13 +57,10 @@ class ApiHelper extends AbstractHelper
      * */
     protected $objectManager;
     /**
-     * @var GroupExcludedWebsiteRepositoryInterface
-     * */
-    protected $customerGroupExcludedWebsiteRepository;
-    /**
      * @var StoreManagerInterface
      * */
     protected $storeManager;
+
     /**
      * @param Context $context
      * @param \Magento\Framework\App\State $state
@@ -75,7 +71,6 @@ class ApiHelper extends AbstractHelper
      * @param \Magento\Customer\Model\GroupFactory $groupFactory
      * @param ObjectManagerInterface $objectManager
      * @param StoreManagerInterface $storeManager
-     * @param GroupExcludedWebsiteRepositoryInterface $customerGroupExcludedWebsiteRepository
      * @param \Magento\Framework\App\ProductMetadataInterface $productMetaData
      * */
     public function __construct(
@@ -86,9 +81,8 @@ class ApiHelper extends AbstractHelper
         \Magento\Framework\Serialize\SerializerInterface $serializer,
         LoggerInterface                                  $logger,
         \Magento\Customer\Model\GroupFactory             $groupFactory,
-        ObjectManagerInterface $objectManager,
-        StoreManagerInterface $storeManager,
-        GroupExcludedWebsiteRepositoryInterface $customerGroupExcludedWebsiteRepository,
+        ObjectManagerInterface                           $objectManager,
+        StoreManagerInterface                            $storeManager,
         \Magento\Framework\App\ProductMetadataInterface  $productMetaData
     )
     {
@@ -102,7 +96,6 @@ class ApiHelper extends AbstractHelper
         $this->objectManager = $objectManager;
         $this->directoryList = $directoryList;
         $this->storeManager = $storeManager;
-        $this->customerGroupExcludedWebsiteRepository = $customerGroupExcludedWebsiteRepository;
         parent::__construct($context);
     }
 
@@ -189,9 +182,16 @@ class ApiHelper extends AbstractHelper
         $customerGroupCollection->addFieldToFilter('customer_group_id', ['gt' => 0]);
         $allCustomerXMagentoVary = [];
         $allXMagentoVary = [];
+
         foreach ($customerGroupCollection->getData() as $customerGroupCollectionValue) {
-            $customerGroupWeb = $this->customerGroupExcludedWebsiteRepository->getCustomerGroupExcludedWebsites((int)$customerGroupCollectionValue['customer_group_id']);
-            // Get the list of websites associated with the customer group
+            $customerGroupWeb = [];
+
+            if (class_exists('\Magento\Customer\Model\ResourceModel\GroupExcludedWebsiteRepository')) {
+
+                $customerGroupExcludedWebsiteRepository = $this->objectManager->get(\Magento\Customer\Model\ResourceModel\GroupExcludedWebsiteRepository::class);
+                // Get the list of websites associated with the customer group
+                $customerGroupWeb = $customerGroupExcludedWebsiteRepository->getCustomerGroupExcludedWebsites((int)$customerGroupCollectionValue['customer_group_id']);
+            }
             if (is_null($this->getStoreViews($storeGroup))) {
                 $data = [CustomerContextConstants::CONTEXT_GROUP => (string)$customerGroupCollectionValue['customer_group_id'], CustomerContextConstants::CONTEXT_AUTH => true];
                 if (!empty($data)) {
@@ -201,10 +201,9 @@ class ApiHelper extends AbstractHelper
                     $allCustomerXMagentoVary[$xMagentoVaryValue] = $data;
                 }
             } else {
+                if (!in_array($storeGroup->getWebsiteId(), $customerGroupWeb)) {
                 foreach ($this->getStoreViews($storeGroup) as $storeView) {
-                    //Exculde the customer group from the website
-                    if (!in_array($storeGroup->getWebsiteId(), $customerGroupWeb)) {
-                        if ($storeView != $this->storeManager->getDefaultStoreView()->getCode())
+                     if ($storeView != $this->storeManager->getDefaultStoreView()->getCode())
                             $data = ["store" => $storeView, CustomerContextConstants::CONTEXT_GROUP => (string)$customerGroupCollectionValue['customer_group_id'], CustomerContextConstants::CONTEXT_AUTH => true];
                         else
                             $data = [CustomerContextConstants::CONTEXT_GROUP => (string)$customerGroupCollectionValue['customer_group_id'], CustomerContextConstants::CONTEXT_AUTH => true];
@@ -221,8 +220,8 @@ class ApiHelper extends AbstractHelper
         }
         if (!is_null($this->getStoreViews($storeGroup))) {
             foreach ($this->getStoreViews($storeGroup) as $storeView) {
-                if ($storeView != $this->storeManager->getDefaultStoreView()->getCode()){
-                    $data = ["store" =>$storeView];
+                if ($storeView != $this->storeManager->getDefaultStoreView()->getCode()) {
+                    $data = ["store" => $storeView];
                     $xMagentoVaryValue = sha1($this->serializer->serialize($data));
                     $allXMagentoVary[] = $xMagentoVaryValue;
                     $allCustomerXMagentoVary[$xMagentoVaryValue] = $data;
@@ -242,7 +241,7 @@ class ApiHelper extends AbstractHelper
             $stores = $storeGroup->getStores();
             foreach ($stores as $storeValue) {
                 $storeViewData = $this->storeManager->getStore($storeValue->getCode());
-                if($storeViewData->isActive())
+                if ($storeViewData->isActive())
                     $storeViewCode[] = $storeValue->getCode(); // get store view name
             }
         }

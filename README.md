@@ -8,11 +8,18 @@ Installation Instructions: https://support.nitropack.io/hc/en-us/articles/127062
 
 # Release Notes
 
+###   2.4.3:
+#### Compatible with Magento Open Source : 2.4
+#### Stability: Stable Build
+#### Description: Improvements:
+-  Bug Fixes and compatibility improvements for Magento 2.3 and Timeout Error fix for invalid URLs  
+
+
 ###   2.4.2:
 #### Compatible with Magento Open Source : 2.4
 #### Stability: Stable Build
 #### Description: Improvements:
--  Config webhooks improvements
+- Config webhooks improvements
 
 
 ###   2.4.1:

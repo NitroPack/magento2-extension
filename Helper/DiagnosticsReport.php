@@ -364,6 +364,8 @@ class DiagnosticsReport extends AbstractHelper
             $headers = array();
             $headers[] = 'X-Magento-Tags-Pattern: .*';
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch,CURLOPT_TIMEOUT,10);
+            curl_setopt($ch,CURLOPT_CONNECTTIMEOUT,10);
             $result = curl_exec($ch);
             if (curl_errno($ch)) {
                 return false;
