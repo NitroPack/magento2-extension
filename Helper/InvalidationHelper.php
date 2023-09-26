@@ -200,16 +200,16 @@ class InvalidationHelper extends AbstractHelper
             $haveData = $this->apiHelper->readFile($settingsFilename);
             if ($haveData) {
                 $settings = json_decode($haveData);
-                    if (isset($settings->previous_extension_status) && !$settings->previous_extension_status) {
-                        $triggerEnabled = false;
-                    }else{
-                        $triggerEnabled = true;
-                    }
+                if (isset($settings->previous_extension_status) && !$settings->previous_extension_status) {
+                    $triggerEnabled = false;
+                } else {
+                    $triggerEnabled = true;
+                }
 
             }
         }
-        if($triggerEnabled){
-        $this->cacheApplicationChange($serviceEnable);
+        if ($triggerEnabled) {
+            $this->cacheApplicationChange($serviceEnable);
         }
         $this->setEnableAndDisable($serviceEnable);
 
@@ -281,7 +281,7 @@ class InvalidationHelper extends AbstractHelper
         return $this->_backendUrl->getUrl('NitroPack/connect/index', ['group' => $id]);
     }
 
-    public function checkHavePreviouslyConnected()
+    public function checkHavePreviouslyConnected($checkConnectedSafeMode = false)
     {
 
         $rootPath = $this->directoryList->getPath('var') . DIRECTORY_SEPARATOR;
@@ -291,14 +291,28 @@ class InvalidationHelper extends AbstractHelper
 
             if (count($checkHaveConnectedFileArray) > 0) {
                 $enabledFlag = true;
+                $checkSafeMode = false;
                 foreach ($checkHaveConnectedFileArray as $checkHaveConnectedFile) {
-
                     $data = json_decode($this->fileDriver->fileGetContents($checkHaveConnectedFile));
+
                     if (!$data->enabled) {
                         $enabledFlag = false;
                     } else {
                         $enabledFlag = true;
                     }
+                    if ($checkConnectedSafeMode) {
+
+                        if (isset($data->safeMode) && $data->safeMode) {
+                            $checkSafeMode = true;
+                        } else {
+                            $checkSafeMode = false;
+                        }
+
+                    }
+                }
+
+                if($checkConnectedSafeMode && $enabledFlag){
+                    return $checkSafeMode;
                 }
                 return $enabledFlag;
             }

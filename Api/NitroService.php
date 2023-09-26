@@ -24,7 +24,7 @@ use Magento\Framework\UrlInterface;
 class NitroService implements NitroServiceInterface
 {
 
-    const EXTENSION_VERSION = '2.4.3';
+    const EXTENSION_VERSION = '2.4.4';
 
     const FULL_PAGE_CACHE_NITROPACK = 'system/full_page_cache/caching_application';
     const FULL_PAGE_CACHE_NITROPACK_VALUE = 3;
@@ -48,7 +48,6 @@ class NitroService implements NitroServiceInterface
     protected $settings = null;
     protected $sdk = null;
     protected $loadedStoreCode = null;
-    protected $varnish = null;
     /**
      * @var StoreManagerInterface
      * */
@@ -155,58 +154,6 @@ class NitroService implements NitroServiceInterface
             } else {
 
                 $this->sdk = $this->initializeSdk();
-
-                if (!is_null($this->sdk)) {
-
-                    if (
-                        !is_null($this->_scopeConfig->getValue(self::FULL_PAGE_CACHE_NITROPACK))
-                        && $this->_scopeConfig->getValue(
-                            self::FULL_PAGE_CACHE_NITROPACK
-                        ) == self::FULL_PAGE_CACHE_NITROPACK_VALUE
-                        && !is_null($this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_BACKEND_HOST))
-                        && !is_null($this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_NITRO_ENABLED))
-                        && $this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_NITRO_ENABLED)
-                    ) {
-                        // Config url check because the value is reset via configuration
-
-                        if ($this->urlBuilder->getCurrentUrl() != $this->urlBuilder->getUrl('NitroPack/Webhook/Config/') . '?token=' . $this->nitroGenerateWebhookToken($this->settings->siteId)) {
-                            $backendServer = explode(
-                                ',',
-                                $this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_BACKEND_HOST)
-                            );
-                            $backendServer = array_map(function ($backendValue) {
-                                $backendHostAndPort = explode(":", $backendValue);
-                                if ($backendHostAndPort[0] == "localhost" || $backendHostAndPort[0] == '127.0.0.1') {
-                                    if (isset($backendHostAndPort[1]) && $backendHostAndPort[1] == 80) {
-                                        return "127.0.0.1";
-                                    }
-                                    if (isset($backendHostAndPort[1])) {
-                                        return "127.0.0.1:".$backendHostAndPort[1];
-                                    }
-                                }
-                                return $backendValue;
-                            }, $backendServer);
-
-                            $this->varnish = $this->initializeVarnish();
-                            $url = $this->request->isSecure() ? 'https://' . $this->request->getHttpHost() : 'http://' . $this->request->getHttpHost();
-                            try {
-                                $this->varnish->configure([
-                                    'Servers' => $backendServer,
-                                    'PurgeAllUrl' => $url,
-                                    'PurgeAllMethod' => 'PURGE',
-                                    'PurgeSingleMethod' => 'PURGE',
-                                ]);
-                                $this->varnish->enable();
-                                $this->sdk->setVarnishProxyCacheHeaders([
-                                    'X-Magento-Tags-Pattern' => ' .*'
-                                ]);
-                            } catch (\Exception $e) {
-                                $this->logger->debug('Varnish exception:' . $e->getMessage());
-                            }
-
-                        }
-                    }
-                }
             }
             //  $this->sdk->purgeLocalCache(true);
             //exit;
@@ -669,7 +616,6 @@ class NitroService implements NitroServiceInterface
             } else {
                 $websiteUrl = $this->storeManager->getStore()->getBaseUrl();
             }
-
             $query_data = array(
                 'event' => $event,
                 'platform' => 'Magento',

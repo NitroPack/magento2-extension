@@ -55,7 +55,7 @@ class HttpContext
         $userAgent = $request->getServer('HTTP_USER_AGENT');
         // ||  !is_null($request->get('PHPSESSID'))
         $setValueFor = ['customer_logged_in','customer_group','store'];
-         if (in_array($name,$setValueFor) && (strpos($userAgent, 'Nitro-Optimizer-Agent') !== false || strpos($userAgent, 'Nitro-Webhook-Agent') !== false) && $request->get('X-Magento-Vary')) {
+         if (!is_null($userAgent) &&  in_array($name,$setValueFor) && (strpos($userAgent, 'Nitro-Optimizer-Agent') !== false || strpos($userAgent, 'Nitro-Webhook-Agent') !== false) && $request->get('X-Magento-Vary')) {
             $this->storeManager->getGroup()->getCode();
             $this->nitro->reload($this->storeManager->getGroup()->getCode());
             if (!is_null($this->nitro->getSdk()) && $this->nitro->getSdk()->getHealthStatus() == HealthStatus::HEALTHY) {

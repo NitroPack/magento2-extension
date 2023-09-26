@@ -192,7 +192,7 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-md-10 col-form-label pl-0">
-                                        Safe Mode<br>
+                                        Test Mode<br>
                                         <small class="text-secondary">Learn more about this feature
                                             <a href="https://support.nitropack.io/hc/en-us/articles/360060910574-Safe-Mode"
                                                target="_blank" rel="noreferrer noopener">here</a>
@@ -623,8 +623,7 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
                 if (isEnabled) {
                     enableSafemode();
                 } else {
-
-
+                   $('#test-mode-disable').hide();
                     let confirmHtml = '<p><strong>Purge Cache?</strong></p>' +
                         '<p>It is recommended to perform a full cache purge so all changes are correctly applied.</p>' +
                         '<p>Would you like to purge the cache now?</p>' +

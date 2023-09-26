@@ -11,30 +11,14 @@
         <policy id="connect-src">
             <values>
                 <value id="nitropack" type="host">*.getnitropack.com</value>
-            </values>
-        </policy>
-        <policy id="connect-src">
-            <values>
                 <value id="nitropack_zendesk" type="host">nitropack.zendesk.com</value>
-            </values>
-        </policy>
-        <policy id="connect-src">
-            <values>
                 <value id="nitropack_zdassets" type="host">*.zdassets.com</value>
-            </values>
-        </policy>
-        <policy id="connect-src">
-            <values>
                 <value id="nitropack_cdn" type="host">*.nitrocdn.com</value>
             </values>
         </policy>
         <policy id="script-src">
             <values>
                 <value id="nitropack_zdassets" type="host">*.zdassets.com</value>
-            </values>
-        </policy>
-        <policy id="script-src">
-            <values>
                 <value id="nitropack_cdn" type="host">*.nitrocdn.com</value>
             </values>
         </policy>
@@ -51,11 +35,6 @@
         <policy id="frame-src">
             <values>
                 <value id="nitropack_io" type="host">nitropack.io</value>
-            </values>
-        </policy>
-        <policy id="style-src">
-            <values>
-                <value id="nitropack_cdn" type="host">*.nitrocdn.com</value>
             </values>
         </policy>
         <policy id="style-src">

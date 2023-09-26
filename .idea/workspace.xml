@@ -6,18 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="ec8709bb-0c6d-420a-bbce-0d2f296fb020" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Api/NitroService.php" beforeDir="false" afterPath="$PROJECT_DIR$/Api/NitroService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Settings/EnableSafeMode.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Settings/EnableSafeMode.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Helper/ApiHelper.php" beforeDir="false" afterPath="$PROJECT_DIR$/Helper/ApiHelper.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Helper/DiagnosticsReport.php" beforeDir="false" afterPath="$PROJECT_DIR$/Helper/DiagnosticsReport.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Observer/ConfigFullPageChange.php" beforeDir="false" afterPath="$PROJECT_DIR$/Observer/ConfigFullPageChange.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Observer/Customer/CustomerGroupSaveAfter.php" beforeDir="false" afterPath="$PROJECT_DIR$/Observer/Customer/CustomerGroupSaveAfter.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Plugin/Config/AdminConfigAfterCheck.php" beforeDir="false" afterPath="$PROJECT_DIR$/Plugin/Config/AdminConfigAfterCheck.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/etc/events.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/events.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/etc/module.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/module.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/adminhtml/templates/settings.phtml" beforeDir="false" afterPath="$PROJECT_DIR$/view/adminhtml/templates/settings.phtml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,7 +33,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "//wsl$/Ubuntu-20.04/var/www/html/submitted-extension-2.4.3",
+    "last_opened_file_path": "//wsl$/Ubuntu-20.04/var/www/html/magento2-extension",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -125,7 +113,8 @@
       <workItem from="1693229390792" duration="734000" />
       <workItem from="1694086326661" duration="4406000" />
       <workItem from="1694102359782" duration="444000" />
-      <workItem from="1695019232525" duration="348000" />
+      <workItem from="1695019232525" duration="1798000" />
+      <workItem from="1695037004183" duration="638000" />
     </task>
     <servers />
   </component>

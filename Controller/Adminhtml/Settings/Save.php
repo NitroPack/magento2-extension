@@ -136,6 +136,9 @@ class Save extends StoreAwareAction
                         ['setting' => $option, 'before' => isset($oldSettings[$option]) ?: null, 'after' => $value]
                     );
                 }
+                if($option === 'enabled' && $value){
+                    $this->nitroPackConfigHelper->varnishConfiguredSetup();
+                }
                 //EVENT TRIGGER
                 $this->nitroPackConfigHelper->setBoolean('previous_extension_status', $value);
 
@@ -172,8 +175,8 @@ class Save extends StoreAwareAction
         }
 
         if (empty($errors) && $shouldSave) {
-            $event = 'configure';
-            $this->triggerConfigureEvent($event, $additional_meta_data);
+           // $event = 'configure';
+           // $this->triggerConfigureEvent($event, $additional_meta_data);
             $this->nitro->persistSettings();
             $newSettings = (array)$this->nitro->getSettings();
 

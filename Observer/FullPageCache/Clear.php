@@ -67,6 +67,7 @@ class Clear implements ObserverInterface
 
     public function execute(Observer $observer)
     {
+
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $storeRepo = $objectManager->create(\Magento\Store\Api\GroupRepositoryInterface::class);
         $storeGroup = $storeRepo->getList();
@@ -91,9 +92,11 @@ class Clear implements ObserverInterface
 
                     $cachePath = $rootPath . 'nitro_cache' . DIRECTORY_SEPARATOR . $this->settings->siteId;
                     try {
+
                         $this->sdk = new NitroPack(
-                            $this->settings->siteId, $this->settings->siteSecret, null, null, $cachePath
+                           $this->settings->siteId, $this->settings->siteSecret, null, null, $cachePath
                         );
+
                         if ($this->settings->enabled) {
                             $this->sdk->purgeCache(
                                 null,

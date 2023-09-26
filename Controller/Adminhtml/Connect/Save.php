@@ -97,6 +97,7 @@ class Save extends StoreAwareAction
                 $this->nitroPackConfigHelper->xMagentoVaryAdd($this->getStoreGroup());
                 $this->nitroPackConfigHelper->setBoolean('cache_to_login_customer', true);
                 $this->nitroPackConfigHelper->persistSettings($this->getStoreGroup()->getCode());
+                $this->nitroPackConfigHelper->varnishConfiguredSetup();
                 return $this->resultJsonFactory->create()->setData(array(
                     'connected' => true,
                     'redirect' => $this->getUrlWithStore('NitroPack/settings/index', array(

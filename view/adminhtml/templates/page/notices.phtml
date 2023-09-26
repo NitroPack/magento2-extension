@@ -4,44 +4,45 @@ $InvalidationHelper = $this->helper('NitroPack\NitroPack\Helper\InvalidationHelp
 $nitroPackConfigHelper = $this->helper('NitroPack\NitroPack\Helper\NitroPackConfigHelper');
 
 
-if($nitroPackConfigHelper->getFullPageCacheValue() && $InvalidationHelper->checkHavePreviouslyConnected()  ){
-if (!$InvalidationHelper->checkInvalidationAndPurgeProcess() && !$InvalidationHelper->checkCronJobIsSetup()) {
-    //Disable
-    $InvalidationHelper->makeConnectionsDisableAndEnable(false);
-    ?>
-    <div class="messages">
-        <div class="message message-warning message-demo-mode">
-            NitroPack has been disabled and the initial system settings have been restored due to incompatible Cron settings preventing cache invalidation/purge. Run the following command to fix the problem:
-            php bin/magento queue:consumers:start nitropack.cache.queue.comsumers &
+if ($nitroPackConfigHelper->getFullPageCacheValue() && $InvalidationHelper->checkHavePreviouslyConnected()) {
+    if (!$InvalidationHelper->checkInvalidationAndPurgeProcess() && !$InvalidationHelper->checkCronJobIsSetup()) {
+        //Disable
+        $InvalidationHelper->makeConnectionsDisableAndEnable(false);
+        ?>
+        <?php
+    } else if (!$InvalidationHelper->checkCronJobIsSetup(120) && !$InvalidationHelper->checkInvalidationAndPurgeProcess()) {
+        ?>
+        <div class="messages">
+            <div class="message message-warning message-demo-mode">
+                NitroPack connection CRON is not running. Enable CRON by running the following command: <strong> php
+                    bin/magento cron:run </strong> or setup a crontab <strong> php bin/magento cron:install </strong>
+            </div>
         </div>
-    </div>
-
+    <?php } else {
+        //Enabled
+        $InvalidationHelper->makeConnectionsDisableAndEnable(true);
+    } ?>
     <?php
-}else if (!$InvalidationHelper->checkCronJobIsSetup(120) && !$InvalidationHelper->checkInvalidationAndPurgeProcess() ){
-?>
-    <div class="messages">
-        <div class="message message-warning message-demo-mode">
-            NitroPack connection CRON is not running. Enable CRON by running the following command: <strong> php bin/magento cron:run </strong> or setup a crontab <strong> php bin/magento cron:install </strong>
+    if ($InvalidationHelper->checkNotificationLegacyDisconnect()): ?>
+        <div class="messages">
+            <div class="message message-warning message-demo-mode">
+                Thank you for updating NitroPack! This Store needs to be reconnected to a website in your <a
+                    href="https://nitropack.io/user/login">NitroPack account</a>.
+                <a href="<?= $InvalidationHelper->backUrlRedirectToConnect(
+                    $InvalidationHelper->checkNotificationLegacyDisconnect()
+                ) ?>">Connect</a> and follow the instructions.
+            </div>
         </div>
-    </div>
-<?php } else {
-    //Enabled
-    $InvalidationHelper->makeConnectionsDisableAndEnable(true);
-} ?>
-<?php
-if ($InvalidationHelper->checkNotificationLegacyDisconnect()): ?>
-    <div class="messages">
-        <div class="message message-warning message-demo-mode">
-            Thank you for updating NitroPack! This Store needs to be reconnected to a website in your <a
-                href="https://nitropack.io/user/login">NitroPack account</a>.
-            <a href="<?= $InvalidationHelper->backUrlRedirectToConnect(
-                $InvalidationHelper->checkNotificationLegacyDisconnect()
-            ) ?>">Connect</a> and follow the instructions.
-        </div>
-    </div>
-<?php
-endif;
+    <?php
+    endif;
 
+    if ($InvalidationHelper->checkHavePreviouslyConnected(true)):
+        ?>
+        <div class="messages">
+            <div class="message message-warning message-demo-mode" id="test-mode-disable">
+               Important NitroPack <strong>Test Mode</strong> is still enabled on your site. Under Test Mode, NitroPack does not serve optimizations to the users. (Optimized site version can be seen by adding ?testnitro=1 after a page URL). To disable Test Mode, go to  <a href="<?= $this->getUrl('nitropack/settings/index') ?>">NitroPack Settings</a>.
+            </div>
+        </div>
+    <?php endif;
 }
 ?>
-

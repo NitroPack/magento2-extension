@@ -8,6 +8,16 @@ Installation Instructions: https://support.nitropack.io/hc/en-us/articles/127062
 
 # Release Notes
 
+###   2.4.4:
+#### Compatible with Magento Open Source : 2.4
+#### Stability: Stable Build
+#### Description: Improvements:
+- SDK Version Update: We've updated the SDK, ensuring a more reliable performance. 
+- Improved Notification: We've introduced a new notification system to keep you informed. You'll receive notifications when Test Mode (formerly "Safe Mode") is enabled, giving you better control and system status monitoring.
+- Issue Resolution: Blank Event on NitroPack - Addressed the NitroPack issue where a blank event was mistakenly triggering. Enjoy a smoother NitroPack experience. 
+- Optimized Varnish Configuration: We've fine-tuned the Varnish configuration process to trigger the Varnish Configure API at the right time, ensuring accuracy after every page optimization and invalidation.
+
+
 ###   2.4.3:
 #### Compatible with Magento Open Source : 2.4
 #### Stability: Stable Build
