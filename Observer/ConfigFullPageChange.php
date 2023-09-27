@@ -7,11 +7,12 @@ use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Event\Observer as EventObserver;
 use Magento\Store\Model\StoreManagerInterface;
 use NitroPack\NitroPack\Api\NitroService;
+use NitroPack\NitroPack\Api\NitroServiceInterface;
 use NitroPack\NitroPack\Helper\InvalidationHelper;
 use NitroPack\NitroPack\Helper\VarnishHelper;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use NitroPack\NitroPack\Helper\ApiHelper;
-
+use NitroPack\SDK\HealthStatus;
 
 class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
 {
@@ -61,7 +62,10 @@ class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
      * @var WriterInterface
      * */
     protected $configWriter;
-
+    /**
+     * @var NitroService
+     * */
+    protected $nitro;
     /**
      * ConfigChange constructor.
      * @param RequestInterface $request
@@ -82,9 +86,11 @@ class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
         \Magento\Framework\Serialize\SerializerInterface $serializer,
         \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList,
         WriterInterface $configWriter,
+        NitroServiceInterface $nitro,
         \Magento\Framework\App\Cache\Frontend\Pool $cacheFrontendPool
     ) {
         $this->request = $request;
+        $this->nitro = $nitro;
         $this->_scopeConfig = $scopeConfig;
         $this->varnishHelper = $varnishHelper;
         $this->invalidationHelper = $invalidationHelper;
@@ -92,7 +98,6 @@ class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
         $this->fileDriver = $fileDriver;
         $this->_cacheTypeList = $cacheTypeList;
         $this->configWriter = $configWriter;
-
         $this->_cacheFrontendPool = $cacheFrontendPool;
     }
 
@@ -106,6 +111,18 @@ class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
                 if (!is_null(
                         $this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_NITRO_ENABLED)
                     ) && $this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_NITRO_ENABLED) == $varnishEnableKey) {
+
+                    $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+                    $storeRepo = $objectManager->create(\Magento\Store\Api\GroupRepositoryInterface::class);
+                    $storeGroup = $storeRepo->getList();
+
+                    foreach ($storeGroup as $storesData) {
+                        try {
+                            $this->nitro->reload($storesData->getCode());
+                            $this->varnishConfiguredSetup();
+                        }catch (\Exception $e) {
+                        }
+                    }
                     $this->varnishHelper->purgeVarnish();
                 }
          }
@@ -121,9 +138,23 @@ class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
                 ) == \Magento\PageCache\Model\Config::BUILT_IN) {
                 $this->varnishHelper->purgeVarnish();
             }
+            $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+            $storeRepo = $objectManager->create(\Magento\Store\Api\GroupRepositoryInterface::class);
+            $storeGroup = $storeRepo->getList();
 
+            foreach ($storeGroup as $storesData) {
+                try {
+                    $this->nitro->reload($storesData->getCode());
+                    if (!is_null($this->nitro->getSdk()) && $this->nitro->getSdk()->getHealthStatus() == HealthStatus::HEALTHY) {
+                        $varnish = $this->nitro->initializeVarnish();
+                        $varnish->disable();
+                    }
+                }catch (\Exception $e) {
+                }
+            }
             $serviceEnable = false;
         }
+
         //
         $this->invalidationHelper->setEnableAndDisable($serviceEnable);
         $this->configWriter->save('full_page_cache/fields/caching_application/value', $nitroCacheKey);
@@ -152,5 +183,63 @@ class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
 
     }
 
+    public function varnishConfiguredSetup()
+    {
+        try {
+
+            if (
+                !is_null($this->_scopeConfig->getValue(NitroService::FULL_PAGE_CACHE_NITROPACK))
+                && $this->_scopeConfig->getValue(
+                    NitroService::FULL_PAGE_CACHE_NITROPACK
+                ) == NitroService::FULL_PAGE_CACHE_NITROPACK_VALUE
+                && !is_null($this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_BACKEND_HOST))
+                && !is_null($this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_NITRO_ENABLED))
+                && $this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_NITRO_ENABLED)
+            ) {
+
+                if (!is_null($this->nitro->getSdk()) && $this->nitro->getSdk()->getHealthStatus() == HealthStatus::HEALTHY) {
+                    // Config url check because the value is reset via configuration
+                    $backendServer = explode(
+                        ',',
+                        $this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_BACKEND_HOST)
+                    );
+                    $backendServer = array_map(function ($backendValue) {
+                        $backendHostAndPort = explode(":", $backendValue);
+                        if ($backendHostAndPort[0] == "localhost" || $backendHostAndPort[0] == '127.0.0.1') {
+                            if (isset($backendHostAndPort[1]) && $backendHostAndPort[1] == 80) {
+                                return "127.0.0.1";
+                            }
+                            if (isset($backendHostAndPort[1])) {
+                                return "127.0.0.1:" . $backendHostAndPort[1];
+                            }
+                        }
+                        return $backendValue;
+                    }, $backendServer);
+
+                    $varnish = $this->nitro->initializeVarnish();
+                    $url = $this->request->isSecure() ? 'https://' . $this->request->getHttpHost() : 'http://' . $this->request->getHttpHost();
+                    try {
+                        $varnish->configure([
+                            'Servers' => $backendServer,
+                            'PurgeAllUrl' => $url,
+                            'PurgeAllMethod' => 'PURGE',
+                            'PurgeSingleMethod' => 'PURGE',
+                        ]);
+                        $varnish->enable();
+                        $this->nitro->getSdk()->setVarnishProxyCacheHeaders([
+                            'X-Magento-Tags-Pattern' => ' .*'
+                        ]);
+                    } catch (\Exception $e) {
+                        return false;
+                    }
+
+                }
+
+            }
+        } catch (\Exception $exception) {
+            return false;
+        }
+
+    }
 
 }
