@@ -11,15 +11,18 @@
         <policy id="connect-src">
             <values>
                 <value id="nitropack" type="host">*.getnitropack.com</value>
-                <value id="nitropack_zendesk" type="host">nitropack.zendesk.com</value>
+                <value id="nitropack_zendesk" type="host">*.intercom.io</value>
                 <value id="nitropack_zdassets" type="host">*.zdassets.com</value>
                 <value id="nitropack_cdn" type="host">*.nitrocdn.com</value>
+                <value id="intercomcdn_cdn" type="host">*.intercomcdn.com</value>
+                <value id="intercomcdn_websocket" type="host">wss://nexus-websocket-a.intercom.io</value>
             </values>
         </policy>
         <policy id="script-src">
             <values>
-                <value id="nitropack_zdassets" type="host">*.zdassets.com</value>
+                <value id="nitropack_intercom" type="host">*.intercom.io</value>
                 <value id="nitropack_cdn" type="host">*.nitrocdn.com</value>
+                <value id="intercomcdn_cdn" type="host">*.intercomcdn.com</value>
             </values>
         </policy>
         <policy id="font-src">
@@ -39,6 +42,7 @@
         </policy>
         <policy id="style-src">
             <values>
+                <value id="nitropack_cdn" type="host">*.nitrocdn.com</value>
                 <value id="nitropack_cdn" type="host">*.nitrocdn.com</value>
             </values>
         </policy>
