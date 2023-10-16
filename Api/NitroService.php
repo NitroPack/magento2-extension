@@ -24,7 +24,7 @@ use Magento\Framework\UrlInterface;
 class NitroService implements NitroServiceInterface
 {
 
-    const EXTENSION_VERSION = '2.4.6'; // Do not change this line manually. It is updated automatically by the build script.
+    const EXTENSION_VERSION = '2.4.7'; // Do not change this line manually. It is updated automatically by the build script.
 
     const FULL_PAGE_CACHE_NITROPACK = 'system/full_page_cache/caching_application';
     const FULL_PAGE_CACHE_NITROPACK_VALUE = 3;
@@ -381,10 +381,10 @@ class NitroService implements NitroServiceInterface
             $this->session = $this->objectManager->get(Session::class);
         }
         if ($this->session->isLoggedIn()) {
-            return false;
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     /**

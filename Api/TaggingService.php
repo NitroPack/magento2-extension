@@ -5,6 +5,7 @@ use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Category;
 use Magento\Cms\Model\Page;
 use Magento\Cms\Model\Block;
+use NitroPack\SDK\HealthStatus;
 
 class TaggingService implements TaggingServiceInterface {
 
@@ -48,7 +49,9 @@ class TaggingService implements TaggingServiceInterface {
 	}
 
 	public function onShutdown() {
+        if($this->nitro->getSdk()->getHealthStatus()===HealthStatus::HEALTHY){
         $this->nitro->tagUrl($this->nitro->getUrl(), $this->currentRequestTags);
+        }
 
     }
 

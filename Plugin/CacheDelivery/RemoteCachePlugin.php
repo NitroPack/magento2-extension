@@ -98,6 +98,12 @@ class RemoteCachePlugin
             header('X-Nitro-Disabled: 1', true);
             return $returnValue;
         }
+        if ($this->nitro->isCustomerLogin() && !$this->nitro->isCustomerLoginEnable() ) { // Magento specific checks if the request can be cached
+
+            header('X-Nitro-Disabled: 1', true);
+            CacheTagObserver::enableObservers();
+            return $returnValue;
+        }
         try {
             if ($this->nitro->hasRemoteCache($layout)) {
                 header('X-Nitro-Cache: HIT', true);

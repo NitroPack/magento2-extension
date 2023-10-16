@@ -211,7 +211,8 @@ class InvalidationHelper extends AbstractHelper
         if ($triggerEnabled) {
             $this->cacheApplicationChange($serviceEnable);
         }
-        $this->setEnableAndDisable($serviceEnable);
+
+         $this->setEnableAndDisable($serviceEnable);
 
     }
 
@@ -231,7 +232,7 @@ class InvalidationHelper extends AbstractHelper
                     if ($serviceEnable != $this->settings->enabled) {
                         $triggerEnabled = true;
                     }
-                    if (isset($this->settings->previous_extension_status) && !$this->settings->previous_extension_status && $serviceEnable) {
+                    if (isset($this->settings->previous_extension_status) && !$this->settings->previous_extension_status && !$serviceEnable) {
                         $this->settings->enabled = false;
                     } else {
                         $this->settings->enabled = $serviceEnable;

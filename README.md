@@ -8,6 +8,13 @@ Installation Instructions: https://support.nitropack.io/hc/en-us/articles/127062
 
 # Release Notes
 
+###   2.4.7:
+#### Compatible with Magento Open Source : 2.4
+#### Stability: Stable Build
+#### Description: Fix:
+- The end users will not see an error message or broken NitroPack banner at the bottom of the site (footer) in case of NitroPack API disconnection.
+
+
 ###   2.4.6:
 #### Compatible with Magento Open Source : 2.4
 #### Stability: Stable Build
