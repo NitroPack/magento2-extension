@@ -9,13 +9,18 @@ if ($nitroPackConfigHelper->getFullPageCacheValue() && $InvalidationHelper->chec
         //Disable
         $InvalidationHelper->makeConnectionsDisableAndEnable(false);
         ?>
+        <div class="messages">
+            <div class="message message-warning message-demo-mode">
+                NitroPack is currently switched off due to CRON settings issues. In order to address the issue, please run the following command: php bin/magento queue:consumers:start nitropack.cache.queue.comsumer &
+            </div>
+        </div>
+
         <?php
     } else if (!$InvalidationHelper->checkCronJobIsSetup(120) && !$InvalidationHelper->checkInvalidationAndPurgeProcess()) {
         ?>
         <div class="messages">
             <div class="message message-warning message-demo-mode">
-                NitroPack connection CRON is not running. Enable CRON by running the following command: <strong> php
-                    bin/magento cron:run </strong> or setup a crontab <strong> php bin/magento cron:install </strong>
+                NitroPack will be disabled because your CRON is switched off. To resolve the issue, run <strong>php bin/magento cron:run</strong> or set up a crontab using <strong>php bin/magento cron:install</strong>.
             </div>
         </div>
     <?php } else {
@@ -40,7 +45,7 @@ if ($nitroPackConfigHelper->getFullPageCacheValue() && $InvalidationHelper->chec
         ?>
         <div class="messages">
             <div class="message message-warning message-demo-mode" id="test-mode-disable">
-               Important NitroPack <strong>Test Mode</strong> is still enabled on your site. Under Test Mode, NitroPack does not serve optimizations to the users. (Optimized site version can be seen by adding ?testnitro=1 after a page URL). To disable Test Mode, go to  <a href="<?= $this->getUrl('nitropack/settings/index') ?>">NitroPack Settings</a>.
+                NitroPack <strong>Test Mode</strong> is currently enabled. To view the optimized version of any page on your website, add the following parameter to the end of the URL: ?testnitro=1. While Test Mode is active, NitroPack won't serve optimized pages to your website visitors.
             </div>
         </div>
     <?php endif;

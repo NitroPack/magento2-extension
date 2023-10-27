@@ -15,6 +15,7 @@ use NitroPack\HttpClient\HttpClient;
 use NitroPack\NitroPack\Api\NitroService;
 use NitroPack\SDK\NitroPack;
 use Psr\Log\LoggerInterface;
+use Magento\InventoryApi\Api\SourceRepositoryInterface;
 
 class ApiHelper extends AbstractHelper
 
@@ -60,6 +61,10 @@ class ApiHelper extends AbstractHelper
      * @var StoreManagerInterface
      * */
     protected $storeManager;
+    /**
+     * @var SourceRepositoryInterface
+     * */
+    private $sourceRepository;
 
     /**
      * @param Context $context
@@ -71,6 +76,7 @@ class ApiHelper extends AbstractHelper
      * @param \Magento\Customer\Model\GroupFactory $groupFactory
      * @param ObjectManagerInterface $objectManager
      * @param StoreManagerInterface $storeManager
+     * @param SourceRepositoryInterface $sourceRepository
      * @param \Magento\Framework\App\ProductMetadataInterface $productMetaData
      * */
     public function __construct(
@@ -83,6 +89,7 @@ class ApiHelper extends AbstractHelper
         \Magento\Customer\Model\GroupFactory             $groupFactory,
         ObjectManagerInterface                           $objectManager,
         StoreManagerInterface                            $storeManager,
+        SourceRepositoryInterface                        $sourceRepository,
         \Magento\Framework\App\ProductMetadataInterface  $productMetaData
     )
     {
@@ -93,6 +100,7 @@ class ApiHelper extends AbstractHelper
         $this->fileDriver = $fileDriver;
         $this->productMetaData = $productMetaData;
         $this->logger = $logger;
+        $this->sourceRepository = $sourceRepository;
         $this->objectManager = $objectManager;
         $this->directoryList = $directoryList;
         $this->storeManager = $storeManager;
@@ -202,8 +210,8 @@ class ApiHelper extends AbstractHelper
                 }
             } else {
                 if (!in_array($storeGroup->getWebsiteId(), $customerGroupWeb)) {
-                foreach ($this->getStoreViews($storeGroup) as $storeView) {
-                     if ($storeView != $this->storeManager->getDefaultStoreView()->getCode())
+                    foreach ($this->getStoreViews($storeGroup) as $storeView) {
+                        if ($storeView != $this->storeManager->getDefaultStoreView()->getCode())
                             $data = ["store" => $storeView, CustomerContextConstants::CONTEXT_GROUP => (string)$customerGroupCollectionValue['customer_group_id'], CustomerContextConstants::CONTEXT_AUTH => true];
                         else
                             $data = [CustomerContextConstants::CONTEXT_GROUP => (string)$customerGroupCollectionValue['customer_group_id'], CustomerContextConstants::CONTEXT_AUTH => true];
@@ -249,5 +257,20 @@ class ApiHelper extends AbstractHelper
             return $storeViewCode;
         }
         return null;
+    }
+
+    public function checkDefaultStockAvailable()
+    {
+
+        $sources = $this->sourceRepository->getList();
+
+        //$logger->info(json_encode());
+
+        if ($sources->getTotalCount() == 1 && current($sources->getItems())->getSourceCode() == 'default') {
+
+            return true;
+        }
+
+        return false;
     }
 }

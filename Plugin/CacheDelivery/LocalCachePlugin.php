@@ -114,7 +114,6 @@ class LocalCachePlugin
 
                 if ($this->nitro->hasLocalCache()) {
                     header('X-Nitro-Cache: HIT', true);
-
                     //CHECK VARNISH ENABLE && VARNISH IS CONFIGURE
                     if (!is_null(
                             $this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_NITRO_ENABLED)
@@ -127,9 +126,7 @@ class LocalCachePlugin
                         header('cache-control: max-age=' . $pageCacheTTL . ', public, s-maxage=' . $pageCacheTTL, true);
                         header('x-magento-tags: ', true);
                     }
-
                     $content = $this->nitro->pageCache->returnCacheFileContent();
-
                     $responseData = [
                         'content' => $content[1],
                         'status_code' => 200,
@@ -137,8 +134,6 @@ class LocalCachePlugin
                         'context' => $this->context->toArray()
 
                     ];
-
-
                     return $this->buildResponse($responseData);
 
                 } else {

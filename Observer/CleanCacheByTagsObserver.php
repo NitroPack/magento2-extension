@@ -89,7 +89,7 @@ class CleanCacheByTagsObserver implements ObserverInterface
         \Magento\Framework\App\Cache\TypeListInterface     $cacheTypeList,
         \Magento\Framework\App\Cache\Frontend\Pool         $cacheFrontendPool,
         ScopeConfigInterface                               $_scopeConfig,
-        ApiHelper $apiHelper,
+        ApiHelper                                          $apiHelper,
         DeploymentConfig                                   $config
     )
     {
@@ -123,6 +123,15 @@ class CleanCacheByTagsObserver implements ObserverInterface
             }
             $tags = $this->cacheTagResolver->getTags($object);
             if (!empty($tags) && count($tags)) {
+                if ($object instanceof \Magento\Catalog\Model\Product\Interceptor) {
+                    if (!$this->checkProductChanges($object)) {
+
+                        return false;
+                    }
+                }
+
+                //
+
                 $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
                 $storeRepo = $objectManager->create(\Magento\Store\Api\GroupRepositoryInterface::class);
                 $stores = $storeRepo->getList();
@@ -135,17 +144,24 @@ class CleanCacheByTagsObserver implements ObserverInterface
                         if ($haveData) {
                             $settings = json_decode($haveData);
                             if (isset($settings->enabled) && $settings->enabled) {
+
                                 $tags = array_unique($tags);
+                                //Non-Zero Product Quantity Check
+                                if ($object instanceof \Magento\CatalogInventory\Model\Adminhtml\Stock\Item\Interceptor) {
+
+                                    if (isset($settings->default_stock) && $settings->default_stock && $this->checkNonZeroQtyChanges($object)) {
+
+                                        return false;
+                                    }
+                                }
                                 foreach ($tags as $tag) {
                                     list($tagType, $id) = $this->getTagTypeAndId($tag);
-
                                     $reasonEntity = $this->getReasonFromType($tagType, $id);
                                     $reasonEntityName = "";
-
                                     if (!empty($reasonEntity)) {
                                         $reasonEntityName = $reasonEntity->getName();
                                     }
-                                    if (strpos($tagType,'category_product_page') !==false  || strpos($tagType,'page') !==false ) {
+                                    if (strpos($tagType, 'category_product_page') !== false || strpos($tagType, 'page') !== false) {
                                         $rawData = [
                                             'action' => 'purge_tag',
                                             'type' => $tagType,
@@ -266,4 +282,82 @@ class CleanCacheByTagsObserver implements ObserverInterface
         return $rawData;
     }
 
+
+    private function filterArrayByKeys(array $input, array $column_keys)
+    {
+        $result = array();
+        $column_keys = array_flip($column_keys); // getting keys as values
+        foreach ($input as $key => $val) {
+            // getting only those key value pairs, which matches $column_keys
+            $result[$key] = array_intersect_key($val, $column_keys);
+        }
+        return $result;
+    }
+
+    /**
+     * @param $object
+     * @return bool
+     */
+    public function checkProductChanges($object)
+    {
+
+        $originalData = $object->getOrigData();
+        $storeData = $object->getData();
+        $diff = [];
+        $skipAttr = ['updated_at'];
+
+        foreach ($object->getData() as $key => $value) {
+            if ($key == 'media_gallery') {
+
+                if (isset($object->getOrigData($key)['images']) && isset($object->getData($key)['images'])) {
+                    if ($this->filterArrayByKeys($object->getOrigData($key)['images'], ['file', 'media_type', 'label', 'position', 'disabled', 'label_default', 'disabled_default']) == $this->filterArrayByKeys($object->getData($key)['images'], ['file', 'media_type', 'label', 'position', 'disabled', 'label_default', 'disabled_default'])) {
+                        continue;
+                    }
+                }
+            }
+            if ($object->hasData($key) && !is_null($object->getOrigData($key)) && !in_array($key, $skipAttr) && $object->getOrigData($key) != $value) {
+                if ($key == 'quantity_and_stock_status' && (bool)$originalData['quantity_and_stock_status']['is_in_stock'] == (bool)$storeData['quantity_and_stock_status']['is_in_stock']) {
+                    continue;
+                }
+                if ($key == 'website_ids' && (bool)array_values($originalData['website_ids']) == $storeData['website_ids']) {
+                    continue;
+                }
+                $diff[$key] = [
+                    $key . '_set' => $value,
+                    $key . '_original' => $object->getOrigData($key),
+                ];
+
+            }
+        }
+        if (count($diff) == 0) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @param $object
+     * @return bool
+     */
+    public function checkNonZeroQtyChanges($object)
+    {
+        $originalData = $object->getOrigData();
+        $saveCatalogInventoryData = $object->getData();
+
+        if (isset($originalData['qty'])) {
+
+            $newQty = (int)$saveCatalogInventoryData['qty'] = $saveCatalogInventoryData['qty'] ?? 0;
+            $oldQty = (int)$originalData['qty'] = $saveCatalogInventoryData['qty'] ?? 0;
+
+            if ($newQty == 0 && $newQty != $oldQty) {
+                return false;
+
+            }
+            if ($oldQty == 0 && $newQty > 0) {
+                return false;
+
+            }
+        }
+        return true;
+    }
 }

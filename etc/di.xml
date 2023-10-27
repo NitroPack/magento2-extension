@@ -19,4 +19,7 @@
     <type name="Magento\Framework\App\Cache\Manager">
         <plugin name="after_cache_checker" type="NitroPack\NitroPack\Plugin\CacheState\CacheStateAfter"/>
     </type>
+    <type name="Magento\CatalogInventory\Model\Stock\StockItemRepository">
+        <plugin name="your_module_stock_item_save_before" type="NitroPack\NitroPack\Plugin\StockItemSaveBefore" sortOrder="10" disabled="false" />
+    </type>
 </config>

@@ -45,12 +45,16 @@ class Save extends StoreAwareAction
      * @var NitroPackConfigHelper
      * */
     protected $nitroPackConfigHelper;
-
+    /**
+     * @var ApiHelper
+     * */
+    protected $apiHelper;
     /**
      * @param Context $context
      * @param NitroServiceInterface $nitro
      * @param AdminFrontendUrl $urlHelper
      * @param ApiHelper $apiHelper
+     * @param NitroPackConfigHelper  $nitroPackConfigHelper
      * @param DirectoryList $directoryList
      * @param \Magento\Framework\Filesystem\Driver\File $fileDriver
      * */
@@ -58,6 +62,7 @@ class Save extends StoreAwareAction
         Context                                   $context,
         NitroServiceInterface                     $nitro,
         AdminFrontendUrl                          $urlHelper,
+        ApiHelper $apiHelper,
         NitroPackConfigHelper                     $nitroPackConfigHelper,
         DirectoryList                             $directoryList,
         \Magento\Framework\Filesystem\Driver\File $fileDriver
@@ -70,6 +75,7 @@ class Save extends StoreAwareAction
         $this->nitroPackConfigHelper = $nitroPackConfigHelper;
         $this->request = $this->getRequest();
         $this->fileDriver = $fileDriver;
+        $this->apiHelper = $apiHelper;
         $this->directoryList = $directoryList;
     }
 
@@ -95,6 +101,11 @@ class Save extends StoreAwareAction
                 $this->nitro->nitroEvent('connect', $eventUrl, $this->storeGroup);
                 $eventSent = $this->nitro->nitroEvent('enable_extension', $eventUrl, $this->storeGroup);
                 $this->nitroPackConfigHelper->xMagentoVaryAdd($this->getStoreGroup());
+
+
+
+                $this->nitroPackConfigHelper->setBoolean('default_stock',$this->apiHelper->checkDefaultStockAvailable());
+
                 $this->nitroPackConfigHelper->setBoolean('cache_to_login_customer', true);
                 $this->nitroPackConfigHelper->persistSettings($this->getStoreGroup()->getCode());
                 $this->nitroPackConfigHelper->varnishConfiguredSetup();

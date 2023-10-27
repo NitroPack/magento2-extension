@@ -67,7 +67,9 @@ class Consumer
         $errorCode = null;
         $message = null;
         $serializedData = $request;
+
         $unserializedData = $this->jsonHelper->jsonDecode($serializedData);
+
         try {
             if ($unserializedData['action'] == 'invalidation') {
                 return $this->cacheCleanHelper->invalidateCache(

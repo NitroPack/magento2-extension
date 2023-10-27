@@ -76,4 +76,7 @@
     <event name="store_delete">
         <observer name="nitropack_add_store_view_observer" instance="NitroPack\NitroPack\Observer\StoreViewObserver" />
     </event>
+    <event name="controller_action_inventory_source_save_after">
+        <observer name="check_default_source" instance="NitroPack\NitroPack\Observer\Source\SourceAddObserver" />
+    </event>
 </config>

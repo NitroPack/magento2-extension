@@ -42,14 +42,15 @@ class Messages implements MessageInterface
     protected $notifications;
 
     public function __construct(
-        Collection $adminSessionInfoCollection,
-        UrlInterface $backendUrl,
-        \NitroPack\NitroPack\Helper\NitroPackConfigHelper $nitroPackConfigHelper,
-        \NitroPack\NitroPack\Helper\InvalidationHelper $invalidationHelper,
+        Collection                                                     $adminSessionInfoCollection,
+        UrlInterface                                                   $backendUrl,
+        \NitroPack\NitroPack\Helper\NitroPackConfigHelper              $nitroPackConfigHelper,
+        \NitroPack\NitroPack\Helper\InvalidationHelper                 $invalidationHelper,
         \NitroPack\NitroPack\Model\NitroPackNotification\Notifications $notifications,
-        ScopeConfigInterface $_scopeConfig,
-        Session $authSession
-    ) {
+        ScopeConfigInterface                                           $_scopeConfig,
+        Session                                                        $authSession
+    )
+    {
         $this->authSession = $authSession;
         $this->backendUrl = $backendUrl;
         $this->nitroPackConfigHelper = $nitroPackConfigHelper;
@@ -62,36 +63,35 @@ class Messages implements MessageInterface
     public function getText()
     {
         $message = "";
-        if (!$this->nitroPackConfigHelper->getFullPageCacheValue(
-            ) || !empty($this->nitroPackConfigHelper->getDisabledCaches())) {
-            if (!$this->nitroPackConfigHelper->getFullPageCacheValue(
-                ) && !empty($this->nitroPackConfigHelper->getDisabledCaches())) {
+        if (!$this->nitroPackConfigHelper->getFullPageCacheValue() || !empty($this->nitroPackConfigHelper->getDisabledCaches())) {
+            if (!$this->nitroPackConfigHelper->getFullPageCacheValue() && !empty($this->nitroPackConfigHelper->getDisabledCaches())) {
 
                 return __(
-                    'Nitropack is disabled due to incompatible Cache setting. NitroPack requires to be set as %1 and %2 enabled',
+                    'Nitropack is currently disabled because it\'s not selected in the %1 and Enable %2 ',
                     '<a href="' . $this->backendUrl->getUrl(
                         'adminhtml/system_config/edit/section/system'
-                    ) . '">Caching Application</a>',
+                    ) . '">Full Page Cache Application settings</a>',
                     '<a href="' . $this->backendUrl->getUrl('adminhtml/cache/index') . '">Full Page Caching</a>',
                 );
             }
             if (!$this->nitroPackConfigHelper->getFullPageCacheValue()) {
-                if(!$this->invalidationHelper->checkInvalidationAndPurgeProcess() &&  !$this->invalidationHelper->checkCronJobIsSetup()){
+                if (!$this->invalidationHelper->checkInvalidationAndPurgeProcess() && !$this->invalidationHelper->checkCronJobIsSetup()) {
                     return __(
                         'NitroPack has been disabled and the initial system settings have been restored due to incompatible Cron settings preventing cache invalidation/purge. Run the following command to fix the problem: php bin/magento queue:consumers:start nitropack.cache.queue.comsumer &'
                     );
                 }
-
                 return __(
-                    'Nitropack is disabled due to incompatible  %1. NitroPack must be selected as a Cache application',
+                    'NitroPack is currently disabled because it\'s not selected in the   %1. To resolve the problem, please choose NitroPack as your cache application',
                     '<a href="' . $this->backendUrl->getUrl(
                         'adminhtml/system_config/edit/section/system'
                     ) . '">Full Page Cache Application settings</a>'
                 );
             }
+
+
             if (!empty($this->nitroPackConfigHelper->getDisabledCaches())) {
                 return __(
-                    'Nitropack is disabled due to incompatible  %1. NitroPack requires Full Page Caching enabled',
+                    'Nitropack is currently disabled due to incompatible %1. To resolve the problem, please enable Full page caching',
                     '<a href="' . $this->backendUrl->getUrl('adminhtml/cache/index') . '">Full Page Caching setting</a>'
                 );
             }
@@ -110,12 +110,8 @@ class Messages implements MessageInterface
 
     public function isDisplayed()
     {
-
-        if($this->invalidationHelper->checkHavePreviouslyConnected()){
-        if (!$this->nitroPackConfigHelper->getFullPageCacheValue(
-            ) || !empty($this->nitroPackConfigHelper->getDisabledCaches())) {
-            if (!$this->nitroPackConfigHelper->getFullPageCacheValue(
-                ) && !empty($this->nitroPackConfigHelper->getDisabledCaches())) {
+        if (!$this->nitroPackConfigHelper->getFullPageCacheValue() || !empty($this->nitroPackConfigHelper->getDisabledCaches())) {
+            if (!$this->nitroPackConfigHelper->getFullPageCacheValue() && !empty($this->nitroPackConfigHelper->getDisabledCaches())) {
                 return true;
             }
             if (!$this->nitroPackConfigHelper->getFullPageCacheValue()) {
@@ -125,16 +121,16 @@ class Messages implements MessageInterface
                 return true;
             }
         } else {
-            return count($this->notifications->get('system')) > 0 ? true : false;
-        }
+            if ($this->invalidationHelper->checkHavePreviouslyConnected()) {
+                return count($this->notifications->get('system')) > 0 ? true : false;
+            }
         }
         return false;
     }
 
     public function getSeverity()
     {
-        if (!$this->nitroPackConfigHelper->getFullPageCacheValue(
-            ) || !empty($this->nitroPackConfigHelper->getDisabledCaches())) {
+        if (!$this->nitroPackConfigHelper->getFullPageCacheValue() || !empty($this->nitroPackConfigHelper->getDisabledCaches())) {
             return \Magento\Framework\Notification\MessageInterface::SEVERITY_CRITICAL;
         } else {
             return \Magento\Framework\Notification\MessageInterface::SEVERITY_NOTICE;
