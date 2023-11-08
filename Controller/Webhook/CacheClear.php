@@ -24,13 +24,14 @@ class CacheClear extends WebhookController
      * @var VarnishHelper
      * */
     protected $varnishHelper;
+
     /**
      * @param Context $context
      * @param RequestInterface $request
      * @param ScopeConfigInterface $_scopeConfig
      * @param VarnishHelper $varnishHelper
      * */
-    public function __construct(Context $context, RequestInterface $request, ScopeConfigInterface $_scopeConfig,VarnishHelper $varnishHelper)
+    public function __construct(Context $context, RequestInterface $request, ScopeConfigInterface $_scopeConfig, VarnishHelper $varnishHelper)
     {
         $this->_scopeConfig = $_scopeConfig;
         $this->request = $request;
@@ -44,23 +45,13 @@ class CacheClear extends WebhookController
     public function execute()
     {
         if ($url = $this->getRequest()->getParam('url', false)) {
-            $this->nitro->purgeCache(
-                $url,
-                null,
-                PurgeType::PAGECACHE_ONLY,
-                sprintf(self::REASON_MANUAL_PURGE_URL, $url)
-            );
-            if (
-                !is_null(
-                    $this->_scopeConfig->getValue(\NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK)
-                )
-                && $this->_scopeConfig->getValue(
-                    \NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK
-                ) == \NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK_VALUE
-                && isset($_SERVER['HTTP_X_VARNISH'])
-            ) {
-                $this->varnishHelper->purgeVarnish($url);
+            if (!is_array($url)) {
+                $this->purgeSingleUrl([$url]);
+
+            } else {
+                $this->purgeSingleUrl($url);
             }
+            return $this->textResponse('ok');
         } else {
             $this->nitro->purgeLocalCache(true);
             if (
@@ -79,4 +70,26 @@ class CacheClear extends WebhookController
     }
 
 
+    public function purgeSingleUrl($url)
+    {
+        foreach ($url as $urlValue) {
+            $this->nitro->purgeCache(
+                $urlValue,
+                null,
+                PurgeType::PAGECACHE_ONLY,
+                sprintf(self::REASON_MANUAL_PURGE_URL, $urlValue)
+            );
+            if (
+                !is_null(
+                    $this->_scopeConfig->getValue(\NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK)
+                )
+                && $this->_scopeConfig->getValue(
+                    \NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK
+                ) == \NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK_VALUE
+                && isset($_SERVER['HTTP_X_VARNISH'])
+            ) {
+                $this->varnishHelper->purgeVarnish($urlValue);
+            }
+        }
+    }
 }

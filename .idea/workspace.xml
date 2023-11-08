@@ -7,16 +7,10 @@
     <list default="true" id="ec8709bb-0c6d-420a-bbce-0d2f296fb020" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Api/NitroService.php" beforeDir="false" afterPath="$PROJECT_DIR$/Api/NitroService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Connect/Save.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Connect/Save.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Helper/ApiHelper.php" beforeDir="false" afterPath="$PROJECT_DIR$/Helper/ApiHelper.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Admin/Alert/Messages.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Admin/Alert/Messages.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Observer/CleanCacheByTagsObserver.php" beforeDir="false" afterPath="$PROJECT_DIR$/Observer/CleanCacheByTagsObserver.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Plugin/CacheDelivery/LocalCachePlugin.php" beforeDir="false" afterPath="$PROJECT_DIR$/Plugin/CacheDelivery/LocalCachePlugin.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/Webhook/CacheClear.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Webhook/CacheClear.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/etc/adminhtml/events.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/adminhtml/events.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/etc/di.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/di.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/etc/module.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/module.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/adminhtml/templates/page/notices.phtml" beforeDir="false" afterPath="$PROJECT_DIR$/view/adminhtml/templates/page/notices.phtml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,20 +33,20 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "//wsl$/Ubuntu-22.04/var/www/html/magento2-extension",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;//wsl$/Ubuntu-22.04/var/www/html/magento2-extension&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="\\wsl$\Ubuntu-20.04\var\www\html\magento2-extension" />
@@ -128,6 +122,10 @@
       <workItem from="1695037004183" duration="638000" />
       <workItem from="1696246225547" duration="2189000" />
       <workItem from="1698233817678" duration="1182000" />
+      <workItem from="1698418227707" duration="608000" />
+      <workItem from="1698649372506" duration="117000" />
+      <workItem from="1699373293874" duration="308000" />
+      <workItem from="1699440217987" duration="64000" />
     </task>
     <servers />
   </component>

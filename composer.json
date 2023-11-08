@@ -21,7 +21,7 @@
     ],
     "homepage": "https://github.com/NitroPack/magento2-extension",
     "authors": [{"name": "NitroPack Support", "email": "support@nitropack.com", "homepage": "https://nitropack.com"}],
-    "version": "2.5.0",
+    "version": "2.5.1",
     "license": "MIT",
     "autoload": {
         "files": [

@@ -11,6 +11,11 @@ Installation Instructions: https://support.nitropack.io/hc/en-us/articles/127062
 ###   2.5.0:
 #### Compatible with Magento Open Source : 2.4
 #### Stability: Stable Build
+#### Description: Improvements: Our cache clear webhook now supports purging multiple URLs, offering enhanced efficiency and flexibility for cache management.
+
+###   2.5.0:
+#### Compatible with Magento Open Source : 2.4
+#### Stability: Stable Build
 #### Description: Improvements:
 - Non-zero quantity changes to a product will no longer trigger page invalidation. 
 - Enhanced notifications for various extension events.
