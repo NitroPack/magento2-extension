@@ -8,7 +8,14 @@ Installation Instructions: https://support.nitropack.io/hc/en-us/articles/127062
 
 # Release Notes
 
-###   2.5.0:
+###   2.5.2:
+#### Compatible with Magento Open Source : 2.4
+#### Stability: Stable Build
+#### Description: Fix:
+- Fixed Redis cache flush issue, ensuring reliable cache management.
+- Added a condition in product attribute change checks to enhance efficiency.
+
+###   2.5.1:
 #### Compatible with Magento Open Source : 2.4
 #### Stability: Stable Build
 #### Description: Improvements: Our cache clear webhook now supports purging multiple URLs, offering enhanced efficiency and flexibility for cache management.

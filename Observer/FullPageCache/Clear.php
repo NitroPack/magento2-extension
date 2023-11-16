@@ -92,7 +92,17 @@ class Clear implements ObserverInterface
 
                     $cachePath = $rootPath . 'nitro_cache' . DIRECTORY_SEPARATOR . $this->settings->siteId;
                     try {
-
+                        $checkRedisConfigure = $this->redisHelper->validatedRedisConnection();
+                        if ($checkRedisConfigure) {
+                            \NitroPack\SDK\Filesystem::setStorageDriver(
+                                new \NitroPack\SDK\StorageDriver\Redis(
+                                    $checkRedisConfigure['host'],
+                                    $checkRedisConfigure['port'],
+                                    $checkRedisConfigure['pass'],
+                                    $checkRedisConfigure['db']
+                                )
+                            );
+                        }
                         $this->sdk = new NitroPack(
                            $this->settings->siteId, $this->settings->siteSecret, null, null, $cachePath
                         );
