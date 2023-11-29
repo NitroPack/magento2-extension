@@ -8,6 +8,13 @@ Installation Instructions: https://support.nitropack.io/hc/en-us/articles/127062
 
 # Release Notes
 
+###   2.5.3:
+#### Compatible with Magento Open Source : 2.4
+#### Stability: Stable Build
+#### Description: Fix:
+- In this update, we’ve implemented checks to ensure the existence of specific classes and variables within Magento, enhancing the functionality of NitroPack.
+
+
 ###   2.5.2:
 #### Compatible with Magento Open Source : 2.4
 #### Stability: Stable Build

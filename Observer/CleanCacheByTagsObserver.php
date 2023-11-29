@@ -316,7 +316,7 @@ class CleanCacheByTagsObserver implements ObserverInterface
                 }
             }
             if ($object->hasData($key) && !is_null($object->getOrigData($key)) && !in_array($key, $skipAttr) && $object->getOrigData($key) != $value) {
-                if ($key == 'quantity_and_stock_status' && isset($originalData['quantity_and_stock_status']) && isset($originalData['quantity_and_stock_status']['is_in_stock']) && (bool)$originalData['quantity_and_stock_status']['is_in_stock'] == (bool)$storeData['quantity_and_stock_status']['is_in_stock']) {
+                if ($key == 'quantity_and_stock_status' && isset($originalData['quantity_and_stock_status']) && isset($originalData['quantity_and_stock_status']['is_in_stock']) && isset($storeData['quantity_and_stock_status']) && isset($storeData['quantity_and_stock_status']['is_in_stock']) && (bool)$originalData['quantity_and_stock_status']['is_in_stock'] == (bool)$storeData['quantity_and_stock_status']['is_in_stock']) {
                     continue;
                 }
                 if ($key == 'website_ids' && isset($originalData['website_ids']) && isset($storeData['website_ids']) && (bool)array_values($originalData['website_ids']) == $storeData['website_ids']) {

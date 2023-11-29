@@ -6,6 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="ec8709bb-0c6d-420a-bbce-0d2f296fb020" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Api/NitroService.php" beforeDir="false" afterPath="$PROJECT_DIR$/Api/NitroService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Helper/ApiHelper.php" beforeDir="false" afterPath="$PROJECT_DIR$/Helper/ApiHelper.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Observer/CleanCacheByTagsObserver.php" beforeDir="false" afterPath="$PROJECT_DIR$/Observer/CleanCacheByTagsObserver.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/etc/module.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/module.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,6 +29,9 @@
     <option name="stateVersion" value="1" />
   </component>
   <component name="PhpWorkspaceProjectConfiguration" interpreter_name="PHP" />
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 2
+}]]></component>
   <component name="ProjectId" id="2MmQtA7ZIKmp5L8qeRck7Tj2Gmk" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -123,6 +132,8 @@
       <workItem from="1699440217987" duration="912000" />
       <workItem from="1699441361904" duration="5000" />
       <workItem from="1699448398130" duration="507000" />
+      <workItem from="1700129055982" duration="1706000" />
+      <workItem from="1701175531685" duration="2466000" />
     </task>
     <servers />
   </component>
