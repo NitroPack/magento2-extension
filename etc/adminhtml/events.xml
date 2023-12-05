@@ -79,4 +79,10 @@
     <event name="controller_action_inventory_source_save_after">
         <observer name="check_default_source" instance="NitroPack\NitroPack\Observer\Source\SourceAddObserver" />
     </event>
+    <event name="product_attribute_grid_build">
+        <observer name="nitropack_add_col" instance="NitroPack\NitroPack\Observer\Grid\ProductAttributeGridBuildObserver" />
+    </event>
+    <event name="product_attribute_form_build_main_tab">
+        <observer name="nitropack_add_field" instance="NitroPack\NitroPack\Observer\Edit\Tab\Front\ProductAttributeFormBuildFrontTabObserver" />
+    </event>
 </config>

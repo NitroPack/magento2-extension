@@ -167,19 +167,19 @@ class NitroPackConfigHelper extends AbstractHelper
         $siteSecret = $nitroSiteSecret;//trim($this->request->getPostValue('nitro_site_secret', ""));
 
         if (!$siteId) {
-            $this->errors['nitro_site_id'] = 'Site ID cannot be blank';
+            $this->errors['nitro_site_id'] = 'Site Id cannot be blank';
         }
 
         if (!$siteSecret) {
-            $this->errors['nitro_site_secret'] = 'Site secret cannot be blank';
+            $this->errors['nitro_site_secret'] = 'Site Secret cannot be blank';
         }
 
         if (!preg_match("/^([a-zA-Z]{32})$/", $siteId)) {
-            $this->errors['nitro_site_id'] = 'Not a valid Site ID';
+            $this->errors['nitro_site_id'] = 'Not a valid Site Id';
         }
 
         if (!preg_match("/^([a-zA-Z0-9]{64})$/", trim($siteSecret))) {
-            $this->errors['nitro_site_secret'] = 'Not a valid Site secret';
+            $this->errors['nitro_site_secret'] = 'Not a valid Site Secret';
         }
 
         $result = empty($this->errors);

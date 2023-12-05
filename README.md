@@ -8,6 +8,16 @@ Installation Instructions: https://support.nitropack.io/hc/en-us/articles/127062
 
 # Release Notes
 
+###   2.6.0:
+#### Compatible with Magento Open Source : 2.4
+#### Stability: Stable Build
+#### Description: 
+Improvement: Users now have the ability to control whether their NitroPack cache will be purged upon specific product attribute changes.
+Bug Fix: Addressed an issue when the default Magento cache is flushed.
+Bug Fix: Cache Warmup status is now accurately synchronized with the NitroPack settings.
+
+
+
 ###   2.5.3:
 #### Compatible with Magento Open Source : 2.4
 #### Stability: Stable Build

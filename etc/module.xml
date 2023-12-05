@@ -1,5 +1,18 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="NitroPack_NitroPack" setup_version="2.5.3"/>
+    <module name="NitroPack_NitroPack" setup_version="2.6.0">
+        <sequence>
+            <module name="Magento_Eav"/>
+            <module name="Magento_Cms"/>
+            <module name="Magento_Catalog"/>
+            <module name="Magento_CatalogInventory"/>
+            <module name="Magento_Backend"/>
+            <module name="Magento_Ui"/>
+            <module name="Magento_Theme"/>
+            <module name="Magento_Search"/>
+            <module name="Magento_CatalogWidget"/>
+            <module name="Magento_MediaStorage"/>
+        </sequence>
+    </module>
 </config>

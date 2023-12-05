@@ -16,6 +16,7 @@ use NitroPack\NitroPack\Api\NitroService;
 use NitroPack\SDK\NitroPack;
 use Psr\Log\LoggerInterface;
 
+
 class ApiHelper extends AbstractHelper
 
 {
@@ -60,6 +61,7 @@ class ApiHelper extends AbstractHelper
      * @var StoreManagerInterface
      * */
     protected $storeManager;
+
 
     /**
      * @param Context $context
@@ -257,7 +259,7 @@ class ApiHelper extends AbstractHelper
         if (class_exists('\Magento\InventoryApi\Api\SourceRepositoryInterface')) {
             $sourceRepository = $this->objectManager->get(\Magento\InventoryApi\Api\SourceRepositoryInterface::class);
             $sources = $sourceRepository->getList();
-            //$logger->info(json_encode());
+
             if ($sources->getTotalCount() == 1 && current($sources->getItems())->getSourceCode() == 'default') {
 
                 return true;

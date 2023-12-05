@@ -6,11 +6,8 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\View\Result\PageFactory;
-
-use Magento\Store\Model\Store;
 use NitroPack\NitroPack\Controller\Adminhtml\StoreAwareAction;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
-use NitroPack\SDK\HealthStatus;
 
 class Index extends StoreAwareAction
 {
@@ -59,11 +56,22 @@ class Index extends StoreAwareAction
     {
 
         if (!$this->nitro->isConnected()) {
-
             $resultRedirect = $this->resultRedirectFactory->create();
             $resultRedirect->setUrl($this->getUrlWithStore('NitroPack/connect/index'));
             return $resultRedirect;
         }
+
+        try{
+        $warmupStats = $this->nitro->getSdk()->getApi()->warmup->stats();
+        if((bool)$this->nitro->getSettings()->cacheWarmup != (bool)$warmupStats['status']){
+            $this->nitro->getSettings()->cacheWarmup= (bool)$warmupStats['status'];
+            $this->nitro->persistSettings();
+        }
+        }catch (\Exception $exception){
+
+        }
+
+
        return $this->resultPageFactory->create();
     }
 }

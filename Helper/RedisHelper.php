@@ -4,7 +4,8 @@ namespace NitroPack\NitroPack\Helper;
 
 use Magento\Setup\Validator\RedisConnectionValidator;
 
-class RedisHelper
+
+class RedisHelper extends \Magento\Framework\App\Helper\AbstractHelper
 {
     /**
      * @var RedisConnectionValidator
@@ -28,6 +29,7 @@ class RedisHelper
 
     public function validatedRedisConnection()
     {
+
         $config = [
             'host' => $this->deploymentConfig->get('nitropack/cache/redis_host'),
             'db' => $this->deploymentConfig->get('nitropack/cache/redis_db'),
@@ -35,6 +37,7 @@ class RedisHelper
             'pass' => empty($this->deploymentConfig->get('nitropack/cache/redis_pass')) ? null : $this->deploymentConfig->get('nitropack/cache/redis_pass'),
 
         ];
+
         if ($this->redisValidator->isValidConnection($config)) {
             return $config;
         }

@@ -5,6 +5,7 @@ namespace NitroPack\NitroPack\Api;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\State;
 use Magento\Framework\App\Area;
+use Magento\Framework\Exception\FileSystemException;
 use Magento\Framework\Filesystem\DirectoryList;
 use Magento\Framework\ObjectManagerInterface;
 use NitroPack\NitroPack\Helper\RedisHelper;
@@ -24,7 +25,7 @@ use Magento\Framework\UrlInterface;
 class NitroService implements NitroServiceInterface
 {
 
-    const EXTENSION_VERSION = '2.5.3';  // Do not change this line manually. It is updated automatically by the build script.
+    const EXTENSION_VERSION = '2.6.0';  // Do not change this line manually. It is updated automatically by the build script.
 
     const FULL_PAGE_CACHE_NITROPACK = 'system/full_page_cache/caching_application';
     const FULL_PAGE_CACHE_NITROPACK_VALUE = 3;
@@ -573,14 +574,17 @@ class NitroService implements NitroServiceInterface
 
         try {
             $rootPath = $this->directoryList->getPath('var') . DIRECTORY_SEPARATOR;
+            if (!$this->fileDriver->isWritable($rootPath)) {
+                throw new FileSystemException(__('The "%1" directory doesn\'t exist or isn\'t writable by Magento. Please check your configuration.', $rootPath));
+            }
         } catch (\Magento\Framework\Exception\FileSystemException $e) {
-            // fallback to using the module directory
+            throw new FileSystemException(__('The "%1" directory doesn\'t exist or isn\'t writable by Magento. Please check your configuration.', $rootPath));
         }
 
         $cachePath = $rootPath . 'nitro_cache' . DIRECTORY_SEPARATOR . $this->settings->siteId;
 
         if (!$this->fileDriver->isExists($cachePath)) {
-            mkdir($cachePath, 0777, true);
+            $this->fileDriver->createDirectory($cachePath, 0777);
         }
         $checkRedisConfigure = $this->redisHelper->validatedRedisConnection();
         if ($checkRedisConfigure) {

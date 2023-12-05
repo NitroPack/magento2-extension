@@ -13,6 +13,7 @@ use Magento\Catalog\Model\CategoryFactory;
 use Magento\Cms\Model\BlockFactory;
 use Magento\Cms\Model\PageFactory;
 use NitroPack\NitroPack\Helper\ApiHelper;
+use Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory;
 
 class CleanCacheByTagsObserver implements ObserverInterface
 {
@@ -76,7 +77,27 @@ class CleanCacheByTagsObserver implements ObserverInterface
      * @var ApiHelper
      * */
     protected $apiHelper;
+    /**
+     * @var CollectionFactory
+     * */
+    protected $attributeCollectionFactory;
 
+    /**
+     * @param Resolver $cacheTagResolver
+     * @param \Magento\Framework\MessageQueue\PublisherInterface $publisher
+     * @param \Magento\Framework\Serialize\Serializer\Json $json
+     * @param StoreManagerInterface $storeManager
+     * @param ProductFactory $productFactory
+     * @param BlockFactory $blockFactory
+     * @param CategoryFactory $categoryFactory
+     * @param PageFactory $pageFactory
+     * @param \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList
+     * @param \Magento\Framework\App\Cache\Frontend\Pool $cacheFrontendPool
+     * @param ScopeConfigInterface $_scopeConfig
+     * @param ApiHelper $apiHelper
+     * @param CollectionFactory $attributeCollectionFactory
+     * @param DeploymentConfig $config
+     * */
     public function __construct(
         Resolver                                           $cacheTagResolver,
         \Magento\Framework\MessageQueue\PublisherInterface $publisher,
@@ -90,6 +111,7 @@ class CleanCacheByTagsObserver implements ObserverInterface
         \Magento\Framework\App\Cache\Frontend\Pool         $cacheFrontendPool,
         ScopeConfigInterface                               $_scopeConfig,
         ApiHelper                                          $apiHelper,
+        CollectionFactory                                  $attributeCollectionFactory,
         DeploymentConfig                                   $config
     )
     {
@@ -105,6 +127,7 @@ class CleanCacheByTagsObserver implements ObserverInterface
         $this->blockFactory = $blockFactory;
         $this->cacheTypeList = $cacheTypeList;
         $this->cacheFrontendPool = $cacheFrontendPool;
+        $this->attributeCollectionFactory = $attributeCollectionFactory;
         $this->productFactory = $productFactory;
     }
 
@@ -123,15 +146,20 @@ class CleanCacheByTagsObserver implements ObserverInterface
             }
             $tags = $this->cacheTagResolver->getTags($object);
             if (!empty($tags) && count($tags)) {
-                if ($object instanceof \Magento\Catalog\Model\Product\Interceptor) {
-                    if (!$this->checkProductChanges($object)) {
 
+                if ($object instanceof \Magento\Catalog\Model\Product\Interceptor) {
+                    $skipAttributeValue = [];
+                    $skipAttribute = $this->getNitroPackCacheSkipAttribute();
+                    if (count($skipAttribute) != 0) {
+                        $skipAttributeValue = array_column($skipAttribute['items'], 'attribute_code');
+
+                    }
+                    if (!$this->checkProductChanges($object, $skipAttributeValue)) {
                         return false;
                     }
+
                 }
-
                 //
-
                 $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
                 $storeRepo = $objectManager->create(\Magento\Store\Api\GroupRepositoryInterface::class);
                 $stores = $storeRepo->getList();
@@ -298,13 +326,14 @@ class CleanCacheByTagsObserver implements ObserverInterface
      * @param $object
      * @return bool
      */
-    public function checkProductChanges($object)
+    public function checkProductChanges($object, $skipAttributeValue)
     {
 
         $originalData = $object->getOrigData();
         $storeData = $object->getData();
         $diff = [];
         $skipAttr = ['updated_at'];
+        $skipAttr = array_merge($skipAttributeValue, $skipAttr);
 
         foreach ($object->getData() as $key => $value) {
             if ($key == 'media_gallery') {
@@ -322,6 +351,8 @@ class CleanCacheByTagsObserver implements ObserverInterface
                 if ($key == 'website_ids' && isset($originalData['website_ids']) && isset($storeData['website_ids']) && (bool)array_values($originalData['website_ids']) == $storeData['website_ids']) {
                     continue;
                 }
+
+
                 $diff[$key] = [
                     $key . '_set' => $value,
                     $key . '_original' => $object->getOrigData($key),
@@ -329,6 +360,8 @@ class CleanCacheByTagsObserver implements ObserverInterface
 
             }
         }
+
+
         if (count($diff) == 0) {
             return false;
         }
@@ -360,4 +393,18 @@ class CleanCacheByTagsObserver implements ObserverInterface
         }
         return true;
     }
+
+    public function getNitroPackCacheSkipAttribute()
+    {
+        try {
+            $attributeCollection = $this->attributeCollectionFactory->create();
+            $attributeCollection
+                ->addFieldToFilter('nitro_purge', 0); // Additional filter for layered navigation
+
+            return $attributeCollection->toArray();
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
 }

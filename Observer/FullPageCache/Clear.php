@@ -8,6 +8,7 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Filesystem\DirectoryList;
 use NitroPack\NitroPack\Api\NitroService;
+use NitroPack\NitroPack\Api\NitroServiceInterface;
 use NitroPack\NitroPack\Helper\ApiHelper;
 use NitroPack\NitroPack\Helper\RedisHelper;
 use NitroPack\NitroPack\Helper\VarnishHelper;
@@ -47,6 +48,7 @@ class Clear implements ObserverInterface
      * @param ApiHelper $apiHelper
      * @param ScopeConfigInterface $scopeConfig
      * @param VarnishHelper $varnishHelper
+     * @param RedisHelper $redisHelper
      * @param  StateInterface $_cacheState
      * */
     public function __construct(
@@ -58,10 +60,10 @@ class Clear implements ObserverInterface
         StateInterface $_cacheState
 
     ) {
-        $this->redisHelper = $redisHelper;
         $this->apiHelper = $apiHelper;
         $this->varnishHelper = $varnishHelper;
         $this->_scopeConfig = $scopeConfig;
+        $this->redisHelper = $redisHelper;
         $this->directoryList = $directoryList;
         $this->_cacheState = $_cacheState;
     }
@@ -93,8 +95,9 @@ class Clear implements ObserverInterface
 
                     $cachePath = $rootPath . 'nitro_cache' . DIRECTORY_SEPARATOR . $this->settings->siteId;
                     try {
+
                         $checkRedisConfigure = $this->redisHelper->validatedRedisConnection();
-                        if ($checkRedisConfigure) {
+                        if (!is_null($checkRedisConfigure) && $checkRedisConfigure) {
                             \NitroPack\SDK\Filesystem::setStorageDriver(
                                 new \NitroPack\SDK\StorageDriver\Redis(
                                     $checkRedisConfigure['host'],

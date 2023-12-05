@@ -5,6 +5,7 @@ namespace NitroPack\NitroPack\Block;
 use Magento\Backend\Block\Template;
 use Magento\Backend\Block\Template\Context;
 use Magento\Backend\Model\UrlInterface;
+use Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -43,6 +44,10 @@ class SettingsBlock extends Template
      * @var Store
      * */
     protected $store;
+    /**
+     * @var  CollectionFactory
+     * */
+    protected $attributeCollectionFactory;
 
     /***
      * @param Context $context
@@ -52,19 +57,21 @@ class SettingsBlock extends Template
      * @param RequestInterface $request
      * @param ScopeConfigInterface $scopeConfig
      * @param TypeListInterface $cacheTypeList
+     * @param CollectionFactory $attributeCollectionFactory
      * @param Store $store
      * @param array $data
      **/
     public function __construct(
-        Context $context, // required as part of the Magento\Backend\Block\Template constructor
+        Context               $context, // required as part of the Magento\Backend\Block\Template constructor
         NitroServiceInterface $nitro, // dependency injection'ed
-        UrlInterface $backendUrl, // dependency injection'ed
+        UrlInterface          $backendUrl, // dependency injection'ed
         StoreManagerInterface $storeManager, // dependency injection'ed
-        RequestInterface $request, // dependency injection'ed
-        ScopeConfigInterface $scopeConfig, // dependency injection'ed
-        TypeListInterface $cacheTypeList, // dependency injection'ed
-        Store $store, // dependency injection'ed
-        array $data = [] // required as part of the Magento\Backend\Block\Template constructor
+        RequestInterface      $request, // dependency injection'ed
+        ScopeConfigInterface  $scopeConfig, // dependency injection'ed
+        TypeListInterface     $cacheTypeList, // dependency injection'ed
+        CollectionFactory     $attributeCollectionFactory,
+        Store                 $store, // dependency injection'ed
+        array                 $data = [] // required as part of the Magento\Backend\Block\Template constructor
     )
     {
         parent::__construct($context, $data);
@@ -74,6 +81,7 @@ class SettingsBlock extends Template
         $this->_scopeConfig = $scopeConfig;
         $this->_cacheTypeList = $cacheTypeList;
         $this->store = $store;
+        $this->attributeCollectionFactory = $attributeCollectionFactory;
         self::$instance = $this;
     }
 
@@ -119,6 +127,7 @@ class SettingsBlock extends Template
     {
         return $this->getBackendUrl('NitroPack/settings/enablecachetocustomerlogin');
     }
+
     public function checkVarnishEnable()
     {
         if (
@@ -258,4 +267,20 @@ class SettingsBlock extends Template
         return $this->_cacheTypeList->getTypeLabels();
     }
 
+    public function getNitroPackAttribute()
+    {
+        $attributeCollection = $this->attributeCollectionFactory->create();
+        $attributeCollection->addFieldToFilter('frontend_label', array('notnull' => true))->setOrder('frontend_label', 'ASC')
+            ->setPageSize(10)
+        ->setCurPage(1);
+
+
+        return $attributeCollection->toArray();
+    }
+
+    public function getProductAttributeUrl()
+    {
+        // route the magento System -> Configuration -> Advanced -> Full Page Cache
+        return $this->getBackendUrl('catalog/product_attribute/index', false, false);
+    }
 }
