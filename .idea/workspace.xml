@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ec8709bb-0c6d-420a-bbce-0d2f296fb020" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Observer/FullPageCache/Clear.php" beforeDir="false" afterPath="$PROJECT_DIR$/Observer/FullPageCache/Clear.php" afterDir="false" />
-    </list>
+    <list default="true" id="ec8709bb-0c6d-420a-bbce-0d2f296fb020" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -132,6 +129,7 @@
       <workItem from="1701259986682" duration="7510000" />
       <workItem from="1701323058313" duration="588000" />
       <workItem from="1701348347367" duration="622000" />
+      <workItem from="1701772612874" duration="315000" />
     </task>
     <servers />
   </component>
