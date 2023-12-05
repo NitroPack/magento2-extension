@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="catalog_eav_attribute" resource="default" comment="Catalog EAV Attribute Table">
+        <column xsi:type="smallint" name="nitro_purge" unsigned="false" nullable="true" default="1"  comment="NitroPack Purge"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="attribute_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="CATALOG_EAV_ATTRIBUTE_ATTRIBUTE_ID_EAV_ATTRIBUTE_ATTRIBUTE_ID"
+                    table="catalog_eav_attribute" column="attribute_id" referenceTable="eav_attribute"
+                    referenceColumn="attribute_id" onDelete="CASCADE"/>
+        <index referenceId="CATALOG_EAV_ATTRIBUTE_USED_FOR_SORT_BY" indexType="btree">
+            <column name="used_for_sort_by"/>
+        </index>
+        <index referenceId="CATALOG_EAV_ATTRIBUTE_USED_IN_PRODUCT_LISTING" indexType="btree">
+            <column name="used_in_product_listing"/>
+        </index>
+    </table>
+</schema>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <fieldset name="front_fieldset">
+        <field name="nitro_purge" component="Magento_Catalog/js/components/disable-on-option/select" sortOrder="40" formElement="select">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="valuesForEnable" xsi:type="array">
+                        <item name="boolean" xsi:type="string">boolean</item>
+                        <item name="select" xsi:type="string">select</item>
+                        <item name="multiselect" xsi:type="string">multiselect</item>
+                        <item name="price" xsi:type="string">price</item>
+                    </item>
+                    <item name="source" xsi:type="string">product_attribute</item>
+                </item>
+            </argument>
+            <settings>
+                <notice translate="true">Can be used only with catalog input type Yes/No (Boolean),</notice>
+                <dataType>string</dataType>
+                <label translate="true">NitroPack Purge Cache on Change</label>
+                <dataScope>nitro_purge</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Magento\LayeredNavigation\Model\Attribute\Source\FilterableOptions"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+    </fieldset>
+</form>

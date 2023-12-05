@@ -8,7 +8,6 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Filesystem\DirectoryList;
 use NitroPack\NitroPack\Api\NitroService;
-use NitroPack\NitroPack\Api\NitroServiceInterface;
 use NitroPack\NitroPack\Helper\ApiHelper;
 use NitroPack\NitroPack\Helper\RedisHelper;
 use NitroPack\NitroPack\Helper\VarnishHelper;
@@ -54,10 +53,12 @@ class Clear implements ObserverInterface
         DirectoryList $directoryList,
         ApiHelper $apiHelper,
         VarnishHelper $varnishHelper,
+        RedisHelper $redisHelper,
         ScopeConfigInterface $scopeConfig,
         StateInterface $_cacheState
 
     ) {
+        $this->redisHelper = $redisHelper;
         $this->apiHelper = $apiHelper;
         $this->varnishHelper = $varnishHelper;
         $this->_scopeConfig = $scopeConfig;
