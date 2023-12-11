@@ -19,7 +19,7 @@
                         <p class="my-4">Please go to <a href="https://nitropack.io/pricing" target="_blank"><strong>nitropack.io&nbsp;<sup><small><i
                                                 class="fa fa-external-link"></i></small></sup></strong></a> and register
                             your site.</p>
-                        <p>Then copy your Site Id and Site Secret, and put them below. <a class="no-break"
+                        <p>Then copy your API Key and API Secret Key, and put them below. <a class="no-break"
                                                                                           href="https://nitropack.io/blog/post/how-to-get-your-site-id-and-site-secret"
                                                                                           target="_blank">See
                                 how&nbsp;<sup><small><i class="fa fa-external-link"></i></small></sup></a></p>
@@ -45,14 +45,14 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="input-site-id">Put Your Site Id</label>
+                            <label for="input-site-id">Put Your API key</label>
                             <div class="input-group">
                                 <input type="text" class="form-control" id="nitro_site_id" name="nitro_site_id"
-                                       placeholder="Site Id"/>
+                                       placeholder="API Key"/>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="input-site-id">Put Your Site Secret</label>
+                            <label for="input-site-id">Put Your API Secret Key</label>
                             <div class="input-group">
                                 <input type="password" class="form-control" id="nitro_site_secret"
                                        name="nitro_site_secret" placeholder="Site Secret" data-toggle-password=""/>
@@ -147,11 +147,11 @@
             event.preventDefault();
 
             if ($('#nitro_site_id').val() == '') {
-                validationError('#nitro_site_id', 'Site Id field cannot be blank. <a class="text-white pl-2 pr-2" href="https://nitropack.io/blog/post/how-to-get-your-site-id-and-site-secret" target="_blank">See how&nbsp;<sup><small><i class="fa fa-external-link"></i></small></sup></a> to get yours.');
+                validationError('#nitro_site_id', 'API Key field cannot be blank. <a class="text-white pl-2 pr-2" href="https://nitropack.io/blog/post/how-to-get-your-site-id-and-site-secret" target="_blank">See how&nbsp;<sup><small><i class="fa fa-external-link"></i></small></sup></a> to get yours.');
                 return;
             }
             if (!preg_match('^([a-zA-Z]{32})$', $('#nitro_site_id').val())) {
-                validationError('#nitro_site_id', 'Invalid Site Id');
+                validationError('#nitro_site_id', 'Invalid API Key');
                 return;
             }
 
@@ -160,7 +160,7 @@
                 return;
             }
             if (!preg_match('^([a-zA-Z0-9]{64})$', $('#nitro_site_secret').val())) {
-                validationError('#nitro_site_secret', 'Invalid Site Secret');
+                validationError('#nitro_site_secret', 'Invalid API Secret Key');
                 return;
             }
             let $loader = $('body').loader();

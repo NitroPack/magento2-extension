@@ -5,8 +5,9 @@ if ($block->checkNitroHeaderCacheIsMiss()):
     ?>
     <script>
         NPTelemetryMetadata = {
-            PAGE_TYPE: "<?= $block->getPageType(); ?>",
-            MISS_REASON: "<?= $block->getPageHeaderMissReason(); ?>"
+            "pageType": "<?= $block->getPageType(); ?>",
+            "missReason": "<?= $block->getPageHeaderMissReason(); ?>",
+            "isEligibleForOptimization": <?= $block->isEligibleForOptimization(); ?>
         };
 
     </script>

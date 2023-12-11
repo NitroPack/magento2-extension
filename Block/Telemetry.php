@@ -102,6 +102,13 @@ class Telemetry extends Template
         return $this->request->getFullActionName();
     }
 
+    public function isEligibleForOptimization()
+    {
+        $uri = $this->request->getUriString();
+        $isStaticAssets = in_array(substr($uri, -4), ['.ico']);
+        return strpos($this->request->getRequestUri(), 'checkout') !==false && !$isStaticAssets ? 0: 1 ;
+    }
+
     public function fetchTelemetryJs()
     {
         $settings = $this->nitro->getSettings();
@@ -113,7 +120,11 @@ class Telemetry extends Template
             if ($this->driverFile->isExists($filePath)) {
                 $data = $this->driverFile->fileGetContents($filePath);
                 $additionalData = $this->serializer->unserialize($data);
-                if ($additionalData['Telemetry']) {
+                if (isset($additionalData['GenericNitroScript']) && isset($additionalData['GenericNitroScript']['Script'])) {
+                    return $additionalData['GenericNitroScript']['Script'];
+                }
+
+                if (isset($additionalData['Telemetry']) && isset($additionalData['Telemetry'])) {
                     return $additionalData['Telemetry'];
                 }
             }

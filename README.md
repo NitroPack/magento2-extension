@@ -8,13 +8,23 @@ Installation Instructions: https://support.nitropack.io/hc/en-us/articles/127062
 
 # Release Notes
 
+###   2.6.1:
+#### Compatible with Magento Open Source : 2.4
+#### Stability: Stable Build
+#### Description:
+Improvement:
+- Refined API secret and API key labels to enhance clarity.
+- Strengthened security by upgrading encryption protocols for X-Magento-Vary header.
+- Implemented technical enhancements in NitroPack scripts.
+
 ###   2.6.0:
 #### Compatible with Magento Open Source : 2.4
 #### Stability: Stable Build
 #### Description: 
-Improvement: Users now have the ability to control whether their NitroPack cache will be purged upon specific product attribute changes.
-Bug Fix: Addressed an issue when the default Magento cache is flushed.
-Bug Fix: Cache Warmup status is now accurately synchronized with the NitroPack settings.
+Improvement: 
+- Users now have the ability to control whether their NitroPack cache will be purged upon specific product attribute changes.
+- Bug Fix: Addressed an issue when the default Magento cache is flushed.
+- Bug Fix: Cache Warmup status is now accurately synchronized with the NitroPack settings.
 
 
 

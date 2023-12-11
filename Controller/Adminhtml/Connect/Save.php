@@ -167,19 +167,19 @@ class Save extends StoreAwareAction
         $siteSecret = trim($this->request->getPostValue('nitro_site_secret', ""));
 
         if (!$siteId) {
-            $this->errors['nitro_site_id'] = 'Site Id cannot be blank';
+            $this->errors['nitro_site_id'] = 'API Key cannot be blank';
         }
 
         if (!$siteSecret) {
-            $this->errors['nitro_site_secret'] = 'Site Secret cannot be blank';
+            $this->errors['nitro_site_secret'] = 'API Secret Key cannot be blank';
         }
 
         if (!preg_match("/^([a-zA-Z]{32})$/", $siteId)) {
-            $this->errors['nitro_site_id'] = 'Not a valid Site Id';
+            $this->errors['nitro_site_id'] = 'Not a valid API Key';
         }
 
         if (!preg_match("/^([a-zA-Z0-9]{64})$/", trim($siteSecret))) {
-            $this->errors['nitro_site_secret'] = 'Not a valid Site Secret';
+            $this->errors['nitro_site_secret'] = 'Not a valid API Secret Key';
         }
 
         $result = empty($this->errors);

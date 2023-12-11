@@ -72,15 +72,10 @@ class Reason
                 $this->setReason($this->reasonHave['sick']);
                 return true;
             }
-            if($this->checkUserLogin()){
-                $this->setReason($this->reasonHave['customer_logged_in']);
-                return true;
-            }
-
-            if($this->checkHaveItemInCart()){
-                $this->setReason($this->reasonHave['have_cart_item']);
-                return true;
-            }
+        if(strpos($this->request->getRequestUri(), 'checkout') !== false){
+            $this->setReason("Checkout Page");
+            return true;
+        }
         if (!$this->nitro->hasLocalCache()) {
             $this->setReason($this->reasonHave['local_cache_missed']);
 
@@ -125,27 +120,4 @@ class Reason
         return false;
     }
 
-    private function checkUserLogin()
-    {
-        if (!$this->context) {
-            $this->context = $this->objectManager->get(\Magento\Framework\App\Http\Context::class);
-        }
-
-        if ($this->context->getValue(\Magento\Customer\Model\Context::CONTEXT_AUTH)) {
-            return true;
-        }
-        return false;
-    }
-
-
-    private function checkHaveItemInCart()
-    {
-        if (!$this->cart) {
-            $this->cart = $this->objectManager->get(Cart::class);
-        }
-        if (!empty($this->cart->getQuote()->getAllItems())) {
-            return true;
-        }
-        return false;
-    }
 }

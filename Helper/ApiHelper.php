@@ -5,8 +5,11 @@ namespace NitroPack\NitroPack\Helper;
 use Magento\Customer\Model\Context as CustomerContextConstants;
 use Magento\Framework\App\Area;
 
+use Magento\Framework\App\DeploymentConfig;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
+use Magento\Framework\App\ObjectManager;
+use Magento\Framework\Config\ConfigOptionsListConstants;
 use Magento\Framework\Filesystem\DirectoryList;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Store\Model\Store;
@@ -61,7 +64,10 @@ class ApiHelper extends AbstractHelper
      * @var StoreManagerInterface
      * */
     protected $storeManager;
-
+    /**
+     * @var DeploymentConfig|null
+     */
+    private ?DeploymentConfig $deploymentConfig = null;
 
     /**
      * @param Context $context
@@ -198,7 +204,8 @@ class ApiHelper extends AbstractHelper
                 $data = [CustomerContextConstants::CONTEXT_GROUP => (string)$customerGroupCollectionValue['customer_group_id'], CustomerContextConstants::CONTEXT_AUTH => true];
                 if (!empty($data)) {
                     ksort($data);
-                    $xMagentoVaryValue = sha1($this->serializer->serialize($data));
+                    $xMagentoVaryValue = $this->getXMagentoValue($data);
+
                     $allXMagentoVary[] = $xMagentoVaryValue;
                     $allCustomerXMagentoVary[$xMagentoVaryValue] = $data;
                 }
@@ -211,7 +218,7 @@ class ApiHelper extends AbstractHelper
                             $data = [CustomerContextConstants::CONTEXT_GROUP => (string)$customerGroupCollectionValue['customer_group_id'], CustomerContextConstants::CONTEXT_AUTH => true];
                         if (!empty($data)) {
                             ksort($data);
-                            $xMagentoVaryValue = sha1($this->serializer->serialize($data));
+                            $xMagentoVaryValue = $this->getXMagentoValue($data);
                             $allXMagentoVary[] = $xMagentoVaryValue;
                             $allCustomerXMagentoVary[$xMagentoVaryValue] = $data;
                         }
@@ -266,5 +273,39 @@ class ApiHelper extends AbstractHelper
             }
         }
         return false;
+    }
+
+
+    /**
+     * Get DeploymentConfig
+     *
+     * @return DeploymentConfig
+     */
+    private function getDeploymentConfig() : DeploymentConfig
+    {
+        if ($this->deploymentConfig === null) {
+            $this->deploymentConfig = ObjectManager::getInstance()
+                ->get(DeploymentConfig::class);
+        }
+        return $this->deploymentConfig;
+    }
+
+    /**
+     * @param array $data
+     * @return string
+     * @throws \Magento\Framework\Exception\FileSystemException
+     * @throws \Magento\Framework\Exception\RuntimeException
+     */
+    public function getXMagentoValue(array $data): string
+    {
+        if (method_exists('Magento\Framework\App\Http\Context', 'getDeploymentConfig')) {
+            $salt = (string)$this->getDeploymentConfig()->get(
+                ConfigOptionsListConstants::CONFIG_PATH_CRYPT_KEY
+            );
+            $xMagentoVaryValue = hash('sha256', $this->serializer->serialize($data) . '|' . $salt);
+        } else {
+            $xMagentoVaryValue = sha1($this->serializer->serialize($data));
+        }
+        return $xMagentoVaryValue;
     }
 }

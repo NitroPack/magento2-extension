@@ -1,4 +1,0 @@
-[submodule "NitroPackSDK"]
-	path = NitroPackSDK
-	url = git@bitbucket.org:nitropack/nitropackcloud-sdk.git
-    branch = master
