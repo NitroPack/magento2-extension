@@ -93,6 +93,7 @@ class Save extends StoreAwareAction
             'enabled',
             'cacheWarmup',
             'safeMode',
+            'gzip',
             'autoClear-products',
             'autoClear-attributes',
             'autoClear-attributeSets',
@@ -113,6 +114,7 @@ class Save extends StoreAwareAction
             'warmupTypes-category',
             'warmupTypes-info',
             'warmupTypes-contact'
+
         );
 
         $arrays = array(
@@ -138,6 +140,13 @@ class Save extends StoreAwareAction
                 }
                 if($option === 'enabled' && $value){
                     $this->nitroPackConfigHelper->varnishConfiguredSetup();
+                }
+                if($option=='gzip') {
+                    if ($value) {
+                        $this->nitro->getSdk()->enableCompression();
+                    } else {
+                        $this->nitro->getSdk()->disableCompression();
+                    }
                 }
                 //EVENT TRIGGER
                 $this->nitroPackConfigHelper->setBoolean('previous_extension_status', $value);

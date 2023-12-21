@@ -8,6 +8,14 @@ Installation Instructions: https://support.nitropack.io/hc/en-us/articles/127062
 
 # Release Notes
 
+###   2.7.0:
+#### Compatible with Magento Open Source : 2.4
+#### Stability: Stable Build
+#### Description:
+Improvement:
+- Our diagnostics have been enhanced to better identify why Magento cache tags might be missing, potentially causing issues with NitroPack.
+- We brought back GZIP Compression with a clever feature that hides the setting if it is already in use, ensuring smoother operation and preventing accidental activation.
+
 ###   2.6.1:
 #### Compatible with Magento Open Source : 2.4
 #### Stability: Stable Build

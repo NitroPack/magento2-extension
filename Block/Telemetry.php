@@ -106,6 +106,9 @@ class Telemetry extends Template
     {
         $uri = $this->request->getUriString();
         $isStaticAssets = in_array(substr($uri, -4), ['.ico']);
+        if(strpos($this->response->getHeader('Cache-Control')->getFieldValue(),'no-cache')!==false){
+           return 0;
+        }
         return strpos($this->request->getRequestUri(), 'checkout') !==false && !$isStaticAssets ? 0: 1 ;
     }
 

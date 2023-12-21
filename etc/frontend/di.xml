@@ -39,6 +39,9 @@
         <plugin name="http-context-nitro-set-value-override" type="NitroPack\NitroPack\Model\App\HttpContext"/>
     </type>
     <type name="Magento\Customer\Model\Session">
-        <plugin name="http-context-nitro-set-value-override" type="NitroPack\NitroPack\Model\Session\CustomerGroup"/>
+        <plugin name="http-context-nitro-set-session-override" type="NitroPack\NitroPack\Model\Session\CustomerGroup"/>
+    </type>
+    <type name="Magento\Framework\View\Layout">
+        <plugin name="view-layout-nitropack" type="\NitroPack\NitroPack\Model\Layout\LayoutPlugin"/>
     </type>
 </config>

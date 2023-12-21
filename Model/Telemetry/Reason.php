@@ -5,6 +5,7 @@ namespace NitroPack\NitroPack\Model\Telemetry;
 use Magento\Checkout\Model\Cart;
 use Magento\Customer\Model\Session;
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\App\ResponseInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
 use Magento\Framework\ObjectManagerInterface;
@@ -16,6 +17,10 @@ class Reason
      * @var RequestInterface
      */
     protected $request;
+    /**
+     * @var ResponseInterface
+     */
+    protected $response;
 
     protected $reason = 'Undefined Reason';
 
@@ -26,6 +31,7 @@ class Reason
         'remote_cache_missed' => "Remote Cache is not created",
         'local_cache_missed' => "Local Server Cache is not created",
         'customer_logged_in' => "Customer is logged in",
+        'no_cacheable' => "No Cacheable in magento layout",
         'have_cart_item' => "Have Cart Item"
     ];
     /**
@@ -48,12 +54,14 @@ class Reason
         NitroServiceInterface $nitro,
         StoreManagerInterface $storeManager,
         RequestInterface $request,
+        ResponseInterface $response,
         ObjectManagerInterface $objectManager
     ) {
         $this->storeManager = $storeManager;
         $this->objectManager = $objectManager;
         $this->nitro = $nitro;
         $this->request = $request;
+        $this->response = $response;
     }
 
     public function possibleReason()
@@ -76,6 +84,14 @@ class Reason
             $this->setReason("Checkout Page");
             return true;
         }
+
+        if(strpos($this->response->getHeader('Cache-Control')->getFieldValue(),'no-cache')!==false){
+
+            $this->setReason($this->reasonHave['no_cacheable']);
+            return true;
+        }
+
+
         if (!$this->nitro->hasLocalCache()) {
             $this->setReason($this->reasonHave['local_cache_missed']);
 

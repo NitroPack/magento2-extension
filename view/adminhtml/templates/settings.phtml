@@ -206,6 +206,28 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
                                         </label>
                                     </div>
                                 </div>
+                                <?php if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) && strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false) {
+
+
+                                   $getHeader = get_headers($block->getStoreUrls(), true);
+
+                                    if(isset($getHeader['Content-Encoding']) && $getHeader['Content-Encoding'] != 'gzip'){
+
+                                    ?>
+                                <div class="form-group row">
+                                    <label class="col-md-10 col-form-label pl-0">
+                                        GZIP Compression<br>
+                                        <small class="text-secondary">ON/OFF switch for HTML compression by NitroPack</small>
+                                    </label>
+                                    <div class="col-xs-2 text-right">
+                                        <label class="switch">
+                                            <input id="gzip_mode" type="checkbox"
+                                                   name="gzip" <?= (isset($settings->gzip) && $settings->gzip ? 'checked' : '') ?>/>
+                                            <span class="slider round"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <?php }} ?>
                                 <div class="form-group row" style="margin-bottom: 0; clear: both;">
 
                                     <small class="text-secondary" style="width: 100%;clear: both;">
