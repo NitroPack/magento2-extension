@@ -8,6 +8,12 @@ Installation Instructions: https://support.nitropack.io/hc/en-us/articles/127062
 
 # Release Notes
 
+###   2.7.1:
+#### Compatible with Magento Open Source : 2.4
+#### Stability: Stable Build
+#### Description: Fix:
+- Bug Fix: This release returns to our previous page caching approach, allowing the entire page to be cached, even when a non-cacheable block is present.
+
 ###   2.7.0:
 #### Compatible with Magento Open Source : 2.4
 #### Stability: Stable Build
