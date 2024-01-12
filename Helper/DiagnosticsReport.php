@@ -186,6 +186,7 @@ class DiagnosticsReport extends AbstractHelper
 
         $nitroDataDir = str_replace('/pagecache', '', $nitro->getCacheDir());
         $configFileName = $nitroDataDir . '/' . $nitroConfig['siteId'] . '-config.json';
+        $healthStatusFile = $nitroDataDir . '/' . 'service-health';
         $info = array(
             'Nitro_MAG_version' => $this->productMetadata->getVersion(),
             'Nitro_Version' => NitroService::EXTENSION_VERSION,
@@ -196,6 +197,8 @@ class DiagnosticsReport extends AbstractHelper
             'Nitro_Plugin_Directory' => $this->moduleDir->getDir('NitroPack_NitroPack'),
             'Nitro_Data_Directory' => $nitro ? $nitroDataDir : __('Undefined', 'nitropack'),
             'Nitro_Config_File' => ($this->fileDriver->isExists($configFileName)) ? $configFileName : __('Undefined', 'nitropack'),
+            'Nitro_Health_Status_File' => ($this->fileDriver->isExists($healthStatusFile)) ? $healthStatusFile : __('Undefined', 'nitropack'),
+            'Nitro_Health_Status' => $this->checkHealthStatus($nitro),
             'Nitro_Backlog_File_Status' => $nitro ? $this->backlogStatus($nitro) : __('Error: Cannot get an SDK instance', 'nitropack'),
             'Nitro_Webhooks' => $nitro ? $this->compareWebhooks($nitro, $nitroConfig) : __('Error: Cannot get an SDK instance', 'nitropack'),
             'Nitro_Connectivity_Requirements' => $this->nitropackCheckFuncAvailability('stream_socket_client') ? __('OK', 'nitropack') : __('Warning: "stream_socket_client" function is disabled.', 'nitropack'),
@@ -264,6 +267,10 @@ class DiagnosticsReport extends AbstractHelper
         return $nitro->backlog->exists() ? 'Warning' : 'OK';
     }
 
+    function checkHealthStatus($nitro){
+        return $nitro->checkHealthStatus();
+    }
+
     function compareWebhooks($nitro, $siteConfig)
     {
         try {
@@ -319,6 +326,14 @@ class DiagnosticsReport extends AbstractHelper
         $activeModuleFilter = array_filter($this->fullModuleList->getAll(), function ($value) {
             return $this->moduleManager->isOutputEnabled($value);
         }, ARRAY_FILTER_USE_KEY);
+        return array_keys($activeModuleFilter);
+    }
+
+
+    public function getAllPluginsStatus()
+    {
+
+        $activeModuleFilter =$this->fullModuleList->getAll();
         return array_keys($activeModuleFilter);
     }
 

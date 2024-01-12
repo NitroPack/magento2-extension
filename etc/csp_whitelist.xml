@@ -22,6 +22,7 @@
             <values>
                 <value id="nitropack_intercom" type="host">*.intercom.io</value>
                 <value id="nitropack_cdn" type="host">*.nitrocdn.com</value>
+                <value id="nitropack_generic" type="host">nitroscripts.com</value>
                 <value id="intercomcdn_cdn" type="host">*.intercomcdn.com</value>
             </values>
         </policy>

@@ -8,6 +8,15 @@ Installation Instructions: https://support.nitropack.io/hc/en-us/articles/127062
 
 # Release Notes
 
+
+###   2.7.2:
+#### Compatible with Magento Open Source : 2.4
+#### Stability: Stable Build
+#### Description: Fix:
+Improvement: 
+- Added health check and included service-health file in diagnostic report.
+- Technical enhancements in NitroPack scripts.
+
 ###   2.7.1:
 #### Compatible with Magento Open Source : 2.4
 #### Stability: Stable Build
