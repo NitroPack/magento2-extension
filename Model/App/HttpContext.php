@@ -26,19 +26,30 @@ class HttpContext
      * @var \Magento\Framework\Serialize\SerializerInterface
      * */
     protected $serializer;
-
+    /**
+     * @var \Magento\Framework\App\RequestInterface
+     * */
+    protected $request;
     /**
      * @param StoreManagerInterface $storeManager
      * @param NitroService $nitroService
      * @param ApiHelper $apiHelper
      * @param \Magento\Framework\Serialize\SerializerInterface $serializer
+     * @param \Magento\Framework\App\RequestInterface $request
      */
-    public function __construct(StoreManagerInterface $storeManager, NitroService $nitroService, ApiHelper $apiHelper, \Magento\Framework\Serialize\SerializerInterface $serializer)
+    public function __construct(
+        StoreManagerInterface $storeManager,
+        NitroService $nitroService,
+        ApiHelper $apiHelper,
+        \Magento\Framework\Serialize\SerializerInterface $serializer,
+        \Magento\Framework\App\RequestInterface $request
+    )
     {
         $this->nitro = $nitroService;
         $this->storeManager = $storeManager;
         $this->apiHelper = $apiHelper;
         $this->serializer = $serializer;
+        $this->request = $request;
     }
 
     /**
@@ -50,9 +61,9 @@ class HttpContext
      */
     public function beforeSetValue(\Magento\Framework\App\Http\Context $subject, $name, $value, $default)
     {
-        $request = \Magento\Framework\App\ObjectManager::getInstance()->get(\Magento\Framework\App\RequestInterface::class);
+        $request = $this->request;
         // Get the User-Agent from the request headers
-        $userAgent = $request->getServer('HTTP_USER_AGENT');
+        $userAgent = $this->request->getServer('HTTP_USER_AGENT');
         // ||  !is_null($request->get('PHPSESSID'))
         $setValueFor = ['customer_logged_in','customer_group','store'];
          if (!is_null($userAgent) &&  in_array($name,$setValueFor) && (strpos($userAgent, 'Nitro-Optimizer-Agent') !== false || strpos($userAgent, 'Nitro-Webhook-Agent') !== false) && $request->get('X-Magento-Vary')) {

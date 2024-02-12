@@ -8,8 +8,6 @@ use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\App\Cache\StateInterface;
 use Magento\Framework\HTTP\Client\Curl;
-use Magento\Store\Model\StoreManagerInterface;
-
 use NitroPack\NitroPack\Controller\Adminhtml\StoreAwareAction;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
 use NitroPack\NitroPack\Helper\NitroPackConfigHelper;

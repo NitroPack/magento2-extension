@@ -9,7 +9,7 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Framework\App\DeploymentConfig;
-
+use NitroPack\NitroPack\Model\EntityAttributeRelationFactory;
 class AttributeDeletedObserver implements ObserverInterface
 {
     protected $storeId = 0;
@@ -42,15 +42,26 @@ class AttributeDeletedObserver implements ObserverInterface
     const TOPIC_NAME_AMQP = 'nitropack.cache.queue.topic';
     const TOPIC_NAME_DB = 'nitropack.cache.queue.topic.db';
     /**
-     * @var ObserverInterface
+     * @var ProductRepositoryInterface
      * */
-    protected $objectManager;
+    protected $productRepository;
+    /**
+     * @var SearchCriteriaBuilder
+     * */
+    protected $searchCriteriaBuilder;
+    /**
+     * @var EntityAttributeRelationFactory
+     * */
+    protected $entityAttributeFactory;
     /**
      * @param RequestInterface   $request
      * @param StoreManagerInterface $storeManager
      * @param \Magento\Framework\MessageQueue\PublisherInterface   $publisher
      * @param \Magento\Framework\MessageQueue\DefaultValueProvider $defaultQueueValueProvider
      * @param \Magento\Framework\Serialize\Serializer\Json         $json
+     * @param ProductRepositoryInterface                          $productRepository
+     * @param SearchCriteriaBuilder                                     $searchCriteriaBuilder
+     * @param EntityAttributeRelationFactory                        $entityAttributeFactory
      * @param DeploymentConfig                                     $config
      * */
     public function __construct(
@@ -59,11 +70,16 @@ class AttributeDeletedObserver implements ObserverInterface
         \Magento\Framework\MessageQueue\PublisherInterface   $publisher,
         \Magento\Framework\MessageQueue\DefaultValueProvider $defaultQueueValueProvider,
         \Magento\Framework\Serialize\Serializer\Json         $json,
+        ProductRepositoryInterface                           $productRepository,
+        SearchCriteriaBuilder                                $searchCriteriaBuilder,
+        EntityAttributeRelationFactory                       $entityAttributeFactory,
         DeploymentConfig                                     $config
     )
     {
-
+        $this->productRepository = $productRepository;
+        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->request = $request;
+        $this->entityAttributeFactory = $entityAttributeFactory;
         $this->publisher = $publisher;
         $this->storeManager = $storeManager;
         $this->storeId = $this->request->getParam('store');
@@ -71,7 +87,7 @@ class AttributeDeletedObserver implements ObserverInterface
         $this->defaultQueueValueProvider->getConnection();
         $this->config = $config;
         $this->json = $json;
-        $this->objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+
         if ($this->storeId == 0) {
             $this->storeId = $this->storeManager->getDefaultStoreView()->getId();
         }
@@ -119,19 +135,15 @@ class AttributeDeletedObserver implements ObserverInterface
 
     protected function findProductsWithAttributeSet($attributeSetId)
     {
-        $productsRepo = $this->objectManager->create(ProductRepositoryInterface::class);
-        $searchCriteriaBuilder = $this->objectManager->create(SearchCriteriaBuilder::class);
-        $searchCriteria = $searchCriteriaBuilder->addFilter('attribute_set_id', $attributeSetId, 'eq')->create();
-        $searchResults = $productsRepo->getList($searchCriteria);
+        $searchCriteria = $this->searchCriteriaBuilder->addFilter('attribute_set_id', $attributeSetId, 'eq')->create();
+        $searchResults = $this->productRepository->getList($searchCriteria);
         return $searchResults->getItems();
     }
 
     protected function findAttributeSetsIncludingAttribute($attributeId)
     {
-        $entityAttributeFactory = $this->objectManager->create(EntityAttributeRelationFactory::class);
-        $model = $entityAttributeFactory->create();
-        $collection = $model->getCollection();
-        $collection->addFieldToFilter('attribute_id', array('eq' => $attributeId));
+        $model = $this->entityAttributeFactory->create()->getCollection();
+        $collection= $model->addFieldToFilter('attribute_id', array('eq' => $attributeId));
 
         $attributeSetIds = array();
         foreach ($collection as $attr) {

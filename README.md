@@ -8,14 +8,13 @@ Installation Instructions: https://support.nitropack.io/hc/en-us/articles/127062
 
 # Release Notes
 
-
-###   2.7.2:
+###   2.8.0:
 #### Compatible with Magento Open Source : 2.4
 #### Stability: Stable Build
-#### Description: Fix:
-Improvement: 
-- Added health check and included service-health file in diagnostic report.
-- Technical enhancements in NitroPack scripts.
+#### Description: Improvements:
+- Ignore cache tags - Users can enhance performance by specifying which cache tags to ignore during the purging process.
+- Onboarding email - Introduction of an onboarding email for users who have not connected their extension.
+- Code refactoring - removing the use of ObjectManager class and obsolete information parameters from the setting JSON that are no longer in use.
 
 ###   2.7.1:
 #### Compatible with Magento Open Source : 2.4

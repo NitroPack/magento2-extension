@@ -75,7 +75,7 @@ class LayoutPlugin
 
         if (!$subject->isCacheable() ) {
             $this->response->setHeader('X-Magento-Tags-Disable',1);
-            //$this->response->setHeader('X-Nitro-Disabled', 1);
+           // $this->response->setHeader('X-Nitro-Disabled', 1);
         }
         return $result;
     }

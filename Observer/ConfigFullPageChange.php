@@ -67,6 +67,10 @@ class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
      * */
     protected $nitro;
     /**
+     * @var \Magento\Store\Api\GroupRepositoryInterface
+     * */
+    protected $storeRepository;
+    /**
      * ConfigChange constructor.
      * @param RequestInterface $request
      * @param ScopeConfigInterface $scopeConfig
@@ -75,6 +79,9 @@ class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
      * @param \Magento\Framework\Filesystem\Driver\File $fileDriver
      * @param \Magento\Framework\Serialize\SerializerInterface $serializer
      * @param \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList
+     * @param WriterInterface $configWriter
+     * @param NitroServiceInterface $nitro
+     * @param \Magento\Store\Api\GroupRepositoryInterface $StoreRepository
      * @param \Magento\Framework\App\Cache\Frontend\Pool $cacheFrontendPool
      * */
     public function __construct(
@@ -87,6 +94,7 @@ class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
         \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList,
         WriterInterface $configWriter,
         NitroServiceInterface $nitro,
+        \Magento\Store\Api\GroupRepositoryInterface $storeRepository,
         \Magento\Framework\App\Cache\Frontend\Pool $cacheFrontendPool
     ) {
         $this->request = $request;
@@ -99,6 +107,7 @@ class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
         $this->_cacheTypeList = $cacheTypeList;
         $this->configWriter = $configWriter;
         $this->_cacheFrontendPool = $cacheFrontendPool;
+        $this->storeRepository = $storeRepository;
     }
 
     public function execute(EventObserver $observer)
@@ -112,9 +121,8 @@ class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
                         $this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_NITRO_ENABLED)
                     ) && $this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_NITRO_ENABLED) == $varnishEnableKey) {
 
-                    $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-                    $storeRepo = $objectManager->create(\Magento\Store\Api\GroupRepositoryInterface::class);
-                    $storeGroup = $storeRepo->getList();
+
+                    $storeGroup = $this->storeRepository->getList();
 
                     foreach ($storeGroup as $storesData) {
                         try {
@@ -138,9 +146,8 @@ class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
                 ) == \Magento\PageCache\Model\Config::BUILT_IN) {
                 $this->varnishHelper->purgeVarnish();
             }
-            $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-            $storeRepo = $objectManager->create(\Magento\Store\Api\GroupRepositoryInterface::class);
-            $storeGroup = $storeRepo->getList();
+
+            $storeGroup = $this->storeRepository->getList();
 
             foreach ($storeGroup as $storesData) {
                 try {

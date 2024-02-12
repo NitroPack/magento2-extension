@@ -88,7 +88,6 @@ class InvalidationHelper extends AbstractHelper
      *
      * @param Context $context
      * @param Shell $shell
-     * @param \Magento\Store\Api\GroupRepositoryInterface $storeGroupRepo
      * @param DirectoryList $directoryList
      * @param \Magento\Cron\Model\ResourceModel\Schedule\CollectionFactory $cronFactory
      * @param ApiHelper $apiHelper
@@ -108,7 +107,6 @@ class InvalidationHelper extends AbstractHelper
     public function __construct(
         Context                                                      $context,
         Shell                                                        $shell,
-        \Magento\Store\Api\GroupRepositoryInterface                  $storeGroupRepo,
         DirectoryList                                                $directoryList,
         \Magento\Cron\Model\ResourceModel\Schedule\CollectionFactory $cronFactory,
         ApiHelper                                                    $apiHelper,
@@ -191,9 +189,7 @@ class InvalidationHelper extends AbstractHelper
     {
 
         $this->settings = null;
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $storeRepo = $objectManager->create(\Magento\Store\Api\GroupRepositoryInterface::class);
-        $stores = $storeRepo->getList();
+        $stores = $this->stores;
         $triggerEnabled = true;
         foreach ($stores as $storesData) {
             $settingsFilename = $this->apiHelper->getSettingsFilename($storesData->getCode());
@@ -218,10 +214,7 @@ class InvalidationHelper extends AbstractHelper
 
     function setEnableAndDisable($serviceEnable)
     {
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $storeRepo = $objectManager->create(\Magento\Store\Api\GroupRepositoryInterface::class);
-        $stores = $storeRepo->getList();
-        foreach ($stores as $storesData) {
+        foreach ($this->stores as $storesData) {
             $settingsFilename = $this->apiHelper->getSettingsFilename($storesData->getCode());
             $haveData = $this->apiHelper->readFile($settingsFilename);
             //Check The file is readable

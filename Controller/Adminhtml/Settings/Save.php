@@ -93,33 +93,10 @@ class Save extends StoreAwareAction
             'enabled',
             'cacheWarmup',
             'safeMode',
-            'gzip',
-            'autoClear-products',
-            'autoClear-attributes',
-            'autoClear-attributeSets',
-            'autoClear-reviews',
-            'autoClear-categories',
-            'autoClear-pages',
-            'autoClear-blocks',
-            'autoClear-widgets',
-            'autoClear-orders',
-            'pageTypes-home',
-            'pageTypes-product',
-            'pageTypes-category',
-            'pageTypes-info',
-            'pageTypes-contact',
-            'cache_to_login_customer',
-            'warmupTypes-home',
-            'warmupTypes-product',
-            'warmupTypes-category',
-            'warmupTypes-info',
-            'warmupTypes-contact'
-
+            'gzip'
         );
 
-        $arrays = array(
-            'pageTypes-custom'
-        );
+        $arrays = array();
 
         $oldSettings = (array)$this->nitro->getSettings();
         $additional_meta_data = [];
@@ -150,45 +127,14 @@ class Save extends StoreAwareAction
                 }
                 //EVENT TRIGGER
                 $this->nitroPackConfigHelper->setBoolean('previous_extension_status', $value);
-
                 $this->nitroPackConfigHelper->setBoolean($option, $value);
                 $shouldSave = true;
             }
 
         }
-
-        foreach ($arrays as $option) {
-            $value = $this->getRequest()->getPostValue($option, null);
-            if ($value === null) {
-                continue;
-            }
-
-            if (is_array($value)) {
-                $this->setArray($option, $value);
-                $shouldSave = true;
-                array_push(
-                    $additional_meta_data,
-                    ['setting' => $option, 'before' => isset($oldSettings[$option]) ?: null, 'after' => $value]
-                );
-            } elseif ($value === "") {
-                $this->setArray($option, array());
-                $shouldSave = true;
-                array_push(
-                    $additional_meta_data,
-                    ['setting' => $option, 'before' => isset($oldSettings[$option]) ?: null, 'after' => $value]
-                );
-            } else {
-                $resultData['nope'] = $value;
-                return $this->resultJsonFactory->create()->setData($resultData);
-            }
-        }
-
         if (empty($errors) && $shouldSave) {
-           // $event = 'configure';
-           // $this->triggerConfigureEvent($event, $additional_meta_data);
             $this->nitro->persistSettings();
             $newSettings = (array)$this->nitro->getSettings();
-
             if (!$oldSettings['cacheWarmup'] && $newSettings['cacheWarmup']) {
                 $sitemapUrl = $this->getWarmupSitemapUrl(
                     $this->getStoreGroup()->getId(),
@@ -205,7 +151,6 @@ class Save extends StoreAwareAction
                 $this->nitro->getApi()->resetWarmup();
             }
         }
-
         $resultData['saved'] = true;
         return $this->resultJsonFactory->create()->setData($resultData);
     }

@@ -81,7 +81,10 @@ class CleanCacheByTagsObserver implements ObserverInterface
      * @var CollectionFactory
      * */
     protected $attributeCollectionFactory;
-
+    /**
+     * @var \Magento\Store\Api\GroupRepositoryInterface
+     * */
+    protected $storeRepo;
     /**
      * @param Resolver $cacheTagResolver
      * @param \Magento\Framework\MessageQueue\PublisherInterface $publisher
@@ -96,6 +99,7 @@ class CleanCacheByTagsObserver implements ObserverInterface
      * @param ScopeConfigInterface $_scopeConfig
      * @param ApiHelper $apiHelper
      * @param CollectionFactory $attributeCollectionFactory
+     * @param \Magento\Store\Api\GroupRepositoryInterface $storeRepo
      * @param DeploymentConfig $config
      * */
     public function __construct(
@@ -112,6 +116,7 @@ class CleanCacheByTagsObserver implements ObserverInterface
         ScopeConfigInterface                               $_scopeConfig,
         ApiHelper                                          $apiHelper,
         CollectionFactory                                  $attributeCollectionFactory,
+        \Magento\Store\Api\GroupRepositoryInterface       $storeRepo,
         DeploymentConfig                                   $config
     )
     {
@@ -119,6 +124,7 @@ class CleanCacheByTagsObserver implements ObserverInterface
         $this->_scopeConfig = $_scopeConfig;
         $this->cacheTagResolver = $cacheTagResolver;
         $this->config = $config;
+        $this->storeRepo = $storeRepo;
         $this->json = $json;
         $this->storeManager = $storeManager;
         $this->publisher = $publisher;
@@ -160,9 +166,7 @@ class CleanCacheByTagsObserver implements ObserverInterface
 
                 }
                 //
-                $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-                $storeRepo = $objectManager->create(\Magento\Store\Api\GroupRepositoryInterface::class);
-                $stores = $storeRepo->getList();
+                $stores = $this->storeRepo->getList();
                 foreach ($stores as $storesData) {
                     $storeId = $storesData->getDefaultStoreId();
                     if ($storeId > 0) {
@@ -174,6 +178,7 @@ class CleanCacheByTagsObserver implements ObserverInterface
                             if (isset($settings->enabled) && $settings->enabled) {
 
                                 $tags = array_unique($tags);
+                                $tags = array_diff($tags, $this->getIgnoreTags());
                                 //Non-Zero Product Quantity Check
                                 if ($object instanceof \Magento\CatalogInventory\Model\Adminhtml\Stock\Item\Interceptor) {
 
@@ -182,6 +187,7 @@ class CleanCacheByTagsObserver implements ObserverInterface
                                         return false;
                                     }
                                 }
+
                                 foreach ($tags as $tag) {
                                     list($tagType, $id) = $this->getTagTypeAndId($tag);
                                     $reasonEntity = $this->getReasonFromType($tagType, $id);
@@ -209,6 +215,7 @@ class CleanCacheByTagsObserver implements ObserverInterface
                                             'storeId' => $storeId,
                                             'reasonEntity' => $reasonEntityName
                                         ];
+
                                         $this->publisher->publish($this->getTopicName(), $this->json->serialize($rawData));
                                         if ($tagType == 'product' && !empty($reasonEntity) && $reasonEntity->getId()) {
                                             $this->categoryProductInvalidate($reasonEntity, $storeId, $reasonEntityName, $rawData);
@@ -297,6 +304,9 @@ class CleanCacheByTagsObserver implements ObserverInterface
     public function categoryProductInvalidate($reasonEntity, int $storeId, string $reasonEntityName, array $rawData): array
     {
         foreach ($reasonEntity->getCategoryIds() as $catId) {
+            if(in_array('cat_c_'.$catId, $this->getIgnoreTags())){
+                continue;
+            }
             $rawData = [
                 'action' => 'invalidation',
                 'type' => 'category',
@@ -305,6 +315,7 @@ class CleanCacheByTagsObserver implements ObserverInterface
                 'storeId' => $storeId,
                 'reasonEntity' => $reasonEntityName
             ];
+
             $this->publisher->publish($this->getTopicName(), $this->json->serialize($rawData));
         }
         return $rawData;
@@ -405,6 +416,22 @@ class CleanCacheByTagsObserver implements ObserverInterface
         } catch (\Exception $e) {
             return [];
         }
+    }
+
+
+    public function getIgnoreTags()
+    {
+
+        $ignoreTags = $this->_scopeConfig->getValue(\NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK_IGNORE_TAGS);
+        if(!is_null($ignoreTags) && $ignoreTags ){
+            $ignoreTags = explode(',', $ignoreTags);
+            $ignoreTags = array_map('trim', $ignoreTags);
+            $ignoreTags = array_filter($ignoreTags);
+            $ignoreTags = array_unique($ignoreTags);
+            return $ignoreTags;
+        }
+
+        return [];
     }
 
 }

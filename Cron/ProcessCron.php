@@ -29,23 +29,29 @@ class ProcessCron
      * @var LoggerInterface $logger
      * */
     protected $logger;
-
+    /**
+     * @var \Magento\Store\Api\GroupRepositoryInterface
+     * */
+    protected $storeRepo;
     /**
      * @param NitroServiceInterface $nitro
      * @param StoreManagerInterface $storeManager
      * @param RedisHelper $redisHelper
      * @param LoggerInterface $logger
+     * @param \Magento\Store\Api\GroupRepositoryInterface $storeRepo
      * */
     public function __construct(
         NitroServiceInterface $nitro,
         StoreManagerInterface $storeManager,
         RedisHelper           $redisHelper,
-        LoggerInterface       $logger
+        LoggerInterface       $logger,
+        \Magento\Store\Api\GroupRepositoryInterface $storeRepo
     )
     {
         $this->logger = $logger;
         $this->nitro = $nitro;
         $this->redisHelper = $redisHelper;
+        $this->storeRepo = $storeRepo;
         $this->storeManager = $storeManager;
     }
     /**
@@ -53,11 +59,8 @@ class ProcessCron
      * */
     public function execute()
     {
-        //Load NitroPack Library to set credential
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $storeRepo = $objectManager->create(\Magento\Store\Api\GroupRepositoryInterface::class);
-        $storeGroup = $storeRepo->getList();
 
+        $storeGroup = $this->storeRepo->getList();
         foreach ($storeGroup as $storesData) {
             try {
                 $this->nitro->reload($storesData->getCode());

@@ -44,19 +44,26 @@ class MaintenanceModeObserver implements ObserverInterface
      * */
     protected $varnishHelper;
     /**
+     * @var   \Magento\Store\Api\GroupRepositoryInterface
+     * */
+    protected $groupRepository;
+    /**
      * @param   \Magento\Framework\Filesystem\Driver\File        $fileDriver
      * @param DirectoryList $directoryList
      * @param ApiHelper                                        $apiHelper
      * @param \Magento\Framework\Serialize\SerializerInterface $serializer
      * @param ScopeConfigInterface $scopeConfig
+     * @param \Magento\Store\Api\GroupRepositoryInterface $groupRepository
      * @param VarnishHelper $varnishHelper
      * */
     public function __construct(
         \Magento\Framework\Filesystem\Driver\File        $fileDriver,
+
         DirectoryList $directoryList,
         ApiHelper                                        $apiHelper,
         \Magento\Framework\Serialize\SerializerInterface $serializer,
         ScopeConfigInterface $_scopeConfig,
+        \Magento\Store\Api\GroupRepositoryInterface $groupRepository,
         VarnishHelper $varnishHelper
 
 
@@ -66,6 +73,7 @@ class MaintenanceModeObserver implements ObserverInterface
         $this->serializer = $serializer;
         $this->fileDriver = $fileDriver;
         $this->varnishHelper = $varnishHelper;
+        $this->groupRepository = $groupRepository;
         $this->apiHelper = $apiHelper;
         $this->_scopeConfig = $_scopeConfig;
     }
@@ -78,9 +86,8 @@ class MaintenanceModeObserver implements ObserverInterface
     public function execute(Observer $observer)
     {
 
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $storeRepo = $objectManager->create(\Magento\Store\Api\GroupRepositoryInterface::class);
-        $storeGroup = $storeRepo->getList();
+
+        $storeGroup = $this->groupRepository->getList();
         foreach ($storeGroup as $storesData) {
             $settingsFilename = $this->apiHelper->getSettingsFilename($storesData->getCode());
             $haveData = $this->apiHelper->readFile($settingsFilename);
@@ -124,10 +131,9 @@ class MaintenanceModeObserver implements ObserverInterface
                         }
 
                 } catch (\Exception $e) {
-                    $file = $objectManager->create('\Magento\Framework\Filesystem\Driver\File');
                     $cachePath = $rootPath . 'nitro_cache' . DIRECTORY_SEPARATOR . $this->settings->siteId;
-                    if ($file->isDirectory($cachePath)) {
-                        $file->deleteDirectory($cachePath);
+                    if ($this->fileDriver->isDirectory($cachePath)) {
+                        $this->fileDriver->deleteDirectory($cachePath);
                     }
                 }
                 $this->fileDriver->filePutContents(

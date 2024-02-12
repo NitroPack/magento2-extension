@@ -22,7 +22,7 @@ interface NitroServiceInterface {
 
 	public function getSiteId();
 	public function setSiteId($newSiteId);
-
+    public function setVariableValue($variable,$value);
     public function getXMagentoVary();
     public function setXMagentoVary($data);
 

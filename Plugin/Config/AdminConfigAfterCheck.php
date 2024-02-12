@@ -18,14 +18,24 @@ class AdminConfigAfterCheck
      * */
 
     protected $nitro;
-
+    /**
+     * @var \Magento\Store\Api\GroupRepositoryInterface
+     * */
+    protected $storeRepo;
+    /**
+     * @param NitroServiceInterface $nitro
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Store\Api\GroupRepositoryInterface $storeRepo
+     * */
     public function __construct(
         NitroServiceInterface                      $nitro,
-        \Magento\Store\Model\StoreManagerInterface $storeManager
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Store\Api\GroupRepositoryInterface $storeRepo
     )
     {
         $this->nitro = $nitro;
         $this->storeManager = $storeManager;
+        $this->storeRepo = $storeRepo;
     }
 
     /**
@@ -38,13 +48,10 @@ class AdminConfigAfterCheck
      */
     public function afterSave()
     {
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $storeRepo = $objectManager->create(\Magento\Store\Api\GroupRepositoryInterface::class);
-        $storeGroup = $storeRepo->getList();
 
+        $storeGroup = $this->storeRepo->getList();
         foreach ($storeGroup as $storeGroupData) {
             $storeGroupCode = $storeGroupData->getCode();
-
             $duplicateAliasDomain = [];
             foreach ($storeGroupData->getStores() as $storeView) {
                 $defaultStoreView = $this->storeManager->getStore($storeGroupData->getDefaultStoreId());

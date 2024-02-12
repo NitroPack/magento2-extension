@@ -13,7 +13,6 @@ use NitroPack\SDK\Api\ResponseStatus;
 use Magento\Framework\Module\Dir;
 use Composer\Composer;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\HTTP\Header;
 use Magento\Framework\HTTP\ZendClientFactory;
 
@@ -48,10 +47,6 @@ class DiagnosticsReport extends AbstractHelper
      * */
     protected $moduleManager;
 
-    /**
-     * @var ObjectManagerInterface
-     * */
-    protected $objectManager;
     /**
      * @var RedisHelper
      * */
@@ -97,7 +92,6 @@ class DiagnosticsReport extends AbstractHelper
      * @var \Magento\Framework\Module\Manager $moduleManager
      * @var ScopeConfigInterface $scopeConfig
      * @var RedisHelper $redisHelper
-     * @var ObjectManagerInterface $objectManager
      * @param ZendClientFactory $httpClientFactory
      * @param \Magento\Framework\App\DeploymentConfig $deploymentConfig = null
      * @param Header $httpHeader
@@ -117,7 +111,6 @@ class DiagnosticsReport extends AbstractHelper
         \Magento\Framework\Module\Manager           $moduleManager,
         ScopeConfigInterface                        $scopeConfig,
         RedisHelper                                 $redisHelper,
-        ObjectManagerInterface                      $objectManager,
         ZendClientFactory $httpClientFactory,
         Header $httpHeader,
         \Magento\Framework\App\DeploymentConfig $deploymentConfig = null,
@@ -131,7 +124,6 @@ class DiagnosticsReport extends AbstractHelper
         $this->httpClientFactory = $httpClientFactory;
         $this->httpHeader = $httpHeader;
         $this->redisHelper = $redisHelper;
-        $this->objectManager = $objectManager;
         $this->moduleDir = $moduleDir;
         $this->scopeConfig = $scopeConfig;
         $this->fileDriver = $fileDriver;

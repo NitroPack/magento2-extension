@@ -38,6 +38,7 @@ class AgainUpdateCredential extends Action
      * @var NitroPackConfigHelper
      * */
     protected $_helper;
+
     protected $store;
 
     /**

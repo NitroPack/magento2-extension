@@ -7,14 +7,12 @@ use Magento\Framework\App\State;
 use Magento\Framework\App\Area;
 use Magento\Framework\Exception\FileSystemException;
 use Magento\Framework\Filesystem\DirectoryList;
-use Magento\Framework\ObjectManagerInterface;
 use NitroPack\NitroPack\Helper\RedisHelper;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Customer\Model\Session;
 use Psr\Log\LoggerInterface;
 use \NitroPack\SDK\Api\Varnish as NitroPackVarnish;
 use \NitroPack\SDK\NitroPack;
-use Magento\Framework\Config\ConfigOptionsListConstants;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\UrlInterface;
 
@@ -25,7 +23,7 @@ use Magento\Framework\UrlInterface;
 class NitroService implements NitroServiceInterface
 {
 
-    const EXTENSION_VERSION = '2.7.2';   // Do not change this line manually. It is updated automatically by the build script.
+    const EXTENSION_VERSION = '2.8.0';  // Do not change this line manually. It is updated automatically by the build script.
 
     const FULL_PAGE_CACHE_NITROPACK = 'system/full_page_cache/caching_application';
     const FULL_PAGE_CACHE_NITROPACK_VALUE = 3;
@@ -33,6 +31,7 @@ class NitroService implements NitroServiceInterface
     public const XML_VARNISH_PAGECACHE_BACKEND_HOST = 'system/full_page_cache/varnish_servers';
 
     public const XML_VARNISH_PAGECACHE_NITRO_ENABLED = 'system/full_page_cache/varnish_enable';
+    public const FULL_PAGE_CACHE_NITROPACK_IGNORE_TAGS = 'nitropack/ignored_tags/ignored_tags';
     protected static $pageRoutes = array(
         'cms_index_index' => 'home',
         'catalog_product_view' => 'product',
@@ -60,10 +59,7 @@ class NitroService implements NitroServiceInterface
      * */
     protected $appState;
 
-    /**
-     * @var ObjectManagerInterface
-     * */
-    protected $objectManager;
+
     /**
      * @var DirectoryList
      * */
@@ -103,9 +99,11 @@ class NitroService implements NitroServiceInterface
      * @var  \Magento\Framework\Encryption\EncryptorInterface
      * */
     protected $encryptor;
-
     /**
-     * @param ObjectManagerInterface $objectManager
+     * @var \Magento\Framework\App\ProductMetadataInterface
+     * */
+    protected $productMetadata;
+    /**
      * @param State $appState
      * @param DirectoryList $directoryList
      * @param \Magento\Framework\Filesystem\Driver\File $fileDriver
@@ -115,11 +113,14 @@ class NitroService implements NitroServiceInterface
      * @param ScopeConfigInterface $_scopeConfig
      * @param UrlInterface $urlBuilder
      * @param \Magento\Store\Model\Store $store
+     * @param \Magento\Framework\App\ProductMetadataInterface  $productMetadata
      * @param RequestInterface $request
      * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
+     * @param StoreManagerInterface $storeManager
+     * @param Session $session
      * */
     public function __construct(
-        ObjectManagerInterface                           $objectManager,
+
         State                                            $appState,
         DirectoryList                                    $directoryList,
         \Magento\Framework\Filesystem\Driver\File        $fileDriver,
@@ -129,14 +130,18 @@ class NitroService implements NitroServiceInterface
         ScopeConfigInterface                             $_scopeConfig,
         UrlInterface                                     $urlBuilder,
         \Magento\Store\Model\Store                       $store,
+        \Magento\Framework\App\ProductMetadataInterface  $productMetadata,
         RequestInterface                                 $request,
-        \Magento\Framework\Encryption\EncryptorInterface $encryptor
+        \Magento\Framework\Encryption\EncryptorInterface $encryptor,
+        StoreManagerInterface $storeManager,
+        Session $session
 
     )
     {
+        $this->session = $session;
+        $this->productMetadata = $productMetadata;
         $this->_scopeConfig = $_scopeConfig;
         $this->logger = $logger;
-        $this->objectManager = $objectManager;
         $this->appState = $appState;
         $this->directoryList = $directoryList;
         $this->fileDriver = $fileDriver;
@@ -145,7 +150,7 @@ class NitroService implements NitroServiceInterface
         $this->urlBuilder = $urlBuilder;
         $this->redisHelper = $redisHelper;
         $this->store = $store;
-        $this->storeManager = $this->objectManager->get(StoreManagerInterface::class);
+        $this->storeManager = $storeManager;
         $this->loadedStoreCode = null;
         $this->encryptor = $encryptor;
 
@@ -183,8 +188,8 @@ class NitroService implements NitroServiceInterface
 
     public function magentoVersion()
     {
-        $mData = $this->objectManager->get('Magento\Framework\App\ProductMetadataInterface');
-        return $mData->getVersion();
+
+        return $this->productMetadata->getVersion();
     }
 
     /**
@@ -335,6 +340,15 @@ class NitroService implements NitroServiceInterface
     }
 
     /**
+     * \NitroPack\NitroPack\Api\NitroServiceInterface::setVariableValue
+     */
+    public function setVariableValue($variable,$value)
+    {
+        $this->settings->{$variable} = $value;
+    }
+
+
+    /**
      * \NitroPack\NitroPack\Api\NitroServiceInterface::setXMagentoVary
      */
     public function setXMagentoVary($data)
@@ -378,13 +392,9 @@ class NitroService implements NitroServiceInterface
      */
     public function isCustomerLogin()
     {
-        if (!$this->session) {
-            $this->session = $this->objectManager->get(Session::class);
-        }
         if ($this->session->isLoggedIn()) {
             return true;
         }
-
         return false;
     }
 
@@ -462,59 +472,7 @@ class NitroService implements NitroServiceInterface
             $settings->siteId = null;
             $settings->siteSecret = null;
         }
-
-        if (!isset($settings->autoClear)) {
-            $settings->autoClear = new \stdClass();
-        }
-
-        $settings->autoClear->products = true;
-        $settings->autoClear->attributes = true;
-        $settings->autoClear->attributeSets = true;
-        $settings->autoClear->reviews = true;
-        $settings->autoClear->categories = true;
-        $settings->autoClear->pages = true;
-        $settings->autoClear->blocks = true;
-        $settings->autoClear->widgets = true;
-        $settings->autoClear->orders = true;
-
-        if (!isset($settings->pageTypes)) {
-            $settings->pageTypes = new \stdClass();
-        }
-
-        $settings->pageTypes->home = true;
-        $settings->pageTypes->product = true;
-        $settings->pageTypes->category = true;
-        $settings->pageTypes->info = true;
-        $settings->pageTypes->contact = true;
-
-        $settings->pageTypes->custom = array();
-
         $settings->cacheWarmup = false;
-
-        if (!isset($settings->warmupTypes)) {
-            $settings->warmupTypes = new \stdClass;
-        }
-
-        $settings->warmupTypes->home = true;
-        $settings->warmupTypes->product = true;
-        $settings->warmupTypes->category = true;
-        $settings->warmupTypes->info = true;
-        $settings->warmupTypes->contact = true;
-
-        if (!isset($settings->warmupPriority)) {
-            $settings->warmupPriority = new \stdClass;
-        }
-
-        $settings->warmupPriority->home = 1.0;
-        $settings->warmupPriority->info = 0.9;
-        $settings->warmupPriority->contact = 0.8;
-        $settings->warmupPriority->category = 0.7;
-        $settings->warmupPriority->product = 0.6;
-
-        if (!isset($settings->warmupCurrencyVariations) || !is_array($settings->warmupCurrencyVariations)) {
-            $settings->warmupCurrencyVariations = array();
-        }
-
         return $settings;
     }
 
@@ -553,9 +511,7 @@ class NitroService implements NitroServiceInterface
             $area = $this->appState->getAreaCode();
 
             if ($area == Area::AREA_FRONTEND) {
-                if (!$this->storeManager) {
-                    $this->storeManager = $this->objectManager->get(StoreManagerInterface::class);
-                }
+
                 $storeName = $this->storeManager->getGroup()->getCode();
             } elseif ($area == Area::AREA_ADMINHTML) {
                 return $rootPath . 'nitro_settings_NO_STORE.json';

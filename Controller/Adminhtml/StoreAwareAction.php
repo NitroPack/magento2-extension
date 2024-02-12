@@ -4,9 +4,7 @@ namespace NitroPack\NitroPack\Controller\Adminhtml;
 
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
-use Magento\Framework\Filesystem\DirectoryList;
 use Magento\Store\Model\StoreManagerInterface;
-
 use NitroPack\NitroPack\Api\NitroServiceInterface;
 
 abstract class StoreAwareAction extends Action
@@ -23,12 +21,12 @@ abstract class StoreAwareAction extends Action
      * */
     public function __construct(
         Context $context,
-        NitroServiceInterface $nitro
+        NitroServiceInterface $nitro,
+
     ) {
 
         parent::__construct($context);
         $this->nitro = $nitro;
-
         $this->storeManager = $this->_objectManager->get(StoreManagerInterface::class);
     }
 

@@ -2,14 +2,10 @@
 
 namespace NitroPack\NitroPack\Model\Telemetry;
 
-use Magento\Checkout\Model\Cart;
-use Magento\Customer\Model\Session;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
-use Magento\Framework\ObjectManagerInterface;
-
 
 class Reason
 {
@@ -43,22 +39,14 @@ class Reason
      * @var StoreManagerInterface
      * */
     private $storeManager;
-    /**
-     * @var ObjectManagerInterface
-     * */
-    private $objectManager;
-    private $context = null;
-    private $cart = null;
 
     public function __construct(
         NitroServiceInterface $nitro,
         StoreManagerInterface $storeManager,
         RequestInterface $request,
-        ResponseInterface $response,
-        ObjectManagerInterface $objectManager
+        ResponseInterface $response
     ) {
         $this->storeManager = $storeManager;
-        $this->objectManager = $objectManager;
         $this->nitro = $nitro;
         $this->request = $request;
         $this->response = $response;

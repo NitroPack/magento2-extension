@@ -30,7 +30,6 @@ abstract class WebhookController extends Action implements HttpGetActionInterfac
         parent::__construct($context);
         $objManager = $context->getObjectManager();
         $this->nitro = $objManager->get(NitroServiceInterface::class);
-
         if(!$this->isValidNitropackWebhook()){
             throw new \Exception('Invalid WebHook token ');
         }

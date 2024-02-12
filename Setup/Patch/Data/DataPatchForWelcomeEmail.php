@@ -3,12 +3,13 @@
 namespace NitroPack\NitroPack\Setup\Patch\Data;
 
 use Magento\Framework\Filesystem\DirectoryList;
-
 use Magento\Framework\Setup\ModuleDataSetupInterface;
+use Magento\Framework\Setup\Patch\DataPatchInterface;
 use NitroPack\NitroPack\Helper\ApiHelper;
 
-class DataPatchForCheckDefaultStock implements \Magento\Framework\Setup\Patch\DataPatchInterface
+class DataPatchForWelcomeEmail  implements DataPatchInterface
 {
+
     /**
      * @var ModuleDataSetupInterface
      */
@@ -25,6 +26,11 @@ class DataPatchForCheckDefaultStock implements \Magento\Framework\Setup\Patch\Da
      * @var ApiHelper
      * */
     protected $apiHelper;
+    /**
+     * @var \Magento\Framework\Event\ManagerInterface
+     */
+    protected $eventManager;
+
 
     /**
      * @param ModuleDataSetupInterface $moduleDataSetup
@@ -32,16 +38,18 @@ class DataPatchForCheckDefaultStock implements \Magento\Framework\Setup\Patch\Da
      * @param DirectoryList $directoryList
      * @param ApiHelper $apiHelper
      * @param ModuleDataSetupInterface $moduleDataSetup
+     * @param \Magento\Framework\Event\ManagerInterface $eventManager
      */
     public function __construct(
         ModuleDataSetupInterface                    $moduleDataSetup,
         \Magento\Store\Api\GroupRepositoryInterface $storeGroupRepo,
         DirectoryList                               $directoryList,
-        ApiHelper                                   $apiHelper
+        ApiHelper                                   $apiHelper,
+        \Magento\Framework\Event\ManagerInterface $eventManager
 
     )
     {
-
+        $this->eventManager = $eventManager;
         $this->apiHelper = $apiHelper;
         $this->directoryList = $directoryList;
         $this->storeGroupRepo = $storeGroupRepo;
@@ -56,27 +64,21 @@ class DataPatchForCheckDefaultStock implements \Magento\Framework\Setup\Patch\Da
     {
         $this->moduleDataSetup->getConnection()->startSetup();
         $storeGroup = $this->storeGroupRepo->getList();
+        $haveConnectionFlag = false;
 
         foreach ($storeGroup as $storesData) {
             $settingsFilename = $this->apiHelper->getSettingsFilename($storesData->getCode());
             $haveData = $this->apiHelper->readFile($settingsFilename);
             if ($haveData) {
-                $settings = json_decode($haveData);
-                try {
-                    $settings->default_stock = false;
-                    if($this->apiHelper->checkDefaultStockAvailable()){
-                        $settings->default_stock = true;
-                    }
-                    $this->apiHelper->writeFile($settingsFilename, $settings);
-                } catch (\Exception $e) {
-                    $error = $e->getMessage();
-                }
-                $this->moduleDataSetup->getConnection()->endSetup();
+                $haveConnectionFlag = true;
             }
         }
+        if(!$haveConnectionFlag){
+            $this->eventManager->dispatch('install_trigger_email');
+        }
+
+        $this->moduleDataSetup->getConnection()->endSetup();
     }
-
-
     public function getAliases()
     {
         return [];
@@ -89,5 +91,4 @@ class DataPatchForCheckDefaultStock implements \Magento\Framework\Setup\Patch\Da
     {
         return [];
     }
-
 }

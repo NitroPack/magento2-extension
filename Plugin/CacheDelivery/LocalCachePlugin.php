@@ -184,7 +184,7 @@ class LocalCachePlugin
 
         foreach ($responseData['headers'] as $headerKey => $headerValue) {
 
-                $response->setHeader($headerValue['name'], $headerValue['value'], true);
+            $response->setHeader($headerValue['name'], $headerValue['value'], true);
 
         }
 

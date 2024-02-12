@@ -8,6 +8,29 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
+        <tab id="nitropack" translate="label" sortOrder="400" class="nitropack-configuration-tab">
+            <label>NitroPack</label>
+        </tab>
+        <section id="nitropack" translate="label" sortOrder="0" showInDefault="1" showInWebsite="0" showInStore="0">
+            <label>Settings</label>
+            <tab>nitropack</tab>
+            <resource>NitroPack_NitroPack::config_nitropack</resource>
+            <group id="usage_track" translate="label" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Usage Data Tracking</label>
+                <attribute type="expanded">1</attribute>
+                <field id="usage_data" translate="label comment" type="select" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Usage Data Tracking</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+            <group id="ignored_tags" translate="label" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
+            <label>Ignored Cache Tags</label>
+            <field id="ignored_tags" translate="label comment" type="textarea" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Ignored Cache Tags</label>
+                <comment> Cache tags are powerful for intelligent purging, but too many tags can impact performance. To optimize, you can now specify cache tags to be ignored during purging. This is particularly useful for common tags that appear on every page and don't significantly contribute to intelligent purging.</comment>
+            </field>
+            </group>
+        </section>
         <section id="system">
             <group id="full_page_cache" translate="label" showInDefault="1" sortOrder="600">
                 <label>Full Page Cache</label>

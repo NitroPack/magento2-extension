@@ -3,7 +3,6 @@
 namespace NitroPack\NitroPack\Controller\Adminhtml\Connect;
 
 use Magento\Backend\App\Action\Context;
-use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Filesystem\DirectoryList;
 use NitroPack\NitroPack\Controller\Adminhtml\StoreAwareAction;
@@ -49,6 +48,7 @@ class Save extends StoreAwareAction
      * @var ApiHelper
      * */
     protected $apiHelper;
+
     /**
      * @param Context $context
      * @param NitroServiceInterface $nitro
@@ -99,13 +99,11 @@ class Save extends StoreAwareAction
                 }
                 $eventUrl = $this->nitro->integrationUrl('extensionEvent');
                 $this->nitro->nitroEvent('connect', $eventUrl, $this->storeGroup);
+
                 $eventSent = $this->nitro->nitroEvent('enable_extension', $eventUrl, $this->storeGroup);
                 $this->nitroPackConfigHelper->xMagentoVaryAdd($this->getStoreGroup());
-
-
-
+                $this->nitro->setVariableValue('handshake_connection_method',$this->request->getPostValue('handshake_connection_method'));
                 $this->nitroPackConfigHelper->setBoolean('default_stock',$this->apiHelper->checkDefaultStockAvailable());
-
                 $this->nitroPackConfigHelper->setBoolean('cache_to_login_customer', true);
                 $this->nitroPackConfigHelper->persistSettings($this->getStoreGroup()->getCode());
                 $this->nitroPackConfigHelper->varnishConfiguredSetup();

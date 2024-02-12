@@ -5,8 +5,6 @@ namespace NitroPack\NitroPack\Controller\Adminhtml\Report;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\RequestInterface;
-use Magento\Framework\ObjectManagerInterface;
-use Magento\Framework\View\Result\PageFactory;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
 use NitroPack\NitroPack\Controller\Adminhtml\StoreAwareAction;
 use NitroPack\NitroPack\Helper\DiagnosticsReport as DiagnosticsReportHelper;
@@ -32,11 +30,6 @@ class DiagnosticsReport extends StoreAwareAction
      * @var ScopeConfigInterface
      * */
     protected $_scopeConfig;
-
-    /**
-     * @var ObjectManagerInterface
-     */
-    private $objectManager;
 
     public $configSetting = null;
     /**
@@ -69,7 +62,6 @@ class DiagnosticsReport extends StoreAwareAction
      * @param Context $context
      * @param RequestInterface $request
      * @param ScopeConfigInterface $_scopeConfig
-     * @param ObjectManagerInterface $objectManager
      * @param NitroServiceInterface $nitro
      * @param DiagnosticsReportHelper $diagnosticsReportHelper
      * @param FileFactory $fileFactory
@@ -81,7 +73,7 @@ class DiagnosticsReport extends StoreAwareAction
     public function __construct(
         Context                 $context,
         ScopeConfigInterface    $_scopeConfig,
-        ObjectManagerInterface  $objectManager,
+
         NitroServiceInterface   $nitro,
         DiagnosticsReportHelper $diagnosticsReportHelper,
         FileFactory $fileFactory,
@@ -101,7 +93,7 @@ class DiagnosticsReport extends StoreAwareAction
         $this->filesystem = $filesystem;
         $this->serializer = $serializer;
         $this->diagnosticsReportHelper = $diagnosticsReportHelper;
-        $this->objectManager = $objectManager;
+
         $this->_scopeConfig = $_scopeConfig;
 
     }

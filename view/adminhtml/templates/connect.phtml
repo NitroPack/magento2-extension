@@ -63,6 +63,7 @@
                                 </div>
                             </div>
                         </div>
+                        <input type="hidden" name="handshake_connection_method" id="handshake_connection_method" value="manual">
                     </form>
                     <div id="nitropack-site-connect" class="text-center pt-3">
                         <button class="btn btn-primary btn-lg" id="nitro_connect">Connect Your Site</button>
@@ -112,6 +113,7 @@
             if (e.data.messageType == "nitropack-connect") {
                 $("#nitro_site_id").val(e.data.api.key);
                 $("#nitro_site_secret").val(e.data.api.secret);
+                $("#handshake_connection_method").val("automatic");
                 $("#nitro_connect").click();
                 connectPopup.close();
                 connectPopup = null;
@@ -171,7 +173,8 @@
                 dataType: 'json',
                 data: {
                     nitro_site_id: $('#nitro_site_id').val(),
-                    nitro_site_secret: $('#nitro_site_secret').val()
+                    nitro_site_secret: $('#nitro_site_secret').val(),
+                    handshake_connection_method: $('#handshake_connection_method').val()
                 },
                 success: connectSuccess,
                 error: connectError

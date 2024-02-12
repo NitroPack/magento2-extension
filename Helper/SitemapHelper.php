@@ -50,14 +50,19 @@ class SitemapHelper extends AbstractHelper
      * @var LoggerInterface
      * */
     protected $logger;
-
+    /**
+     * @var \Magento\Framework\Filesystem
+     * */
+    protected $filesystem;
     /**
      * @param \Magento\Framework\App\Helper\Context $context
      * @param Emulation $appEmulation
      * @param LoggerInterface $logger
      * @param \Magento\Framework\Filesystem\Io\File $file
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
-     * @param SitemapFactory $sitemapFactory
+     * @param SitemapFactory $sitemapFactory,
+     * @param \Magento\Sitemap\Model\Sitemap $sitemap,
+     * @param \Magento\Framework\Filesystem $filesystem,
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager,
      * @param \Magento\Sitemap\Model\ResourceModel\Sitemap\CollectionFactory $sitemapCollectionFactory
      * */
     public function __construct(
@@ -67,11 +72,13 @@ class SitemapHelper extends AbstractHelper
         \Magento\Framework\Filesystem\Io\File $file,
         SitemapFactory $sitemapFactory,
         \Magento\Sitemap\Model\Sitemap $sitemap,
+        \Magento\Framework\Filesystem $filesystem,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Sitemap\Model\ResourceModel\Sitemap\CollectionFactory $sitemapCollectionFactory
     ) {
         parent::__construct($context);
         $this->file = $file;
+        $this->filesystem = $filesystem;
         $this->logger = $logger;
         $this->sitemapCollectionFactory = $sitemapCollectionFactory;
         $this->appEmulation = $appEmulation;
@@ -138,9 +145,8 @@ class SitemapHelper extends AbstractHelper
         }
         $xmlData .= '</sitemapindex>';
         try {
-            $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-            $fileSystem = $objectManager->create('\Magento\Framework\Filesystem');
-            $mediaPath = $fileSystem->getDirectoryRead(
+
+            $mediaPath = $this->filesystem->getDirectoryRead(
                 \Magento\Framework\App\Filesystem\DirectoryList::MEDIA
             )->getAbsolutePath();
 

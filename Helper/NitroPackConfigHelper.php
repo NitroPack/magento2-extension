@@ -12,7 +12,6 @@ use Magento\Customer\Model\Context as CustomerContextConstants;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Filesystem\DirectoryList;
 use Magento\Framework\HTTP\Client\Curl;
-use Magento\Framework\ObjectManagerInterface;
 use NitroPack\NitroPack\Api\NitroService;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
 use NitroPack\SDK\HealthStatus;
@@ -62,10 +61,6 @@ class NitroPackConfigHelper extends AbstractHelper
      * */
     protected $request;
     /**
-     * @var ObjectManagerInterface
-     * */
-    private $objectManager;
-    /**
      * @var Curl
      * */
     protected $curlClient;
@@ -83,7 +78,6 @@ class NitroPackConfigHelper extends AbstractHelper
      * @param StateInterface $_cacheState
      * @param DirectoryList $directoryList
      * @param RequestInterface $request
-     * @param ObjectManagerInterface $objectManager
      * @param \Magento\Framework\Filesystem\Driver\File $fileDriver
      * @param ScopeConfigInterface $_scopeConfig
      * @param Curl $curlClient
@@ -97,7 +91,6 @@ class NitroPackConfigHelper extends AbstractHelper
         StateInterface                                   $_cacheState,
         DirectoryList                                    $directoryList,
         RequestInterface                                 $request,
-        ObjectManagerInterface                           $objectManager,
         \Magento\Framework\Filesystem\Driver\File        $fileDriver,
         ScopeConfigInterface                             $_scopeConfig,
         Curl                                             $curlClient,
@@ -115,7 +108,6 @@ class NitroPackConfigHelper extends AbstractHelper
         $this->serializer = $serializer;
         $this->state = $state;
         $this->request = $request;
-        $this->objectManager = $objectManager;
         $this->_scopeConfig = $_scopeConfig;
         $this->fileDriver = $fileDriver;
     }

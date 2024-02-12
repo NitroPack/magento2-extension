@@ -5,6 +5,13 @@
                 <resource id="NitroPack_NitroPack::menuSection" title="NitroPack.io" sortOrder="10" >
                     <resource id="NitroPack_NitroPack::menuSection_settings" title="Settings" sortOrder="100" />
                 </resource>
+                <resource id="Magento_Backend::stores">
+                    <resource id="Magento_Backend::stores_settings">
+                        <resource id="Magento_Config::config">
+                            <resource id="NitroPack_NitroPack::config_nitro" title="NitroPack Settings Section"  />
+                        </resource>
+                    </resource>
+                </resource>
             </resource>
         </resources>
     </acl>
