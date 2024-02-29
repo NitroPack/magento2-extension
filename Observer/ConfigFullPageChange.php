@@ -5,13 +5,12 @@ namespace NitroPack\NitroPack\Observer;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Event\Observer as EventObserver;
-use Magento\Store\Model\StoreManagerInterface;
 use NitroPack\NitroPack\Api\NitroService;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
 use NitroPack\NitroPack\Helper\InvalidationHelper;
-use NitroPack\NitroPack\Helper\VarnishHelper;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use NitroPack\NitroPack\Helper\ApiHelper;
+use NitroPack\NitroPack\Model\FullPageCache\PurgeInterface;
 use NitroPack\SDK\HealthStatus;
 
 class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
@@ -27,9 +26,9 @@ class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
      * */
     private $_scopeConfig;
     /**
-     * @var VarnishHelper
+     * @var PurgeInterface
      * */
-    private $varnishHelper;
+    private $purgeInterface;
 
     protected $settings;
     protected $sdk = null;
@@ -74,7 +73,7 @@ class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
      * ConfigChange constructor.
      * @param RequestInterface $request
      * @param ScopeConfigInterface $scopeConfig
-     * @param VarnishHelper $helper
+     * @param PurgeInterface $purgeInterface
      * @param InvalidationHelper $invalidationHelper
      * @param \Magento\Framework\Filesystem\Driver\File $fileDriver
      * @param \Magento\Framework\Serialize\SerializerInterface $serializer
@@ -87,7 +86,7 @@ class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
     public function __construct(
         RequestInterface $request,
         ScopeConfigInterface $scopeConfig,
-        VarnishHelper $varnishHelper,
+        PurgeInterface $purgeInterface,
         InvalidationHelper $invalidationHelper,
         \Magento\Framework\Filesystem\Driver\File $fileDriver,
         \Magento\Framework\Serialize\SerializerInterface $serializer,
@@ -100,7 +99,7 @@ class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
         $this->request = $request;
         $this->nitro = $nitro;
         $this->_scopeConfig = $scopeConfig;
-        $this->varnishHelper = $varnishHelper;
+        $this->purgeInterface = $purgeInterface;
         $this->invalidationHelper = $invalidationHelper;
         $this->serializer = $serializer;
         $this->fileDriver = $fileDriver;
@@ -120,10 +119,7 @@ class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
                 if (!is_null(
                         $this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_NITRO_ENABLED)
                     ) && $this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_NITRO_ENABLED) == $varnishEnableKey) {
-
-
                     $storeGroup = $this->storeRepository->getList();
-
                     foreach ($storeGroup as $storesData) {
                         try {
                             $this->nitro->reload($storesData->getCode());
@@ -131,7 +127,7 @@ class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
                         }catch (\Exception $e) {
                         }
                     }
-                    $this->varnishHelper->purgeVarnish();
+                    $this->purgeInterface->purge();
                 }
          }
         $nitroCacheKey = $groupParams['full_page_cache']['fields']['caching_application']['value'];
@@ -143,8 +139,8 @@ class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
                     $this->_scopeConfig->getValue(self::FULL_PAGE_CACHE_NITROPACK)
                 ) && $this->_scopeConfig->getValue(
                     self::FULL_PAGE_CACHE_NITROPACK
-                ) == \Magento\PageCache\Model\Config::BUILT_IN) {
-                $this->varnishHelper->purgeVarnish();
+                ) == \Magento\PageCache\Model\Config::BUILT_IN ) {
+                $this->purgeInterface->purge();
             }
 
             $storeGroup = $this->storeRepository->getList();

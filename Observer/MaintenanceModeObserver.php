@@ -9,7 +9,7 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Filesystem\DirectoryList;
 use NitroPack\NitroPack\Api\NitroService;
 use NitroPack\NitroPack\Helper\ApiHelper;
-use NitroPack\NitroPack\Helper\VarnishHelper;
+use NitroPack\NitroPack\Model\FullPageCache\PurgeInterface;
 use NitroPack\SDK\NitroPack;
 
 class MaintenanceModeObserver implements ObserverInterface
@@ -40,9 +40,9 @@ class MaintenanceModeObserver implements ObserverInterface
     protected $_scopeConfig;
 
     /**
-     * @var VarnishHelper
+     * @var PurgeInterface
      * */
-    protected $varnishHelper;
+    protected $purgeInterface;
     /**
      * @var   \Magento\Store\Api\GroupRepositoryInterface
      * */
@@ -54,7 +54,7 @@ class MaintenanceModeObserver implements ObserverInterface
      * @param \Magento\Framework\Serialize\SerializerInterface $serializer
      * @param ScopeConfigInterface $scopeConfig
      * @param \Magento\Store\Api\GroupRepositoryInterface $groupRepository
-     * @param VarnishHelper $varnishHelper
+     * @param PurgeInterface $purgeInterface
      * */
     public function __construct(
         \Magento\Framework\Filesystem\Driver\File        $fileDriver,
@@ -64,7 +64,7 @@ class MaintenanceModeObserver implements ObserverInterface
         \Magento\Framework\Serialize\SerializerInterface $serializer,
         ScopeConfigInterface $_scopeConfig,
         \Magento\Store\Api\GroupRepositoryInterface $groupRepository,
-        VarnishHelper $varnishHelper
+        PurgeInterface $purgeInterface
 
 
     )
@@ -72,7 +72,7 @@ class MaintenanceModeObserver implements ObserverInterface
         $this->directoryList = $directoryList;
         $this->serializer = $serializer;
         $this->fileDriver = $fileDriver;
-        $this->varnishHelper = $varnishHelper;
+        $this->purgeInterface = $purgeInterface;
         $this->groupRepository = $groupRepository;
         $this->apiHelper = $apiHelper;
         $this->_scopeConfig = $_scopeConfig;
@@ -120,16 +120,7 @@ class MaintenanceModeObserver implements ObserverInterface
                             \NitroPack\SDK\PurgeType::COMPLETE,
                             "Magento cache flush remove all page cache"
                         );
-                        if (
-                            !is_null($this->_scopeConfig->getValue(NitroService::FULL_PAGE_CACHE_NITROPACK))
-                            && $this->_scopeConfig->getValue(
-                                NitroService::FULL_PAGE_CACHE_NITROPACK
-                            ) == NitroService::FULL_PAGE_CACHE_NITROPACK_VALUE
-
-                        ) {
-                            $this->varnishHelper->purgeVarnish();
-                        }
-
+                        $this->purgeInterface->purge();
                 } catch (\Exception $e) {
                     $cachePath = $rootPath . 'nitro_cache' . DIRECTORY_SEPARATOR . $this->settings->siteId;
                     if ($this->fileDriver->isDirectory($cachePath)) {

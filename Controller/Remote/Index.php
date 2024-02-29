@@ -9,7 +9,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\RequestInterface;
 use NitroPack\NitroPack\Api\NitroService;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
-use NitroPack\NitroPack\Helper\VarnishHelper;
+use NitroPack\NitroPack\Model\FullPageCache\PurgeInterface;
 
 class Index extends Action implements HttpPostActionInterface
 {
@@ -22,9 +22,9 @@ class Index extends Action implements HttpPostActionInterface
      * */
     protected $request;
     /**
-     * @var VarnishHelper
+     * @var PurgeInterface
      * */
-    protected $varnishHelper;
+    protected $purgeInterface;
     /**
      * @var ScopeConfigInterface
      * */
@@ -41,7 +41,7 @@ class Index extends Action implements HttpPostActionInterface
     /**
      * @param Context $context
      * @param NitroServiceInterface $nitro
-     * @param VarnishHelper $varnishHelper
+     * @param PurgeInterface $purgeInterface
      * @param ScopeConfigInterface $scopeConfig
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Store\Api\StoreRepositoryInterface $storeRepository
@@ -50,7 +50,7 @@ class Index extends Action implements HttpPostActionInterface
     public function __construct(
         Context                                     $context,
         NitroServiceInterface                       $nitro,
-        VarnishHelper                               $varnishHelper,
+        PurgeInterface                               $purgeInterface,
         ScopeConfigInterface                        $scopeConfig,
         \Magento\Store\Model\StoreManagerInterface  $storeManager,
         \Magento\Store\Api\StoreRepositoryInterface $storeRepository,
@@ -62,7 +62,7 @@ class Index extends Action implements HttpPostActionInterface
         $this->_scopeConfig = $scopeConfig;
         $this->_storeManager = $storeManager;
         $this->storeRepository = $storeRepository;
-        $this->varnishHelper = $varnishHelper;
+        $this->purgeInterface = $purgeInterface;
         parent::__construct($context);
     }
 
@@ -88,10 +88,12 @@ class Index extends Action implements HttpPostActionInterface
                 }
             }
 
-            if ($nitroHeaderMiss && $this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_NITRO_ENABLED) && $this->nitro->getSdk()->isAllowedUrl($this->request->getParam('currentUrl'))) {
-
-                $this->varnishHelper->purgeVarnish($this->request->getParam('currentUrl'));
+            if ($nitroHeaderMiss && ($this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_NITRO_ENABLED) || $this->_scopeConfig->getValue(NitroService::XML_FASTLY_PAGECACHE_ENABLE_NITRO)  )&& $this->nitro->getSdk()->isAllowedUrl($this->request->getParam('currentUrl'))) {
+                $this->purgeInterface->purge($this->request->getParam('currentUrl'));
             }
+
+
+
             if ($this->nitro->getSdk()->hasRemoteCache($route)) {
                 header('X-Nitro-Cache: HIT', true);
                 return true;

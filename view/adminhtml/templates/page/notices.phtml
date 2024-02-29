@@ -2,16 +2,17 @@
 
 $InvalidationHelper = $this->helper('NitroPack\NitroPack\Helper\InvalidationHelper');
 $nitroPackConfigHelper = $this->helper('NitroPack\NitroPack\Helper\NitroPackConfigHelper');
+$fastlyHelper = $this->helper('NitroPack\NitroPack\Helper\FastlyHelper');
 
-
-if ($nitroPackConfigHelper->getFullPageCacheValue() && $InvalidationHelper->checkHavePreviouslyConnected()) {
+if (($nitroPackConfigHelper->getFullPageCacheValue() || $fastlyHelper->isFastlyAndNitroPackEnabled()) && $InvalidationHelper->checkHavePreviouslyConnected()) {
     if (!$InvalidationHelper->checkInvalidationAndPurgeProcess() && !$InvalidationHelper->checkCronJobIsSetup()) {
         //Disable
         $InvalidationHelper->makeConnectionsDisableAndEnable(false);
         ?>
         <div class="messages">
             <div class="message message-warning message-demo-mode">
-                NitroPack is currently switched off due to CRON settings issues. In order to address the issue, please run the following command: php bin/magento queue:consumers:start nitropack.cache.queue.comsumer &
+                NitroPack is currently switched off due to CRON settings issues. In order to address the issue, please run the following command: php bin/magento queue:consumers:start nitropack.cache.queue.consumer &
+
             </div>
         </div>
 

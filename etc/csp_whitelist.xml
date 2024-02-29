@@ -16,6 +16,7 @@
                 <value id="nitropack_cdn" type="host">*.nitrocdn.com</value>
                 <value id="intercomcdn_cdn" type="host">*.intercomcdn.com</value>
                 <value id="intercomcdn_websocket" type="host">wss://nexus-websocket-a.intercom.io</value>
+                <value id="bob_connect" type="host">blob: 'self'</value>
             </values>
         </policy>
         <policy id="script-src">
@@ -24,27 +25,32 @@
                 <value id="nitropack_cdn" type="host">*.nitrocdn.com</value>
                 <value id="nitropack_generic" type="host">nitroscripts.com</value>
                 <value id="intercomcdn_cdn" type="host">*.intercomcdn.com</value>
+                <value id="bob_script" type="host">blob: 'self'</value>
             </values>
         </policy>
         <policy id="font-src">
             <values>
                 <value id="nitropack_cdn" type="host">*.nitrocdn.com</value>
+                <value id="bob_font" type="host">blob: 'self'</value>
             </values>
         </policy>
         <policy id="img-src">
             <values>
                 <value id="nitropack_cdn" type="host">*.nitrocdn.com</value>
+                <value id="bob_img" type="host">blob: 'self'</value>
             </values>
         </policy>
         <policy id="frame-src">
             <values>
                 <value id="nitropack_io" type="host">nitropack.io</value>
+                <value id="bob_frame" type="host">blob: 'self'</value>
             </values>
         </policy>
         <policy id="style-src">
             <values>
                 <value id="nitropack_cdn" type="host">*.nitrocdn.com</value>
                 <value id="nitropack_cdn" type="host">*.nitrocdn.com</value>
+                <value id="bob_style" type="host">blob: 'self'</value>
             </values>
         </policy>
     </policies>

@@ -6,8 +6,8 @@ use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\App\RequestInterface;
-use NitroPack\NitroPack\Helper\VarnishHelper;
 use Magento\Framework\View\Result\PageFactory;
+use NitroPack\NitroPack\Model\FullPageCache\PurgeInterface;
 
 class Index extends Action implements HttpGetActionInterface
 {
@@ -21,23 +21,23 @@ class Index extends Action implements HttpGetActionInterface
      * */
     protected $resultPageFactory;
     /**
-     * @var VarnishHelper
+     * @var PurgeInterface
      * */
-    protected $varnishHelper;
+    protected $purgeInterface;
     /**
      * @param  Context $context
-     * @param  VarnishHelper $varnishHelper,
-     * @param  PageFactory $resultPageFactory,
+     * @param  PurgeInterface $purgeInterface
+     * @param  PageFactory $resultPageFactory
      * @param  RequestInterface $request
      * */
     public function __construct(
         Context $context,
-        VarnishHelper $varnishHelper,
+        PurgeInterface $purgeInterface,
         PageFactory $resultPageFactory,
         RequestInterface $request
     ) {
         $this->request = $request;
-        $this->varnishHelper = $varnishHelper;
+        $this->purgeInterface = $purgeInterface;
         $this->resultPageFactory = $resultPageFactory;
 
         parent::__construct($context);
@@ -45,7 +45,7 @@ class Index extends Action implements HttpGetActionInterface
 
     public function execute()
     {
-        $this->varnishHelper->purgeVarnish();
+        $this->purgeInterface->purge();
         return $this->resultPageFactory->create();
     }
 }

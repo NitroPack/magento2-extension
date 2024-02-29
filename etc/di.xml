@@ -22,4 +22,8 @@
     <type name="Magento\CatalogInventory\Model\Stock\StockItemRepository">
         <plugin name="your_module_stock_item_save_before" type="NitroPack\NitroPack\Plugin\StockItemSaveBefore" sortOrder="10" disabled="false" />
     </type>
+
+    <preference for="NitroPack\NitroPack\Model\FullPageCache\IntegratedCacheInterface" type="NitroPack\NitroPack\Model\FullPageCache\IntegratedCache"/>
+    <preference for="NitroPack\NitroPack\Model\FullPageCache\PurgeInterface" type="NitroPack\NitroPack\Model\FullPageCache\PurgeCache"/>
+
 </config>

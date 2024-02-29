@@ -14,6 +14,7 @@ use Magento\Cms\Model\BlockFactory;
 use Magento\Cms\Model\PageFactory;
 use NitroPack\NitroPack\Helper\ApiHelper;
 use Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory;
+use NitroPack\NitroPack\Helper\FastlyHelper;
 
 class CleanCacheByTagsObserver implements ObserverInterface
 {
@@ -86,6 +87,10 @@ class CleanCacheByTagsObserver implements ObserverInterface
      * */
     protected $storeRepo;
     /**
+     * @var FastlyHelper
+     * */
+    protected $fastlyHelper;
+    /**
      * @param Resolver $cacheTagResolver
      * @param \Magento\Framework\MessageQueue\PublisherInterface $publisher
      * @param \Magento\Framework\Serialize\Serializer\Json $json
@@ -98,6 +103,7 @@ class CleanCacheByTagsObserver implements ObserverInterface
      * @param \Magento\Framework\App\Cache\Frontend\Pool $cacheFrontendPool
      * @param ScopeConfigInterface $_scopeConfig
      * @param ApiHelper $apiHelper
+     * @param FastlyHelper $fastlyHelper
      * @param CollectionFactory $attributeCollectionFactory
      * @param \Magento\Store\Api\GroupRepositoryInterface $storeRepo
      * @param DeploymentConfig $config
@@ -115,11 +121,13 @@ class CleanCacheByTagsObserver implements ObserverInterface
         \Magento\Framework\App\Cache\Frontend\Pool         $cacheFrontendPool,
         ScopeConfigInterface                               $_scopeConfig,
         ApiHelper                                          $apiHelper,
+        FastlyHelper $fastlyHelper,
         CollectionFactory                                  $attributeCollectionFactory,
-        \Magento\Store\Api\GroupRepositoryInterface       $storeRepo,
+        \Magento\Store\Api\GroupRepositoryInterface        $storeRepo,
         DeploymentConfig                                   $config
     )
     {
+        $this->fastlyHelper = $fastlyHelper;
         $this->apiHelper = $apiHelper;
         $this->_scopeConfig = $_scopeConfig;
         $this->cacheTagResolver = $cacheTagResolver;
@@ -142,9 +150,10 @@ class CleanCacheByTagsObserver implements ObserverInterface
 
         if (!is_null(
                 $this->_scopeConfig->getValue(\NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK)
-            ) && $this->_scopeConfig->getValue(
+            ) && in_array($this->_scopeConfig->getValue(
                 \NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK
-            ) == \NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK_VALUE) {
+            ), [\NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK_VALUE, \NitroPack\NitroPack\Api\NitroService::FASTLY_CACHING_APPLICATION_VALUE])) {
+
 
             $object = $observer->getEvent()->getObject();
             if (!is_object($object)) {
@@ -176,7 +185,10 @@ class CleanCacheByTagsObserver implements ObserverInterface
                         if ($haveData) {
                             $settings = json_decode($haveData);
                             if (isset($settings->enabled) && $settings->enabled) {
-
+                                //Check NitroPack With Fastly Disable
+                                if ($this->fastlyHelper->isFastlyAndNitroDisable()) {
+                                    return false;
+                                }
                                 $tags = array_unique($tags);
                                 $tags = array_diff($tags, $this->getIgnoreTags());
                                 //Non-Zero Product Quantity Check
@@ -304,7 +316,7 @@ class CleanCacheByTagsObserver implements ObserverInterface
     public function categoryProductInvalidate($reasonEntity, int $storeId, string $reasonEntityName, array $rawData): array
     {
         foreach ($reasonEntity->getCategoryIds() as $catId) {
-            if(in_array('cat_c_'.$catId, $this->getIgnoreTags())){
+            if (in_array('cat_c_' . $catId, $this->getIgnoreTags())) {
                 continue;
             }
             $rawData = [
@@ -423,7 +435,7 @@ class CleanCacheByTagsObserver implements ObserverInterface
     {
 
         $ignoreTags = $this->_scopeConfig->getValue(\NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK_IGNORE_TAGS);
-        if(!is_null($ignoreTags) && $ignoreTags ){
+        if (!is_null($ignoreTags) && $ignoreTags) {
             $ignoreTags = explode(',', $ignoreTags);
             $ignoreTags = array_map('trim', $ignoreTags);
             $ignoreTags = array_filter($ignoreTags);

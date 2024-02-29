@@ -2,6 +2,7 @@
 
 $nitroPackConfigHelper = $this->helper('NitroPack\NitroPack\Helper\NitroPackConfigHelper');
 $nitroPackInvalidationHelper = $this->helper('NitroPack\NitroPack\Helper\InvalidationHelper');
+$fastlyHelper = $this->helper('NitroPack\NitroPack\Helper\FastlyHelper');
 $enabledMagentoCaches = $nitroPackConfigHelper->getDisabledCaches();
 $settings = $block->getSettings();
 $saveUrl = $block->getSaveUrl();
@@ -17,6 +18,7 @@ $storeCurrencies = $block->getAvailableCurrencies();
 $storeLocales = $block->getAvailableLocales();
 $builtInPageRoutes = $block->getBuiltInPageTypeRoutes();
 $builtInPageTypes = array_keys($builtInPageRoutes);
+$fastlyHelper = $this->helper('NitroPack\NitroPack\Helper\FastlyHelper');
 
 ?>
 <div id="tab_element">
@@ -88,8 +90,7 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
                         </div>
                         <?php
                     } else {
-
-                        if (!$nitroPackConfigHelper->getFullPageCacheValue()) {
+                        if (!$nitroPackConfigHelper->getFullPageCacheValue() && !$fastlyHelper->isFastlyAndNitroPackEnabled()) {
                             ?>
                             <div class="row">
                                 <div class="col mb-5">
@@ -142,7 +143,7 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
                                     <div class="col-xs-2 text-right">
                                         <label class="switch">
                                             <input id="status" type="checkbox" name="enabled"<?php
-                                            if (!empty($enabledMagentoCaches) || !$nitroPackConfigHelper->getFullPageCacheValue()) {
+                                            if (!empty($enabledMagentoCaches) || !$nitroPackConfigHelper->getFullPageCacheValue() && !$fastlyHelper->isFastlyAndNitroPackEnabled()) {
                                                 echo "disabled";
                                             } ?>
                                                    value="<?= ($settings->enabled ? 1 : 0) ?>" <?= ($settings->enabled ? 'checked' : '') ?>>
@@ -151,7 +152,7 @@ $builtInPageTypes = array_keys($builtInPageRoutes);
                                     </div>
                                 </div>
                                 <?php
-                                if (!empty($enabledMagentoCaches) || !$nitroPackConfigHelper->getFullPageCacheValue()) { ?>
+                                if (!empty($enabledMagentoCaches) || !$nitroPackConfigHelper->getFullPageCacheValue() && !$fastlyHelper->isFastlyAndNitroPackEnabled()) { ?>
                                     <div class="form-group row" id="enabledMagentoCachesWarning">
                                         <div class="messages">
                                             <div class="message message-warning warning">

@@ -7,10 +7,9 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Filesystem\DirectoryList;
-use NitroPack\NitroPack\Api\NitroService;
 use NitroPack\NitroPack\Helper\ApiHelper;
 use NitroPack\NitroPack\Helper\RedisHelper;
-use NitroPack\NitroPack\Helper\VarnishHelper;
+use NitroPack\NitroPack\Model\FullPageCache\PurgeInterface;
 use NitroPack\SDK\NitroPack;
 use Magento\Cron\Model\Config;
 use Magento\Cron\Model\Schedule;
@@ -38,9 +37,9 @@ class NitroPackCacheFlush implements ObserverInterface
      * */
     protected $_scopeConfig;
     /**
-     * @var VarnishHelper
+     * @var PurgeInterface
      * */
-    protected $varnishHelper;
+    protected $purgeInterface;
     /**
      * @var Config
      * */
@@ -50,38 +49,52 @@ class NitroPackCacheFlush implements ObserverInterface
      * */
     protected $cronSchedule;
     /**
+     * @var \Magento\Store\Api\GroupRepositoryInterface
+     * */
+    protected $storeGroupRepo;
+    /**
+     * @var \Magento\Framework\Filesystem\Driver\File
+     * */
+    public $fileDriver;
+    /**
      * @param DirectoryList $directoryList
      * @param ApiHelper $apiHelper
      * @param ScopeConfigInterface $scopeConfig
-     * @param VarnishHelper $varnishHelper
+     * @param PurgeInterface $purgeInterface
      * @param RedisHelper $redisHelper
      * @param Config $cronConfig
+     * @param \Magento\Framework\Filesystem\Driver\File $fileDriver
+     * @param \Magento\Store\Api\GroupRepositoryInterface $storeGroupRepo
      * @param Schedule $cronSchedule
      * */
     public function __construct(
         DirectoryList $directoryList,
         ApiHelper $apiHelper,
-        VarnishHelper $varnishHelper,
+        PurgeInterface $purgeInterface,
         ScopeConfigInterface $scopeConfig,
         RedisHelper $redisHelper,
         Config $cronConfig,
+        \Magento\Framework\Filesystem\Driver\File $fileDriver,
+        \Magento\Store\Api\GroupRepositoryInterface $storeGroupRepo,
         Schedule $cronSchedule
 
     ) {
+
+        $this->fileDriver = $fileDriver;
         $this->cronSchedule =  $cronSchedule;
         $this->redisHelper =$redisHelper;
         $this->apiHelper = $apiHelper;
-        $this->varnishHelper = $varnishHelper;
+        $this->purgeInterface = $purgeInterface;
         $this->_scopeConfig = $scopeConfig;
         $this->directoryList = $directoryList;
         $this->cronConfig = $cronConfig;
+        $this->storeGroupRepo = $storeGroupRepo;
    }
 
     public function execute(Observer $observer)
     {
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $storeRepo = $objectManager->create(\Magento\Store\Api\GroupRepositoryInterface::class);
-        $storeGroup = $storeRepo->getList();
+
+        $storeGroup = $this->storeGroupRepo->getList();
 
         foreach ($storeGroup as $storesData) {
             $settingsFilename = $this->apiHelper->getSettingsFilename($storesData->getCode());
@@ -114,21 +127,14 @@ class NitroPackCacheFlush implements ObserverInterface
                     );
 
                     if ($this->settings->enabled) {
+
                         $this->sdk->purgeCache(
                             null,
                             null,
                             \NitroPack\SDK\PurgeType::COMPLETE,
                             "Magento cache flush remove all page cache"
                         );
-                        if (
-                            !is_null($this->_scopeConfig->getValue(NitroService::FULL_PAGE_CACHE_NITROPACK))
-                            && $this->_scopeConfig->getValue(
-                                NitroService::FULL_PAGE_CACHE_NITROPACK
-                            ) == NitroService::FULL_PAGE_CACHE_NITROPACK_VALUE
-
-                        ) {
-                            $this->varnishHelper->purgeVarnish();
-                        }
+                        $this->purgeInterface->purge();
                     }
 
                         //HEALTH CHECK
@@ -138,7 +144,7 @@ class NitroPackCacheFlush implements ObserverInterface
                         $this->cleanupStaleCache();
                         $this->runCronRecord();
                 } catch (\Exception $e) {
-                    $file = $objectManager->create('\Magento\Framework\Filesystem\Driver\File');
+                    $file = $this->fileDriver;
                     $cachePath = $rootPath . 'nitro_cache' . DIRECTORY_SEPARATOR . $this->settings->siteId;
                     if ($file->isDirectory($cachePath)) {
                         $file->deleteDirectory($cachePath);

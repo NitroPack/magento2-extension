@@ -16,7 +16,7 @@ use Magento\Store\Model\Store;
 use NitroPack\NitroPack\Api\NitroService;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
 use NitroPack\NitroPack\Helper\RedisHelper;
-use NitroPack\NitroPack\Helper\VarnishHelper;
+use NitroPack\NitroPack\Model\FullPageCache\PurgeInterface;
 use Psr\Log\LoggerInterface;
 
 
@@ -83,9 +83,9 @@ class DataPatch implements DataPatchInterface, PatchRevertableInterface
      * */
     protected $scopeConfig;
     /**
-     * @var VarnishHelper
+     * @var PurgeInterface
      * */
-    protected $varnishHelper;
+    protected $purgeInterface;
     /**
      * @var WriterInterface
      * */
@@ -116,7 +116,7 @@ class DataPatch implements DataPatchInterface, PatchRevertableInterface
      * @param ResourceInterface $moduleResource
      * @param Store $store
      * @param WriterInterface $configWriter
-     * @param VarnishHelper $varnishHelper
+     * @param PurgeInterface $purgeInterface
      * @param ScopeConfigInterface $scopeConfig
      **/
     public function __construct(
@@ -134,7 +134,7 @@ class DataPatch implements DataPatchInterface, PatchRevertableInterface
         ResourceInterface $moduleResource,
         RedisHelper $redisHelper,
         LoggerInterface $logger,
-        VarnishHelper $varnishHelper,
+        PurgeInterface $purgeInterface,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         WriterInterface $configWriter,
         Store $store
@@ -154,7 +154,7 @@ class DataPatch implements DataPatchInterface, PatchRevertableInterface
         $this->apiHelper = $apiHelper;
         $this->moduleResource = $moduleResource;
         $this->moduleDataSetup = $moduleDataSetup;
-        $this->varnishHelper = $varnishHelper;
+        $this->purgeInterface= $purgeInterface;
         $this->scopeConfig = $scopeConfig;
         $this->configWriter = $configWriter;
     }
@@ -192,7 +192,7 @@ class DataPatch implements DataPatchInterface, PatchRevertableInterface
         } else {
             $this->setData('system/full_page_cache/caching_application', \Magento\PageCache\Model\Config::BUILT_IN);
         }
-        $this->varnishHelper->purgeVarnish();
+        $this->purgeInterface->purge();
 
         $this->moduleDataSetup->getConnection()->endSetup();
     }

@@ -8,10 +8,10 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Filesystem\DirectoryList;
 use NitroPack\NitroPack\Api\NitroService;
-use NitroPack\NitroPack\Api\NitroServiceInterface;
 use NitroPack\NitroPack\Helper\ApiHelper;
+use NitroPack\NitroPack\Helper\FastlyHelper;
 use NitroPack\NitroPack\Helper\RedisHelper;
-use NitroPack\NitroPack\Helper\VarnishHelper;
+use NitroPack\NitroPack\Model\FullPageCache\PurgeInterface;
 use NitroPack\SDK\NitroPack;
 
 class Clear implements ObserverInterface
@@ -36,32 +36,41 @@ class Clear implements ObserverInterface
      * */
     protected $_scopeConfig;
     /**
-     * @var VarnishHelper
+     * @var PurgeInterface
      * */
-    protected $varnishHelper;
+    protected $purgeInterface;
     /**
      * @var StateInterface;
      * */
-    private   $_cacheState;
+    private $_cacheState;
+    /**
+     * @var FastlyHelper
+     * */
+    protected $fastlyHelper;
+
     /**
      * @param DirectoryList $directoryList
      * @param ApiHelper $apiHelper
+     * @param FastlyHelper $fastlyHelper
      * @param ScopeConfigInterface $scopeConfig
-     * @param VarnishHelper $varnishHelper
+     * @param PurgeInterface $purgeInterface
      * @param RedisHelper $redisHelper
-     * @param  StateInterface $_cacheState
+     * @param StateInterface $_cacheState
      * */
     public function __construct(
-        DirectoryList $directoryList,
-        ApiHelper $apiHelper,
-        VarnishHelper $varnishHelper,
-        RedisHelper $redisHelper,
+        DirectoryList        $directoryList,
+        ApiHelper            $apiHelper,
+        FastlyHelper         $fastlyHelper,
+        PurgeInterface       $purgeInterface,
+        RedisHelper          $redisHelper,
         ScopeConfigInterface $scopeConfig,
-        StateInterface $_cacheState
+        StateInterface       $_cacheState
 
-    ) {
+    )
+    {
+        $this->fastlyHelper = $fastlyHelper;
         $this->apiHelper = $apiHelper;
-        $this->varnishHelper = $varnishHelper;
+        $this->purgeInterface = $purgeInterface;
         $this->_scopeConfig = $scopeConfig;
         $this->redisHelper = $redisHelper;
         $this->directoryList = $directoryList;
@@ -76,9 +85,9 @@ class Clear implements ObserverInterface
         $storeGroup = $storeRepo->getList();
         if (!is_null(
                 $this->_scopeConfig->getValue('system/full_page_cache/caching_application')
-            ) && $this->_scopeConfig->getValue(
+            ) && in_array($this->_scopeConfig->getValue(
                 'system/full_page_cache/caching_application'
-            ) == NitroService::FULL_PAGE_CACHE_NITROPACK_VALUE && $this->_cacheState->isEnabled('full_page')) {
+            ), [NitroService::FULL_PAGE_CACHE_NITROPACK_VALUE, NitroService::FASTLY_CACHING_APPLICATION_VALUE]) && $this->_cacheState->isEnabled('full_page')) {
 
             foreach ($storeGroup as $storesData) {
                 $settingsFilename = $this->apiHelper->getSettingsFilename($storesData->getCode());
@@ -108,25 +117,23 @@ class Clear implements ObserverInterface
                             );
                         }
                         $this->sdk = new NitroPack(
-                           $this->settings->siteId, $this->settings->siteSecret, null, null, $cachePath
+                            $this->settings->siteId, $this->settings->siteSecret, null, null, $cachePath
                         );
 
                         if ($this->settings->enabled) {
+                            //Check NitroPack With Fastly Disable
+                            if ($this->fastlyHelper->isFastlyAndNitroDisable()) {
+                                return;
+                            }
                             $this->sdk->purgeCache(
                                 null,
                                 null,
                                 \NitroPack\SDK\PurgeType::COMPLETE,
                                 "Magento cache flush remove all page cache"
                             );
-                            if (
-                                !is_null($this->_scopeConfig->getValue(NitroService::FULL_PAGE_CACHE_NITROPACK))
-                                && $this->_scopeConfig->getValue(
-                                    NitroService::FULL_PAGE_CACHE_NITROPACK
-                                ) == NitroService::FULL_PAGE_CACHE_NITROPACK_VALUE
 
-                            ) {
-                                $this->varnishHelper->purgeVarnish();
-                            }
+                            $this->purgeInterface->purge();
+
                         }
                     } catch (\Exception $e) {
                         $file = $objectManager->create('\Magento\Framework\Filesystem\Driver\File');

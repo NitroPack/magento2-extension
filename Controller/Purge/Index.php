@@ -6,7 +6,7 @@ use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
-use NitroPack\NitroPack\Helper\VarnishHelper;
+use NitroPack\NitroPack\Model\FullPageCache\PurgeInterface;
 
 class Index extends Action
 {
@@ -16,32 +16,32 @@ class Index extends Action
      * */
     protected $request;
     /**
-     * @var VarnishHelper
+     * @var PurgeInterface
      * */
-    protected $varnishHelper;
+    protected $purgeInterface;
     /**
      * @var JsonFactory
      * */
     protected $resultJsonFactory;
     /**
      * @param Context $context
-     * @param VarnishHelper $varnishHelper
+     * @param PurgeInterface $purgeInterface
      * @param RequestInterface $request
      * */
     public function __construct(
         Context $context,
-        VarnishHelper $varnishHelper,
+        PurgeInterface $purgeInterface,
         RequestInterface $request
     ) {
         $this->request = $request;
-        $this->varnishHelper = $varnishHelper;
+        $this->purgeInterface = $purgeInterface;
         $this->resultJsonFactory = $this->_objectManager->create(JsonFactory::class);
         parent::__construct($context);
     }
 
     public function execute()
     {
-        $this->varnishHelper->purgeVarnish();
+        $this->purgeInterface->purge();
         $resultData = ['message' => 'Successfully purge'];
         return $this->resultJsonFactory->create()->setData($resultData);
     }

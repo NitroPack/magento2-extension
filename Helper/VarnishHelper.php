@@ -76,4 +76,7 @@ class VarnishHelper extends AbstractHelper
             return '';
         }
     }
+
+
+
 }

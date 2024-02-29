@@ -4,6 +4,7 @@ namespace NitroPack\NitroPack\Plugin\CacheState;
 
 use Magento\Framework\App\Cache\StateInterface;
 use Magento\Framework\Event\ManagerInterface as EventManager;
+use NitroPack\NitroPack\Api\NitroService;
 
 class CacheStateAfter
 {
@@ -65,12 +66,17 @@ class CacheStateAfter
     public function afterFlush(\Magento\Framework\App\Cache\Manager $subject, $result, $types)
     {
         if (!is_null(
-                $this->scopeConfig->getValue('system/full_page_cache/caching_application')
-            ) && $this->scopeConfig->getValue(
-                'system/full_page_cache/caching_application'
-            ) == \NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK_VALUE && $this->cacheState->isEnabled(
+                $this->scopeConfig->getValue(NitroService::FULL_PAGE_CACHE_NITROPACK)
+            ) && in_array($this->scopeConfig->getValue(
+                NitroService::FULL_PAGE_CACHE_NITROPACK
+            ),[ NitroService::FULL_PAGE_CACHE_NITROPACK_VALUE ,NitroService::FASTLY_CACHING_APPLICATION_VALUE]) && $this->cacheState->isEnabled(
                 'full_page'
             ) && in_array('full_page', $types)) {
+
+            if($this->scopeConfig->getValue(NitroService::FULL_PAGE_CACHE_NITROPACK) == NitroService::FASTLY_CACHING_APPLICATION_VALUE && $this->scopeConfig->getValue(NitroService::XML_FASTLY_PAGECACHE_ENABLE_NITRO)!=1){
+                return $result;
+            }
+
             $this->eventManager->dispatch('nitropack_cache_flush_after', []);
         }
         return $result;

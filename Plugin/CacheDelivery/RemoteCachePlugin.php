@@ -7,6 +7,7 @@ use Magento\Framework\App\RequestInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
 use NitroPack\NitroPack\Api\NitroService;
+use NitroPack\NitroPack\Helper\FastlyHelper;
 use NitroPack\NitroPack\Observer\CacheTagObserver;
 
 class RemoteCachePlugin
@@ -28,15 +29,27 @@ class RemoteCachePlugin
      * @var ScopeConfigInterface
      * */
     protected $_scopeConfig;
-
+    /**
+     * @var FastlyHelper
+     * */
+    protected $fastlyHelper;
+    /**
+     * @param  NitroServiceInterface $nitro
+     * @param  RequestInterface $request
+     * @param  FastlyHelper $fastlyHelper
+     * @param  StoreManagerInterface $storeManager
+     * @param  ScopeConfigInterface $_scopeConfig
+     * */
     public function __construct(
         NitroServiceInterface $nitro,
         RequestInterface $request,
+        FastlyHelper $fastlyHelper,
         StoreManagerInterface $storeManager,
         ScopeConfigInterface $_scopeConfig
     ) {
         $this->nitro = $nitro;
         $this->request = $request;
+        $this->fastlyHelper = $fastlyHelper;
         $this->storeManager = $storeManager;
         $this->_scopeConfig = $_scopeConfig;
     }
@@ -82,11 +95,17 @@ class RemoteCachePlugin
         if (defined('NITROPACK_DEBUG') && NITROPACK_DEBUG) {
             header('X-Nitro-Layout: ' . $layout);
         }
-        if (!$this->nitro->isConnected() || !$this->nitro->isEnabled() || is_null(
+        if (!$this->nitro->isConnected() || !$this->nitro->isEnabled() ||
+            is_null(
                 $this->_scopeConfig->getValue(\NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK)
-            ) || $this->_scopeConfig->getValue(
+            ) || !in_array($this->_scopeConfig->getValue(
                 \NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK
-            ) != \NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK_VALUE) {
+            ),[\NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK_VALUE,NitroService::FASTLY_CACHING_APPLICATION_VALUE])){
+            header('X-Nitro-Disabled: 1');
+            return $returnValue;
+        }
+        //Check NitroPack With Fastly Disable
+        if($this->fastlyHelper->isFastlyAndNitroDisable()){
             header('X-Nitro-Disabled: 1');
             return $returnValue;
         }

@@ -23,14 +23,15 @@ use Magento\Framework\UrlInterface;
 class NitroService implements NitroServiceInterface
 {
 
-    const EXTENSION_VERSION = '2.8.0';  // Do not change this line manually. It is updated automatically by the build script.
+    const EXTENSION_VERSION = '2.9.0';  // Do not change this line manually. It is updated automatically by the build script.
 
     const FULL_PAGE_CACHE_NITROPACK = 'system/full_page_cache/caching_application';
     const FULL_PAGE_CACHE_NITROPACK_VALUE = 3;
-
+    public const FASTLY_CACHING_APPLICATION_VALUE = 42;
     public const XML_VARNISH_PAGECACHE_BACKEND_HOST = 'system/full_page_cache/varnish_servers';
 
     public const XML_VARNISH_PAGECACHE_NITRO_ENABLED = 'system/full_page_cache/varnish_enable';
+    public const XML_FASTLY_PAGECACHE_ENABLE_NITRO = 'system/full_page_cache/enable_nitropack';
     public const FULL_PAGE_CACHE_NITROPACK_IGNORE_TAGS = 'nitropack/ignored_tags/ignored_tags';
     protected static $pageRoutes = array(
         'cms_index_index' => 'home',

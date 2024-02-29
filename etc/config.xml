@@ -9,6 +9,7 @@
         <system>
             <full_page_cache>
                 <varnish_servers>127.0.0.1</varnish_servers>
+                <enable_nitropack>0</enable_nitropack>
             </full_page_cache>
         </system>
         <nitropack>

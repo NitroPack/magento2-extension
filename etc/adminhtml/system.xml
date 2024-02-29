@@ -48,6 +48,13 @@
                         <field id="caching_application">3</field>
                     </depends>
                 </field>
+                <field id="enable_nitropack" translate="label comment" type="select" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Enable NitroPack</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="caching_application">42</field>
+                    </depends>
+                </field>
                 <field id="varnish_servers" translate="label" type="text" sortOrder="2" showInDefault="1"
                        showInWebsite="0" showInStore="0">
                     <label>Reverse Proxy Server(s) IPs</label>

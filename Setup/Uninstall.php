@@ -8,8 +8,8 @@ use Magento\Framework\Setup\UninstallInterface;
 use Magento\Framework\Module\StatusFactory;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use NitroPack\NitroPack\Model\FullPageCache\PurgeInterface;
 
-use NitroPack\NitroPack\Helper\VarnishHelper;
 
 
 class Uninstall implements UninstallInterface
@@ -27,9 +27,9 @@ class Uninstall implements UninstallInterface
      * */
     protected $scopeConfig;
     /**
-     * @var VarnishHelper
+     * @var PurgeInterface
      * */
-    protected $varnishHelper;
+    protected $purgeInterface;
     /**
      * @var  \Magento\Framework\Filesystem\Driver\File
      * */
@@ -47,7 +47,7 @@ class Uninstall implements UninstallInterface
         \NitroPack\NitroPack\Model\NitroPackEvent\Trigger $trigger,
         \Magento\Framework\Filesystem\Driver\File $fileDriver,
         WriterInterface $configWriter,
-        VarnishHelper $varnishHelper,
+        PurgeInterface $purgeInterface,
         \NitroPack\NitroPack\Helper\ApiHelper $apiHelper,
         \Magento\Store\Api\GroupRepositoryInterface $storeGroupRepo,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
@@ -56,7 +56,7 @@ class Uninstall implements UninstallInterface
         $this->fileDriver = $fileDriver;
         $this->apiHelper = $apiHelper;
         $this->configWriter = $configWriter;
-        $this->varnishHelper = $varnishHelper;
+        $this->purgeInterface = $purgeInterface;
         $this->scopeConfig = $scopeConfig;
         $this->storeGroupRepo = $storeGroupRepo;
     }
@@ -80,7 +80,7 @@ class Uninstall implements UninstallInterface
             $this->setData('system/full_page_cache/caching_application', \Magento\PageCache\Model\Config::BUILT_IN);
         }
 
-        $this->varnishHelper->purgeVarnish();
+        $this->purgeInterface->purge();
         $setup->endSetup();
     }
 
@@ -113,8 +113,8 @@ class Uninstall implements UninstallInterface
                 $scopeId = 0
             );
         }
-        $helper = $objectManager->create(\NitroPack\NitroPack\Model\NitroPackEvent\Trigger::class);
-        $helper->purgeVarnish();
+        $purgeInterface = $objectManager->create(\NitroPack\NitroPack\Model\FullPageCache\PurgeInterface::class);
+        $purgeInterface->purge();
     }
 
     function disconnection($storeGroupCode)

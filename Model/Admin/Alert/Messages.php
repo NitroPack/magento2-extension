@@ -9,6 +9,7 @@ use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Notification\MessageInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use NitroPack\NitroPack\Helper\FastlyHelper;
 
 class Messages implements MessageInterface
 {
@@ -41,6 +42,11 @@ class Messages implements MessageInterface
      * */
     protected $notifications;
 
+    /**
+     * @var FastlyHelper
+     */
+    protected $fastlyHelper;
+
     public function __construct(
         Collection                                                     $adminSessionInfoCollection,
         UrlInterface                                                   $backendUrl,
@@ -48,7 +54,8 @@ class Messages implements MessageInterface
         \NitroPack\NitroPack\Helper\InvalidationHelper                 $invalidationHelper,
         \NitroPack\NitroPack\Model\NitroPackNotification\Notifications $notifications,
         ScopeConfigInterface                                           $_scopeConfig,
-        Session                                                        $authSession
+        Session                                                        $authSession,
+        FastlyHelper                                                   $fastlyHelper
     )
     {
         $this->authSession = $authSession;
@@ -58,6 +65,7 @@ class Messages implements MessageInterface
         $this->_scopeConfig = $_scopeConfig;
         $this->notifications = $notifications;
         $this->adminSessionInfoCollection = $adminSessionInfoCollection;
+        $this->fastlyHelper = $fastlyHelper;
     }
 
     public function getText()
@@ -77,7 +85,7 @@ class Messages implements MessageInterface
             if (!$this->nitroPackConfigHelper->getFullPageCacheValue()) {
                 if (!$this->invalidationHelper->checkInvalidationAndPurgeProcess() && !$this->invalidationHelper->checkCronJobIsSetup()) {
                     return __(
-                        'NitroPack has been disabled and the initial system settings have been restored due to incompatible Cron settings preventing cache invalidation/purge. Run the following command to fix the problem: php bin/magento queue:consumers:start nitropack.cache.queue.comsumer &'
+                        'NitroPack has been disabled and the initial system settings have been restored due to incompatible Cron settings preventing cache invalidation/purge. Run the following command to fix the problem: php bin/magento queue:consumers:start nitropack.cache.queue.consumer & '
                     );
                 }
                 return __(
@@ -114,7 +122,7 @@ class Messages implements MessageInterface
             if (!$this->nitroPackConfigHelper->getFullPageCacheValue() && !empty($this->nitroPackConfigHelper->getDisabledCaches())) {
                 return true;
             }
-            if (!$this->nitroPackConfigHelper->getFullPageCacheValue()) {
+            if (!$this->nitroPackConfigHelper->getFullPageCacheValue() && !$this->fastlyHelper->isFastlyAndNitroPackEnabled()) {
                 return true;
             }
             if (!empty($this->nitroPackConfigHelper->getDisabledCaches())) {

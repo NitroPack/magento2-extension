@@ -9,12 +9,14 @@ use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Response\Http as ResponseHttp;
 use NitroPack\NitroPack\Api\NitroService;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
+use NitroPack\NitroPack\Helper\FastlyHelper;
 use NitroPack\NitroPack\Observer\CacheTagObserver;
 
 class LocalCachePlugin
 {
     // Checks if there is local cache for the current request as soon as possible. Executed before Magento\Framework\App\FrontController::dispatch
     public const XML_VARNISH_PAGECACHE_NITRO_ENABLED = 'system/full_page_cache/varnish_enable';
+    public const XML_FASTLY_PAGECACHE_ENABLE_NITRO = 'system/full_page_cache/enable_nitropack';
     public const XML_PAGECACHE_TTL = 'system/full_page_cache/ttl';
     protected $nitro = null;
     /**
@@ -37,11 +39,16 @@ class LocalCachePlugin
      * @var \Magento\Framework\App\Response\HttpFactory
      * */
     private $httpFactory;
-
+    /**
+     * @var FastlyHelper
+     * */
+    protected $fastlyHelper;
     /**
      * @param NitroServiceInterface $nitro
      * @param \Magento\Framework\ObjectManagerInterface $objectManager
      * @param \Magento\Framework\App\Http\Context|null $context
+     * @param ScopeConfigInterface $_scopeConfig
+     * @param FastlyHelper $fastlyHelper
      * @param \Magento\Framework\App\Http\ContextFactory|null $contextFactory
      * @param \Magento\Framework\App\Response\HttpFactory|null $httpFactory
      * */
@@ -49,6 +56,7 @@ class LocalCachePlugin
         NitroServiceInterface                       $nitro,
         \Magento\Framework\ObjectManagerInterface   $objectManager,
         ScopeConfigInterface                        $_scopeConfig,
+        FastlyHelper $fastlyHelper,
         \Magento\Framework\App\Http\Context         $context = null,
         \Magento\Framework\App\Http\ContextFactory  $contextFactory = null,
         \Magento\Framework\App\Response\HttpFactory $httpFactory = null
@@ -56,6 +64,7 @@ class LocalCachePlugin
     {
         $this->_scopeConfig = $_scopeConfig;
         $this->objectManager = $objectManager;
+        $this->fastlyHelper = $fastlyHelper;
         $this->nitro = $nitro;
         $this->context = $context ?? ObjectManager::getInstance()->get(\Magento\Framework\App\Http\Context::class);
         $this->contextFactory = $contextFactory ?? ObjectManager::getInstance()->get(
@@ -78,12 +87,18 @@ class LocalCachePlugin
         if (headers_sent() || NitroService::isANitroRequest()) {
             return $proceed($request);
         }
-        if (!$this->nitro->isConnected() || !$this->nitro->isEnabled() || is_null(
-                $this->_scopeConfig->getValue(\NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK)
-            ) || $this->_scopeConfig->getValue(
-                \NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK
-            ) != \NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK_VALUE) {
+        if (!$this->nitro->isConnected() || !$this->nitro->isEnabled() ||
+            is_null(
+                $this->_scopeConfig->getValue(NitroService::FULL_PAGE_CACHE_NITROPACK)
+            ) || !in_array($this->_scopeConfig->getValue(
+                NitroService::FULL_PAGE_CACHE_NITROPACK
+            ),[NitroService::FULL_PAGE_CACHE_NITROPACK_VALUE,NitroService::FASTLY_CACHING_APPLICATION_VALUE])){
+            header('X-Nitro-Disabled: 1');
+            return $proceed($request);
+        }
+        //Check NitroPack With Fastly Disable
 
+        if($this->fastlyHelper->isFastlyAndNitroDisable()){
             header('X-Nitro-Disabled: 1');
             return $proceed($request);
         }
@@ -125,6 +140,17 @@ class LocalCachePlugin
                         ) ? $this->_scopeConfig->getValue(self::XML_PAGECACHE_TTL) : 86400;
                         header('cache-control: max-age=' . $pageCacheTTL . ', public, s-maxage=' . $pageCacheTTL, true);
                         header('x-magento-tags: ', true);
+                    }
+                    //CHECK FASTLY ENABLE && FASTLY IS CONFIGURE
+                    if (!is_null(
+                            $this->_scopeConfig->getValue(self::XML_FASTLY_PAGECACHE_ENABLE_NITRO)
+                        ) && $this->_scopeConfig->getValue(
+                            self::XML_FASTLY_PAGECACHE_ENABLE_NITRO
+                        ) == 1 && isset($_SERVER['HTTP_X_VARNISH']) ) {
+                        $pageCacheTTL = !is_null(
+                            $this->_scopeConfig->getValue(self::XML_PAGECACHE_TTL)
+                        ) ? $this->_scopeConfig->getValue(self::XML_PAGECACHE_TTL) : 86400;
+                        header('cache-control: max-age=' . $pageCacheTTL . ', public, s-maxage=' . $pageCacheTTL, true);
                     }
                     $content = $this->nitro->pageCache->returnCacheFileContent();
                     $responseData = [

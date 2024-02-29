@@ -13,6 +13,7 @@ use Magento\Store\Model\StoreManagerInterface;
 use NitroPack\NitroPack\Api\NitroService;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\Filesystem\DirectoryList;
+use NitroPack\NitroPack\Helper\FastlyHelper;
 
 
 class InvalidationHelper extends AbstractHelper
@@ -165,6 +166,7 @@ class InvalidationHelper extends AbstractHelper
 
     function checkCronJobIsSetup($defineTime = null)
     {
+
         $crontabCollection = $this->cronFactory->create()->addFieldToSelect('executed_at')->addFieldToFilter(
             'job_code',
             array('in' => array('nitropack_consumers_runner', 'nitropack_cron_for_health_and_stale_cleanup')
@@ -185,9 +187,8 @@ class InvalidationHelper extends AbstractHelper
     }
 
 
-    function makeConnectionsDisableAndEnable($serviceEnable)
+    public function makeConnectionsDisableAndEnable($serviceEnable)
     {
-
         $this->settings = null;
         $stores = $this->stores;
         $triggerEnabled = true;
@@ -204,6 +205,7 @@ class InvalidationHelper extends AbstractHelper
 
             }
         }
+
         if ($triggerEnabled) {
             $this->cacheApplicationChange($serviceEnable);
         }
@@ -212,7 +214,7 @@ class InvalidationHelper extends AbstractHelper
 
     }
 
-    function setEnableAndDisable($serviceEnable)
+    public function setEnableAndDisable($serviceEnable)
     {
         foreach ($this->stores as $storesData) {
             $settingsFilename = $this->apiHelper->getSettingsFilename($storesData->getCode());
@@ -231,7 +233,6 @@ class InvalidationHelper extends AbstractHelper
                         $this->settings->enabled = $serviceEnable;
                     }
                     if ($triggerEnabled) {
-
                         $this->apiHelper->triggerEventMultipleStore(
                             $serviceEnable ? 'enable_extension' : 'disable_extension',
                             false,
@@ -312,8 +313,6 @@ class InvalidationHelper extends AbstractHelper
             }
         }
         return false;
-
-
     }
 
 
@@ -325,22 +324,29 @@ class InvalidationHelper extends AbstractHelper
             if (!$this->_cacheState->isEnabled(self::$cachesToEnable)) {
                 $this->_cacheState->setEnabled(self::$cachesToEnable, true);
             }
+
             if ($serviceEnable) {
-                if (!$this->nitroHelper->getFullPageCacheValue()) {
-                    $this->configWriter->save(\NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK, \NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK_VALUE, ScopeConfigInterface::SCOPE_TYPE_DEFAULT, 0);
+
+                if ($this->scopeConfig->getValue(NitroService::FULL_PAGE_CACHE_NITROPACK) != $this->scopeConfig->getValue('full_page_cache/fields/caching_application/value')) {
+
+                    $this->configWriter->save(NitroService::FULL_PAGE_CACHE_NITROPACK, $this->scopeConfig->getValue('full_page_cache/fields/caching_application/value'), ScopeConfigInterface::SCOPE_TYPE_DEFAULT, 0);
 
                     if ($this->nitroHelper->isVarnishConfigured($baseUrl)) {
-                        $this->configWriter->save(\NitroPack\NitroPack\Api\NitroService::XML_VARNISH_PAGECACHE_NITRO_ENABLED, 1, ScopeConfigInterface::SCOPE_TYPE_DEFAULT, 0);
+                        $this->configWriter->save(NitroService::XML_VARNISH_PAGECACHE_NITRO_ENABLED, 1, ScopeConfigInterface::SCOPE_TYPE_DEFAULT, 0);
                     }
-                }
 
+                }
+                if ($this->scopeConfig->getValue(NitroService::FULL_PAGE_CACHE_NITROPACK) == NitroService::FASTLY_CACHING_APPLICATION_VALUE && $this->scopeConfig->getValue(FastlyHelper::XML_PATH_CACHING_APPLICATION_IS_NITROPACK_ENABLED) == 0) {
+                    $this->configWriter->save(FastlyHelper::XML_PATH_CACHING_APPLICATION_IS_NITROPACK_ENABLED, 1, ScopeConfigInterface::SCOPE_TYPE_DEFAULT, 0);
+                }
             } else {
-                if ($this->nitroHelper->isVarnishConfigured($baseUrl)) {
-                    $this->configWriter->save(\NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK, 2, ScopeConfigInterface::SCOPE_TYPE_DEFAULT, 0);
+                if ($this->scopeConfig->getValue(NitroService::FULL_PAGE_CACHE_NITROPACK) == FastlyHelper::FASTLY_CACHING_APPLICATION_VALUE) {
+                    $this->configWriter->save(FastlyHelper::XML_PATH_CACHING_APPLICATION_IS_NITROPACK_ENABLED, 0, ScopeConfigInterface::SCOPE_TYPE_DEFAULT, 0);
+                } elseif ($this->nitroHelper->isVarnishConfigured($baseUrl)) {
+                    $this->configWriter->save(NitroService::FULL_PAGE_CACHE_NITROPACK, 2, ScopeConfigInterface::SCOPE_TYPE_DEFAULT, 0);
                 } else {
-                    $this->configWriter->save(\NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK, 1, ScopeConfigInterface::SCOPE_TYPE_DEFAULT, 0);
+                    $this->configWriter->save(NitroService::FULL_PAGE_CACHE_NITROPACK, 1, ScopeConfigInterface::SCOPE_TYPE_DEFAULT, 0);
                 }
-
             }
             $types = array_keys($this->cacheTypeList->getTypes());
             foreach ($types as $type) {

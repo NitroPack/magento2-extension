@@ -5,16 +5,11 @@ namespace NitroPack\NitroPack\Controller\Webhook;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Config\Storage\WriterInterface;
-use NitroPack\NitroPack\Helper\VarnishHelper;
 use NitroPack\NitroPack\Api\NitroService;
 
 class Config extends WebhookController
 {
 
-    /**
-     * @var  VarnishHelper
-     * */
-    protected $varnishHelper;
     /**
      * @var ScopeConfigInterface
      **/
@@ -31,15 +26,13 @@ class Config extends WebhookController
 
     /**
      * @param Context $context
-     * @param VarnishHelper $varnishHelper
      * @param ScopeConfigInterface $_scopeConfig
      * @param \Magento\Framework\Filesystem\Driver\File $fileDriver
      * @param WriterInterface $configWriter
      * */
-    public function __construct(Context $context, VarnishHelper $varnishHelper, ScopeConfigInterface $_scopeConfig, \Magento\Framework\Filesystem\Driver\File $fileDriver, WriterInterface $configWriter)
+    public function __construct(Context $context, ScopeConfigInterface $_scopeConfig, \Magento\Framework\Filesystem\Driver\File $fileDriver, WriterInterface $configWriter)
     {
         $this->_scopeConfig = $_scopeConfig;
-        $this->varnishHelper = $varnishHelper;
         $this->fileDriver = $fileDriver;
         $this->configWriter = $configWriter;
         parent::__construct($context);
