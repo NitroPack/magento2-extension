@@ -8,6 +8,16 @@ Installation Instructions: https://support.nitropack.io/hc/en-us/articles/127062
 
 # Release Notes
 
+
+###   2.9.0:
+#### Compatible with Magento Open Source : 2.4
+#### Stability: Stable Build
+#### Description: Improvements:
+- Improvement: Added integration for Fastly CDN.
+- Improvement: Code revamp for Varnish integration.
+- Bug fix: Resolved the issue where enabling Varnish caused the Full Page Cache option to change to NitroPack.
+
+
 ###   2.8.0:
 #### Compatible with Magento Open Source : 2.4
 #### Stability: Stable Build
