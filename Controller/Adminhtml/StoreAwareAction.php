@@ -21,7 +21,7 @@ abstract class StoreAwareAction extends Action
      * */
     public function __construct(
         Context $context,
-        NitroServiceInterface $nitro,
+        NitroServiceInterface $nitro
 
     ) {
 

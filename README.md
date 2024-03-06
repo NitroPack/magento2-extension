@@ -8,6 +8,11 @@ Installation Instructions: https://support.nitropack.io/hc/en-us/articles/127062
 
 # Release Notes
 
+###   2.9.1:
+#### Compatible with Magento Open Source : 2.4
+#### Stability: Stable Build
+#### Description: Improvements:  PHP 7.4 compatibility
+
 
 ###   2.9.0:
 #### Compatible with Magento Open Source : 2.4
