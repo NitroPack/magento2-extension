@@ -191,6 +191,14 @@ class CleanCacheByTagsObserver implements ObserverInterface
                                 }
                                 $tags = array_unique($tags);
                                 $tags = array_diff($tags, $this->getIgnoreTags());
+                                //Check Pattern is Defined
+                                $patternTagsArray = array_filter($this->getIgnoreTags(), function($value) {
+                                    return strpos($value, '_*') !== false;
+                                });
+                                //IF Pattern is Defined then Remove the Tags
+                                if(count($patternTagsArray)>0){
+                                    $tags = $this->patternIgnoreTag($tags,$patternTagsArray);
+                                }
                                 //Non-Zero Product Quantity Check
                                 if ($object instanceof \Magento\CatalogInventory\Model\Adminhtml\Stock\Item\Interceptor) {
 
@@ -250,7 +258,39 @@ class CleanCacheByTagsObserver implements ObserverInterface
     {
         return $this->defaultQueueValueConnection == 'amqp' && $this->config->get('queue/amqp') && count($this->config->get('queue/amqp')) > 0 ? self::TOPIC_NAME_AMQP : self::TOPIC_NAME_DB;
     }
+    public function patternIgnoreTag($tags,$patternsIgnoreTag)
+    {
+       $readyTags = [];
+      // Iterate through each tag
+        foreach ($tags as $tag) {
+            $ignore = false; // Flag to determine if tag should be ignored
 
+            // Check against each pattern
+            foreach ($patternsIgnoreTag as $pattern) {
+                // Escape special characters and convert * to .*
+                $pattern = preg_quote($pattern, '/');
+                $pattern = str_replace('\*', '.*', $pattern);
+
+                // Add start and end anchors to match the whole string
+                $pattern = '/^' . $pattern . '$/';
+
+                // Check if tag matches the pattern
+                if (preg_match($pattern, $tag)) {
+                    $ignore = true; // Set flag to ignore the tag
+                    break; // No need to check further patterns
+                }
+            }
+
+            // Process or ignore the tag based on the flag
+            if (!$ignore) {
+                $readyTags[] =  $tag;
+            }
+
+
+        }
+        return $readyTags;
+
+    }
     public function getTagTypeAndId($cacheTag)
     {
         $id = false;
@@ -318,6 +358,13 @@ class CleanCacheByTagsObserver implements ObserverInterface
         foreach ($reasonEntity->getCategoryIds() as $catId) {
             if (in_array('cat_c_' . $catId, $this->getIgnoreTags())) {
                 continue;
+            }
+            //Check Category Pattern is Defined
+            $patternTagsArray = array_filter($this->getIgnoreTags(), function($value) {
+                return strpos($value, 'cat_c_*') !== false;
+            });
+            if(count($patternTagsArray)>0){
+                    continue;
             }
             $rawData = [
                 'action' => 'invalidation',
@@ -445,5 +492,7 @@ class CleanCacheByTagsObserver implements ObserverInterface
 
         return [];
     }
+
+
 
 }
