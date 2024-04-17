@@ -4,11 +4,9 @@
 		<title>
 			Connect to NitroPack
 		</title>
-		<css src="NitroPack_NitroPack::css/admin.css"/>
-		<css src="NitroPack_NitroPack::css/connect.css"/>
-		<css src="NitroPack_NitroPack::css/font-awesome.min.css"/>
-		<css src="NitroPack_NitroPack::css/nitro_bootstrap.css"/>
-	</head>
+        <css src="NitroPack_NitroPack::css/settings.min.css"/>
+        <css src="NitroPack_NitroPack::css/tailwind-rewrite.css" rel="stylesheet" />
+    </head>
 	<body>
 		<referenceContainer name="page.main.actions">
             <block class="Magento\Backend\Block\Store\Switcher" name="store_switcher"  template="NitroPack_NitroPack::store/switcher.phtml">

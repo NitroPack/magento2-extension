@@ -4,9 +4,8 @@ namespace NitroPack\NitroPack\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\App\RequestInterface;
-use Psr\Log\LoggerInterface;
+use NitroPack\NitroPack\Logger\Logger;
 use Magento\Store\Model\StoreManagerInterface;
-
 use NitroPack\NitroPack\Api\TaggingServiceInterface;
 
 class CacheTagObserver implements ObserverInterface {
@@ -19,8 +18,8 @@ class CacheTagObserver implements ObserverInterface {
      * */
 	protected $request;
     /**
-     * @var \Psr\Log\LoggerInterface
-     * */
+     * @var Logger
+     */
 	protected $logger;
 
 	static $loggedRequest = false;
@@ -34,7 +33,7 @@ class CacheTagObserver implements ObserverInterface {
 	public function __construct(
 		TaggingServiceInterface $tagger,
 		RequestInterface $request,
-		LoggerInterface $logger,
+		Logger $logger,
         StoreManagerInterface $storeManager
 	) {
 		$this->tagger = $tagger;

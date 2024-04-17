@@ -191,11 +191,9 @@ class CleanCacheByTagsObserver implements ObserverInterface
                                 }
                                 $tags = array_unique($tags);
                                 $tags = array_diff($tags, $this->getIgnoreTags());
-                                //Check Pattern is Defined
                                 $patternTagsArray = array_filter($this->getIgnoreTags(), function($value) {
                                     return strpos($value, '_*') !== false;
                                 });
-                                //IF Pattern is Defined then Remove the Tags
                                 if(count($patternTagsArray)>0){
                                     $tags = $this->patternIgnoreTag($tags,$patternTagsArray);
                                 }

@@ -4,6 +4,9 @@
         <job instance="NitroPack\NitroPack\Cron\ProcessCron" method="execute" name="nitropack_cron_for_health_and_stale_cleanup">
             <schedule>*/5 * * * *</schedule>
         </job>
+        <job instance="NitroPack\NitroPack\Cron\RecentLogRecords" method="execute" name="nitropack_recent_log_records">
+            <schedule>0 1 * * *</schedule>
+        </job>
     </group>
     <group id="consumers">
         <job name="nitropack_consumers_runner" instance="Magento\MessageQueue\Model\Cron\ConsumersRunner" method="run">

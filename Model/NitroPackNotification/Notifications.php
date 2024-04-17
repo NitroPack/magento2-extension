@@ -8,7 +8,7 @@ use NitroPack\SDK\Filesystem;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Serialize\Serializer\Json;
-use Psr\Log\LoggerInterface;
+use NitroPack\NitroPack\Logger\Logger;
 
 class Notifications
 {
@@ -28,8 +28,8 @@ class Notifications
 
     private $notifications;
     /**
-     * @var LoggerInterface
-     * */
+     * @var Logger
+     */
     private $logger;
     /**
      * @var StoreManagerInterface $storeManager
@@ -45,7 +45,7 @@ class Notifications
         StoreManagerInterface $storeManager,
         DirectoryList $directoryList,
         Json $serializer,
-        LoggerInterface $logger,
+        Logger $logger,
         RequestInterface $request
     ) {
         $this->serializer = $serializer;

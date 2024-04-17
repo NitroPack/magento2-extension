@@ -1,0 +1,125 @@
+<?php $viewModel = $block->getOptimizationPage(); ?>
+<div class="h-auto max-w-full card-radius bg-white border border-gray-200 rounded-md shadow items-center pad-24"
+     id="optimizations-widget" x-data="{ showPurgeCacheModal: false }" @keydown.escape="showPurgeCacheModal = false">
+    <div class="flex flex-row items-center justify-between border-b border-gray-200">
+        <h2 class="text-base font-bold text-gray-900 optimize-page-head mb-8">Optimized pages</h2>
+        <div class="flex flex-row items-center mb-8" id="pending-optimizations-section">
+            <div role="status">
+                <svg aria-hidden="true" class="w-6 h-6 text-gray-200 animate-spin dark:text-gray-600 fill-purple-600"
+                     viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                        fill="currentColor"/>
+                    <path
+                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                        fill="currentFill"/>
+                </svg>
+                <span class="sr-only">Loading...</span>
+            </div>
+            <span class="ml-2 mr-1 optimizer-load-heading">Processing <span id="pending-optimizations-count">X</span> page(s) in the background </span>
+        </div>
+    </div>
+    <div class="flex flex-row items-center mt-8 ml-10" x-data="{ isDisplayedTotal: false, isDisplayedReason: true }">
+        <h6 class="text-4xl font-bold text-gray-900 pt-4 font-inter optimize-total-div"><span data-optimized-pages-total
+                                                                                              class="optimize-total">0</span>
+        </h6>
+        <span class="pl-10 pt-6 dashboard-primary-text text-gray-900 text-lite-gray"
+              @click="isDisplayedTotal  = ! isDisplayedTotal , isDisplayedReason=false " x-show="isDisplayedReason"
+              style="height: 60px; cursor: pointer;">
+              <div id="last-cache-purge" class="text-md"><?= __('Last cache purge:'); ?> <span
+                      data-last-cache-purge><?= __('Never'); ?></span></div>
+              <div id="last-cache-purge-reason" class="text-md"><?= __('Reason:'); ?> <span
+                      data-purge-reason><?= __('Unknown'); ?></span></div>
+        </span>
+
+
+
+    <div class="pl-10 pt-6 dashboard-primary-text text-gray-900 text-lite-gray" x-show="isDisplayedTotal"
+         x-collapse.duration.1000ms @click=" isDisplayedReason  = ! isDisplayedReason , isDisplayedTotal = false "
+         style="height: 60px; display:none;">
+        <div class="optimizations-subcount"><span data-optimized-pages-mobile>0</span> <?= __('mobile pages'); ?></div>
+        <div class="optimizations-subcount"><span data-optimized-pages-tablet>0</span> <?= __('tablet pages'); ?></div>
+        <div class="optimizations-subcount"><span data-optimized-pages-desktop>0</span> <?= __('desktop pages'); ?>
+        </div>
+    </div>
+        <button id="optimizations-purge-cache"  @click="showPurgeCacheModal = true, toggleOverflow(false)" type="button" class="ml-auto bg-transparent text-purple-700 font-medium  py-2 px-4 border border-purple-500 rounded purge-btn" >
+            Purge cache </button>
+    </div>
+    <?= $this->getChildHtml('PurgeCachePopup'); ?>
+
+</div>
+
+<script>
+    require(['jquery', 'NitroPack_NitroPack/js/overlay'], function ($, cardOverlay) {
+        var getOptimizationsTimeout = null;
+        $("#optimizations-widget").cardOverlay("loading", {message: "Loading optimizations data"});
+        var getOptimizations = _ => {
+            var url = '<?= $viewModel->getOptimizePageUrl() ?>';
+            ((s, e, f) => {
+                if (window.fetch) {
+                    fetch(url)
+                        .then(resp => resp.json())
+                        .then(s)
+                        .catch(e)
+                        .finally(f);
+                } else {
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: s,
+                        error: e,
+                        complete: f
+                    })
+                }
+            })(data => {
+                $('[data-last-cache-purge]').text(data.last_cache_purge.timeAgo);
+                if (data.last_cache_purge.reason) {
+                    $('[data-purge-reason]').text(data.last_cache_purge.reason);
+                    $('#last-cache-purge-reason').show();
+                } else {
+                    $('#last-cache-purge-reason').hide();
+                }
+
+                if (data.pending_count) {
+                    $("#pending-optimizations-count").text(data.pending_count);
+                    $("#pending-optimizations-section").show();
+                } else {
+                    $("#pending-optimizations-section").hide();
+                }
+
+                $('[data-optimized-pages-desktop]').text(data.optimized_pages.desktop);
+                $('[data-optimized-pages-mobile]').text(data.optimized_pages.mobile);
+                $('[data-optimized-pages-tablet]').text(data.optimized_pages.tablet);
+                $('[data-optimized-pages-total]').text(data.optimized_pages.total);
+                $("#optimizations-widget").cardOverlay("clear");
+            }, __ => {
+                $("#optimizations-widget").cardOverlay("error", {message: "<?php __('Error while fetching optimizations data'); ?>"});
+            }, __ => {
+
+                if (!getOptimizationsTimeout) {
+
+                    getOptimizationsTimeout = setTimeout(function () {
+
+                        getOptimizationsTimeout = null;
+                        getOptimizations();
+                    }, 60000);
+                }
+            });
+        }
+        window.addEventListener("cache.purge.success", getOptimizations);
+
+        $('#purge-cache-confirm').click(function (e) {
+            e.preventDefault();
+            $("#optimizations-widget").cardOverlay("loading", {message: "Purging cache"});
+            window.performCachePurge();
+            $(this).addClass('disabled');
+        });
+
+
+        $(window).on("load", function () {
+            getOptimizations();
+        });
+
+    });
+</script>

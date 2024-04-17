@@ -1,18 +1,18 @@
 <?xml version="1.0"?>
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
 	<head>
-		<title>
-			NitroPack Settings
-		</title>
-		<css src="NitroPack_NitroPack::css/admin.css"/>
-		<css src="NitroPack_NitroPack::css/settings.css"/>
-		<css src="NitroPack_NitroPack::css/font-awesome.min.css"/>
-		<css src="NitroPack_NitroPack::css/nitro_bootstrap.css"/>
-		<link src="NitroPack_NitroPack::js/nitro_embed.js"/>
-		<link src="NitroPack_NitroPack::js/nitro_notifications.js"/>
-		<link src="NitroPack_NitroPack::js/nitro_cache_warmup.js"/>
-	</head>
+        <css src="NitroPack_NitroPack::css/tailwind-rewrite.css" rel="stylesheet" />
+        <script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js" defer="true" src_type="url"/>
+        <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"  defer="true" src_type="url"/>
+        <css src="NitroPack_NitroPack::css/settings.min.css"/>
+        <link src="NitroPack_NitroPack::js/nitro_notifications.js"/>
+    </head>
 	<body>
+        <referenceContainer name="header" remove="true" />
+        <referenceContainer name="page.wrapper">
+            <block  class="NitroPack\NitroPack\Block\DiagnosticsBlock" name="LogoBlock" template="NitroPack_NitroPack::logo.phtml" after="notices.wrapper"  />
+            <block class="NitroPack\NitroPack\Block\Dashboard\GeneralBlock" template="NitroPack_NitroPack::dashboard/notifications.phtml" after="LogoBlock"/>
+        </referenceContainer>
 		<referenceContainer name="page.main.actions">
             <block class="Magento\Backend\Block\Store\Switcher" name="store_switcher"  template="NitroPack_NitroPack::store/switcher.phtml">
                 <action method="setUseConfirm">
@@ -23,9 +23,39 @@
                     <argument name="switch_store_views" xsi:type="string">0</argument>
                 </arguments>
             </block>
+            <container name="header.inner.right" after="page.main.actions"/>
 		</referenceContainer>
 		<referenceContainer name="content">
             <block class="NitroPack\NitroPack\Block\SettingsBlock" template="NitroPack_NitroPack::settings.phtml">
+                <block  class="NitroPack\NitroPack\Block\Dashboard\NitroDashboardBlock" name="OptimizedPages" template="NitroPack_NitroPack::dashboard/optimized_pages.phtml"  >
+                    <arguments>
+                        <argument name="optimization_page" xsi:type="object">\NitroPack\NitroPack\Model\Dashboard\OptimizationPage</argument>
+                    </arguments>
+                    <block  class="NitroPack\NitroPack\Block\Dashboard\Popup\Popup" name="PurgeCachePopup" template="NitroPack_NitroPack::dashboard/popup/purge_cache_popup.phtml"  />
+                </block>
+                <block  class="NitroPack\NitroPack\Block\Dashboard\NitroDashboardBlock" name="OptimizationMode" template="NitroPack_NitroPack::dashboard/optimization_mode.phtml" >
+                    <arguments>
+                        <argument name="optimization_mode" xsi:type="object">\NitroPack\NitroPack\Model\Dashboard\OptimizationMode</argument>
+                    </arguments>
+                    <block  class="NitroPack\NitroPack\Block\Dashboard\Popup\Popup" name="OptimizeModePopup" template="NitroPack_NitroPack::dashboard/popup/optimize_mode_popup.phtml"  />
+                    <block  class="NitroPack\NitroPack\Block\Dashboard\Popup\Popup" name="CompareModePopup" template="NitroPack_NitroPack::dashboard/popup/compare_mode_popup.phtml"  />
+                </block>
+                <block  class="NitroPack\NitroPack\Block\Dashboard\NitroDashboardBlock" name="SubscriptionBlock" template="NitroPack_NitroPack::dashboard/subscription.phtml"  >
+                    <arguments>
+                        <argument name="subscription_block" xsi:type="object">\NitroPack\NitroPack\Model\Dashboard\SubscriptionBlock</argument>
+                    </arguments>
+                </block>
+                <block  class="NitroPack\NitroPack\Block\Dashboard\GeneralBlock" name="GeneralBlock" template="NitroPack_NitroPack::dashboard/general.phtml"  >
+                    <block  class="NitroPack\NitroPack\Block\Dashboard\Popup\Popup" name="DisconnectPopup" template="NitroPack_NitroPack::dashboard/popup/disconnect_popup.phtml"  />
+                    <block  class="NitroPack\NitroPack\Block\Dashboard\Popup\Popup" name="EnabledConfirmPopup" template="NitroPack_NitroPack::dashboard/popup/enabled_confirm_popup.phtml"  />
+                    <block  class="NitroPack\NitroPack\Block\Dashboard\Popup\Popup" name="TestModePopup" template="NitroPack_NitroPack::dashboard/popup/test_mode_popup.phtml"  />
+                    <block  class="NitroPack\NitroPack\Block\Dashboard\Popup\Popup" name="TestModeDisablePurgePopup" template="NitroPack_NitroPack::dashboard/popup/test_mode_disable_purge_popup.phtml"  />
+                </block>
+                <block  class="NitroPack\NitroPack\Block\Dashboard\ProductAttributeBlock" name="ProductAttributeBlock" template="NitroPack_NitroPack::dashboard/product_attribute.phtml"  >
+                    <arguments>
+                        <argument name="product_attribute_block" xsi:type="object">\NitroPack\NitroPack\Model\Dashboard\ProductAttributeBlock</argument>
+                    </arguments>
+                </block>
                 <block  class="NitroPack\NitroPack\Block\DiagnosticsBlock" name="DiagnosticsBlock" template="NitroPack_NitroPack::diagnostics.phtml"  />
             </block>
 		</referenceContainer>

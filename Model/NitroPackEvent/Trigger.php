@@ -9,7 +9,7 @@ use \NitroPack\SDK\NitroPack;
 use Magento\Framework\Filesystem\DirectoryList;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\Area;
-use Psr\Log\LoggerInterface;
+use NitroPack\NitroPack\Logger\Logger;
 
 
 class Trigger
@@ -66,6 +66,20 @@ class Trigger
       * @var \Magento\Store\Model\Store $store
       * */
      protected $store;
+
+    /**
+     * @param \Magento\Store\Api\GroupRepositoryInterface $groupRepository
+     * @param DirectoryList $directoryList
+     * @param \Magento\Framework\Filesystem\Driver\File $fileDriver
+     * @param \Magento\Framework\Serialize\SerializerInterface $serializer
+     * @param \Magento\Framework\App\DeploymentConfig $deploymentConfig
+     * @param \Magento\Framework\App\ProductMetadataInterface $productMetaData
+     * @param \NitroPack\NitroPack\Helper\ApiHelper $apiHelper
+     * @param \NitroPack\NitroPack\Helper\RedisHelper $redisHelper
+     * @param StoreManagerInterface $storeManager
+     * @param \Magento\Store\Model\Store $store
+     * @param Logger $logger
+     */
     public function __construct(
         \Magento\Store\Api\GroupRepositoryInterface $groupRepository,
         DirectoryList $directoryList,
@@ -77,7 +91,7 @@ class Trigger
         \NitroPack\NitroPack\Helper\RedisHelper $redisHelper,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Store\Model\Store $store,
-        LoggerInterface $logger
+        Logger $logger
     ) {
         $this->apiHelper = $apiHelper;
         $this->redisHelper = $redisHelper;

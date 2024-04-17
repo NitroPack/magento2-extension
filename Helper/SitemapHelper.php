@@ -9,7 +9,7 @@ use Magento\Sitemap\Model\SitemapFactory;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\StoreManagerInterface;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
-use Psr\Log\LoggerInterface;
+use NitroPack\NitroPack\Logger\Logger;
 
 class SitemapHelper extends AbstractHelper
 {
@@ -47,8 +47,8 @@ class SitemapHelper extends AbstractHelper
      * */
     private $file;
     /**
-     * @var LoggerInterface
-     * */
+     * @var Logger
+     */
     protected $logger;
     /**
      * @var \Magento\Framework\Filesystem
@@ -57,7 +57,7 @@ class SitemapHelper extends AbstractHelper
     /**
      * @param \Magento\Framework\App\Helper\Context $context
      * @param Emulation $appEmulation
-     * @param LoggerInterface $logger
+     * @param Logger $logger
      * @param \Magento\Framework\Filesystem\Io\File $file
      * @param SitemapFactory $sitemapFactory,
      * @param \Magento\Sitemap\Model\Sitemap $sitemap,
@@ -68,7 +68,7 @@ class SitemapHelper extends AbstractHelper
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         Emulation $appEmulation,
-        LoggerInterface $logger,
+        Logger $logger,
         \Magento\Framework\Filesystem\Io\File $file,
         SitemapFactory $sitemapFactory,
         \Magento\Sitemap\Model\Sitemap $sitemap,
@@ -87,11 +87,12 @@ class SitemapHelper extends AbstractHelper
         $this->sitemap = $sitemap;
     }
 
-    public function getSiteMapPath($storeGroup, $storeGroupCode, $nitro)
+
+    public function getSiteMapPath($storeGroup, $storeGroupCode, $nitroSetting)
     {
         $stores = $this->_storeManager->getStores();
-        $dataValue = [];
         $storeUrl = '';
+        $dataValue = [];
         foreach ($stores as $storesData) {
             if ($storesData->getStoreGroupId() == $storeGroup) {
                 if (empty($storeUrl)) {
@@ -99,46 +100,52 @@ class SitemapHelper extends AbstractHelper
                         \Magento\Framework\UrlInterface::URL_TYPE_MEDIA
                     );
                 }
-                $siteMap = $this->sitemapCollectionFactory->create()->addStoreFilter([$storesData->getId()])->load();
-
-                if ($siteMap->getSize() > 0) {
-                    foreach ($siteMap as $sitemap) {
-                        $sitemapUrl = $sitemap->getSitemapUrl(
-                            $sitemap->getSitemapPath(),
-                            $sitemap->getSitemapFilename()
-                        );
+                if($storesData->getIsActive()) {
+                    $siteMap = $this->sitemapCollectionFactory->create()->addStoreFilter([$storesData->getId()])->addOrder('sitemap_time','desc')->setPageSize(1)->load();
+                    if ($siteMap->getSize() > 0) {
+                        foreach ($siteMap  as $sitemapValue) {
+                            $sitemapUrl = $sitemapValue->getSitemapUrl(
+                                $sitemapValue->getSitemapPath(),
+                                $sitemapValue->getSitemapFilename()
+                            );
+                            $dataValue[] = $sitemapUrl;
+                        }
+                    } else {
+                        $data = [
+                            'sitemap_path' => '/media/',
+                            'sitemap_filename' => $storesData->getCode() . '.xml',
+                            'store_id' => $storesData->getId()
+                        ];
+                        /** @var \Magento\Sitemap\Model\Sitemap $model */
+                        $model = $this->sitemapFactory->create();
+                        $model->setData($data);
+                        $sitemapUrl = $model->getSitemapUrl($model->getSitemapPath(), $model->getSitemapFilename());
                         $dataValue[] = $sitemapUrl;
-                    }
-                } else {
-                    $data = [
-                        'sitemap_path' => '/media/',
-                        'sitemap_filename' => $storesData->getCode() . '.xml',
-                        'store_id' => $storesData->getId()
-                    ];
-                    /** @var \Magento\Sitemap\Model\Sitemap $model */
-                    $model = $this->sitemapFactory->create();
-                    $model->setData($data);
-                    $sitemapUrl = $model->getSitemapUrl($model->getSitemapPath(), $model->getSitemapFilename());
-                    $dataValue[] = $sitemapUrl;
-                    try {
-                        $model->save();
-                        $this->appEmulation->startEnvironmentEmulation(
-                            $model->getStoreId(),
-                            Area::AREA_FRONTEND,
-                            true
-                        );
-                        $model->generateXml();
-                        $this->appEmulation->stopEnvironmentEmulation();
-                    } catch (\Exception $e) {
-                        $this->logger->critical($e->getMessage());
+                        try {
+                            $model->save();
+                            $this->appEmulation->startEnvironmentEmulation(
+                                $model->getStoreId(),
+                                Area::AREA_FRONTEND,
+                                true
+                            );
+                            $model->generateXml();
+                            $this->appEmulation->stopEnvironmentEmulation();
+                        } catch (\Exception $e) {
+                            $this->logger->critical($e->getMessage());
+                        }
                     }
                 }
             }
         }
+        return  $this->generateStoreGroupXml($dataValue,$nitroSetting,$storeUrl,$storeGroupCode);
+
+    }
+
+    public function generateStoreGroupXml($dataValue,$settings,$storeUrl,$storeGroupCode){
         $xmlData = '<?xml version="1.0" encoding="UTF-8"?>';
         $xmlData .= '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
-        $settings = $nitro->getSettings();
-        if ($nitro->isEnabled() && $settings->cacheWarmup) {
+
+        if ($settings->enabled) {
             foreach ($dataValue as $dataValueItem) {
                 $xmlData .= '<sitemap><loc>' . $dataValueItem . '</loc></sitemap>';
             }
@@ -158,8 +165,8 @@ class SitemapHelper extends AbstractHelper
             }
         } catch (\Exception $e) {
             $this->logger->critical($e->getMessage());
+            return false;
         }
-
         return false;
     }
 }

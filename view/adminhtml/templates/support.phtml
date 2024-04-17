@@ -1,23 +1,25 @@
-<div class="nitro support-bg" style=" background-image: url('<?php echo $this->getViewFileUrl('NitroPack_NitroPack::img/support-bg.jpg');?>');" >
-    <div class="row justify-content-center">
-        <div class="col-md-12 col-sm-12 col-lg-5">
-            <div class="card support-card">
-                <div class="text-center p-3">
-                    <div class="support-card-img">
-                        <img src="<?php echo $this->getViewFileUrl('NitroPack_NitroPack::img/404-image.png');?>" width="400" id="support-logo" alt="NitroPack.io">
-                    </div>
-                    <div class="support-h2">
-                        Oh No!
-                    </div>
-                    <br>
-                    <div class="support-p1">
-                    Look like we are experiencing some technical issues (Sorry about that)
-                    </div>
-                    <div class="support-p1">
-                        Please try again or <a href="https://support.nitropack.io/">ask for a support</a>
-                    </div>
-                </div>
-            </div>
+<?php
+$nitroPackConfigHelper = $this->helper('NitroPack\NitroPack\Helper\AdminFrontendUrl');
+$settingPage = $this->getUrl('NitroPack/Settings/Index');
+?>
+<div class="row justify-content-center ">
+    <div class="container-sm h-[600px]"">
+        <div class="flex justify-between items-center">
+            <img class="mx-auto mt-[80px] mb-[80px]"
+                 src="<?php echo $this->getViewFileUrl('NitroPack_NitroPack::img/warning.png'); ?>" id="support-logo"
+                 alt="NitroPack.io">
+        </div>
+        <div class="text-grey-700 text-center font-inter text-24-32 font-bold">
+            We could not load the page due to a technical issue.
+        </div>
+        <br>
+        <div class="text-grey-700 text-center font-inter text-18-27 mb-14">
+            Our technical team is already aware of the issue and is working to resolve it.<br> We apologize for the
+            inconvenience and appreciate your patience. <br>If the problem persists, please contact our <a class="text-blue" target="_blank" href="https://support.nitropack.io/en/ ">support team.</a>
+        </div>
+        <div class="flexitems-center">
+        <button onClick="window.location.href='<?= $settingPage ?>'" class="mx-auto flex gap-2 justify-center items-center border-solid border border-purple font-inter rounded-lg hover:bg-purple-100 text-purple font-medium font-inter hover:text-purple py-[8px] px-[20px] stroke-purple">
+            Refresh now</button>
         </div>
     </div>
 </div>

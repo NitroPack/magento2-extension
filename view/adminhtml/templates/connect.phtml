@@ -1,172 +1,203 @@
 <!-- wip -->
-<div class="nitro">
-    <div class="row justify-content-center">
-        <div class="col-md-8 col-sm-12 col-lg-4">
-            <div class="card">
-                <h2 class="text-center p-3">
-                    <div class="p-1">
-                        <img src="https://nitropack.io/asset/img/icov6.png" width="52" id="nitropack-logo"
-                             alt="NitroPack.io">
-                    </div>
-                    <div class="p-1">
-                        <span class="opacity-0-9">NitroPack</span> <span class="opacity-0-2">/ IO</span>
-                    </div>
-                </h2>
-                <div class="card-body card-welcome" id="manual-connect-fields" style="display: none;">
-                    <div id="nitropack-alert-welcome" class="alert alert-light bg-light alert-welcome">
-                        <h4 class="text-center">Welcome to NitroPack.io!</h4>
-                        <hr>
-                        <p class="my-4">Please go to <a href="https://nitropack.io/pricing" target="_blank"><strong>nitropack.io&nbsp;<sup><small><i
-                                                class="fa fa-external-link"></i></small></sup></strong></a> and register
-                            your site.</p>
-                        <p>Then copy your API Key and API Secret Key, and put them below. <a class="no-break"
-                                                                                          href="https://nitropack.io/blog/post/how-to-get-your-site-id-and-site-secret"
-                                                                                          target="_blank">See
-                                how&nbsp;<sup><small><i class="fa fa-external-link"></i></small></sup></a></p>
-                    </div>
+<div class="row justify-content-center nitro">
+    <div class="container-sm">
+        <div id="connection-screen">
+        <div class="flex justify-between items-center">
+            <div class="w-1/4 pl-[10%]">
+                <div class="back font-inter font-bold" style="display:none;">
+                    <a href="javascript:void(0);"
+                       onclick="jQuery('#manual-connect-fields').hide(); jQuery('.e-submit-body').show(); jQuery('.back').hide();"
+                       id="directlyConnected"><- Back</a>
+                </div>
+            </div>
+            <div class="flex justify-center w-1/2">
+                <img src="<?= $block->getImage('logo.svg') ?>" class="mx-1">
+                <img src="<?= $block->getImage('plus.svg') ?>" class="mx-1">
+                <img src="<?= $block->getImage('magento-logo.svg') ?>" class="mx-1">
+            </div>
+            <div class="w-1/4"></div>
+        </div>
+            <h1 class="text-center font-inter font-bold text-h4 text-grey-700">Welcome to NitroPack for Magento</h1>
+            <p class="text-center font-inter font-normal text-20-28 text-grey-700">Let’s speed up your website by connecting it to NitroPack!</p>
+        <div id="nitropack-info-div"  class="connect-warning-bg flex mx-auto justify-center items-center w-[560px] p-[16px] mt-8" style="display:none;">
+            <p class="text-center font-inter text-sm text-grey-700"></p>
+        </div>
+        <div class="e-submit-body grid justify-center mt-8">
+            <div class="h-[350px]">
+                <div id="nitropack-site-connect" class="text-center pt-3">
+                    <button type="button"
+                        class="connect-button font-inter text-sm bg-purple hover:bg-purple-200 text-white hover:text-white focus:text-white focus:bg-purple-200"
+                        id="api-details-form-submit"> <img src="<?= $block->getImage('loading.svg'); ?>" alt="loading" id="npConnectLoading" class="icon-left mr-2" style="display: none; margin-bottom: 3px;">Connect
+                    </button>
+                </div>
 
-                    <div id="nitropack-alert-error"
-                         style="display:none;">
+                <p class="text-sm text-center mt-6 text-grey-700 font-inter" style="font-size: 14px !important; font-weight: 400; line-height: 24px !important;">Having trouble connecting? <br/> Explore our <a
+                        class="text-blue"
+                        href="javascript:void(0);"
+                        onclick="jQuery('#manual-connect-fields').show(); jQuery('.e-submit-body').hide(); jQuery('.back').show();"
+                        id="manuallyConnected">manual connect</a> option, browse our <br/><a class="text-blue" target="_blank" href="https://support.nitropack.io/en/collections/6175777-nitropack-for-magento">FAQ section</a>, or reach out to our <a class="text-blue" target="_blank" href="https://support.nitropack.io/en/ ">support team.</a></p>
+            </div>
+        </div>
 
-                        <p id="nitropack-error-message" class="my-4"></p>
-                    </div>
 
-                    <div id="nitropack-info-div" class="nitropack-focus-veil" style="display:none;">
-                        <p class="nitropack-centered"></p>
-                        <span><i class="fa fa-close"></i></span>
-                    </div>
-
-                    <form enctype="multipart/form-data" id="connect-form">
-                        <div class="form-group">
-                            <label for="select-store">Selected Store View</label>
-                            <div>
-                                <input type="text" class="form-control" disabled id="select-store" name="store_id"
-                                       value="<?= $block->getStoreName() ?>: <?= $block->getStoreUrl() ?>"/>
-                            </div>
+        <div class="grid justify-center mt-8" id="manual-connect-fields" style="display: none;">
+            <div class="h-[350px]">
+                <form enctype="multipart/form-data" id="connect-form">
+                    <div class="form-group">
+                        <div>
+                            <input type="hidden" class="form-control" disabled id="select-store" name="store_id"
+                                   value="<?= $block->getStoreName() ?>: <?= $block->getStoreUrl() ?>"/>
                         </div>
-                        <div class="form-group">
-                            <label for="input-site-id">Put Your API key</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control" id="nitro_site_id" name="nitro_site_id"
-                                       placeholder="API Key"/>
-                            </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="text-sm font-medium text-grey-800" for="input-site-id">API Key</label>
+                        <div class="input-group mt-2">
+                            <input type="text" id="nitro_site_id" name="nitro_site_id"
+                                   data-validate="{required:true, 'validate-email':true}"
+                                   class="bg-white w-[400px] font-inter border border-gray-300 text-gray-900 text-m rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                                   placeholder="<?= $escaper->escapeHtml(__("Enter your API Key")) ?>"/>
                         </div>
-                        <div class="form-group">
-                            <label for="input-site-id">Put Your API Secret Key</label>
-                            <div class="input-group">
-                                <input type="password" class="form-control" id="nitro_site_secret"
-                                       name="nitro_site_secret" placeholder="Site Secret" data-toggle-password=""/>
-                                <div class="input-group-append">
-									<span class="btn btn-outline-secondary" id="toggle-password">
-										<i class="fa fa-eye"></i>
+                    </div>
+                    <div class="form-group mt-4 mb-8">
+                        <label class="text-sm font-medium text-grey-800" for="input-site-id">API Secret Key</label>
+                        <div class="input-group mt-2">
+                            <input type="password" id="nitro_site_secret" name="nitro_site_secret"
+                                   class="form-control bg-white w-[400px] font-inter border border-gray-300 text-gray-900 text-m rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                                   placeholder="<?= $escaper->escapeHtml(__("Enter your API Secret Key")) ?>"
+                                   data-toggle-password=""/>
+                            <div class="input-group-append">
+									<span class="eyeicon" id="toggle-password">
+										<i class="eye">
+                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                                 xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M0.666626 8C0.666626 8 3.33329 2.66667 7.99996 2.66667C12.6666 2.66667 15.3333 8 15.3333 8C15.3333 8 12.6666 13.3333 7.99996 13.3333C3.33329 13.3333 0.666626 8 0.666626 8Z"
+                                                stroke="#776795" stroke-linecap="round" stroke-linejoin="round"></path>
+                                            <path
+                                                d="M8 10C9.10457 10 10 9.10457 10 8C10 6.89543 9.10457 6 8 6C6.89543 6 6 6.89543 6 8C6 9.10457 6.89543 10 8 10Z"
+                                                stroke="#1B004E" stroke-linecap="round" stroke-linejoin="round"></path>
+                                        </svg>
+                                        </i>
 									</span>
-                                </div>
                             </div>
                         </div>
-                        <input type="hidden" name="handshake_connection_method" id="handshake_connection_method" value="manual">
-                    </form>
-                    <div id="nitropack-site-connect" class="text-center pt-3">
-                        <button class="btn btn-primary btn-lg" id="nitro_connect">Connect Your Site</button>
                     </div>
-                    <div class="text-center">
-                        <a href="javascript:void(0);" onclick="jQuery('#manual-connect-fields').hide(); jQuery('.e-submit-body').show(); "
-                           id="directlyConnected"><small>Connect NitroPack Directly</small></a>
+                    <input type="hidden" name="handshake_connection_method" id="handshake_connection_method"
+                           value="manual">
+                    <div id="nitropack-site-connect" class="text-center pt-3 mt-8">
+                        <button type="button" class="connect-button font-inter text-sm bg-purple hover:bg-purple-200 text-white hover:text-white focus:text-white focus:bg-purple-200"
+                            id="nitro_connect"> <img src="<?= $block->getImage('loading.svg'); ?>" alt="loading" id="npConnectLoading" class="icon-left mr-2" style="display: none; margin-bottom: 3px;">Connect
+                        </button>
                     </div>
-                </div>
-
-                <div id="nitropack-error-close" class="text-center pb-5 pt-3" style="display:none;">
-                    <button class="btn btn-primary btn-lg" id="nitro_error_close">Close</button>
-                </div>
+                </form>
 
 
-                <div class="e-submit-body">
-                    <div class="e-submit text-center pb-2 pt-3">
-                        <a class="btn btn-primary btn-lg" id="api-details-form-submit" href="javascript:void(0);">
-                            <i id="connect-spinner" class="fa fa-spinner fa-spin white" style="display:none;"></i>
-                            <span id="connect-text">Connect to NitroPack</span>
-                        </a>
-                        <h1 id="connect-success" style="display:none;margin-bottom:auto;font-size:36px;"><i
-                                class="fa fa-check-circle"></i></h1>
-                    </div>
-                    <div class="text-center pb-5">
-                        <a href="javascript:void(0);" onclick="jQuery('#manual-connect-fields').show(); jQuery('.e-submit-body').hide();"
-                           id="manuallyConnected"><small>Enter details manually</small></a>
-                    </div>
+                <div class="text-center mt-6">
+                    <div class="font-inter text-sm text-grey-700 text-center">Or connect
+                        <a href="javascript:void(0);" class="text-blue"
+                       onclick="connectDirectly()"
+                       id="directlyConnected">automatically</a></div>
                 </div>
+            </div>
+            <div class="font-inter text-sm text-grey-700 text-center">Learn about API Key and API Secret Key <a class="text-blue" target="_blank" href="https://nitropack.io/blog/post/how-to-get-your-site-id-and-site-secret">here</a></div>
+
+            <div id="nitropack-error-close" class="text-center pb-5 pt-3" style="display:none;">
+                <button class="btn btn-primary btn-lg" id="nitro_error_close">Close</button>
             </div>
         </div>
     </div>
-</div>
-<script type="text/javascript">
 
+        <div id="connection-success" class="row justify-content-center" style="display: none">
+            <div class="min-h-[600px] container-sm">
+                <div class="flex justify-center gap-5">
+                    <img src="<?= $block->getImage('logo.svg') ?>">
+                    <img src="<?= $block->getImage('plus.svg') ?>">
+                    <img src="<?= $block->getImage('magento-logo.svg') ?>">
+                </div>
+
+                <h4 class="text-center font-inter font-bold text-h4 text-grey-700">Website sucessfully connected!</h4>
+                <p class="text-center font-inter font-normal text-20-28 text-grey-700">Redirecting you to NitroPack extension dashboard</p>
+                <div class="mt-4 mb-4 flex justify-center">
+                    <svg width="50" height="50" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <style>#loader{transform-origin:center;animation:spinner_AtaB 1s infinite linear}@keyframes spinner_AtaB{100%{transform:rotate(360deg)}}</style>
+                        <g id="Interactive-spinner-light">
+                            <path id="base" d="M16 8C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8ZM1.45303 8C1.45303 11.6158 4.38421 14.547 8 14.547C11.6158 14.547 14.547 11.6158 14.547 8C14.547 4.38421 11.6158 1.45303 8 1.45303C4.38421 1.45303 1.45303 4.38421 1.45303 8Z" fill="#F5F4F6"></path>
+                            <path id="loader" d="M15.0348 6.15202C15.4229 6.05008 15.658 5.65132 15.5213 5.27409C15.2469 4.51711 14.8594 3.80454 14.3707 3.16115C13.7352 2.32454 12.9412 1.62128 12.034 1.09153C11.1268 0.56178 10.1241 0.215909 9.08316 0.0736665C8.28266 -0.0357247 7.47162 -0.0230363 6.67753 0.110065C6.2818 0.176394 6.05008 0.577114 6.15202 0.96519C6.25396 1.35327 6.6511 1.58094 7.04808 1.5226C7.65618 1.43324 8.27506 1.42977 8.88643 1.51332C9.73827 1.62972 10.5588 1.91277 11.3013 2.34631C12.0438 2.77984 12.6935 3.35536 13.2136 4.04002C13.5868 4.5314 13.8879 5.07208 14.109 5.6456C14.2533 6.02 14.6467 6.25396 15.0348 6.15202Z" fill="#8240FF"></path>
+                        </g>
+                    </svg>
+                </div>
+                <p class="text-center font-inter font-normal text-20-28 text-grey-700">Go to NitroPack main dashboard for all settings</p>
+
+                <div class="text-center pt-3 mt-8">
+                    <button class="connect-button font-inter text-sm bg-purple hover:bg-purple-200 text-white hover:text-white focus:bg-purple-200 focus:text-white" id="go-to-dashboard"><span class="text-white hover:text-white">NitroPack main dashboard</span></button>
+                </div>
+            </div>
+    </div>
+</div>
+
+<script type="text/javascript">
     function preg_match(re, val) {
         return (new RegExp(re).test(val));
     }
 
     require(['jquery'], function ($) {
+
         let saveUrl = '<?= $block->getSaveUrl() ?>';
 
         $(document).ready(function () {
             $('#nitro_connect').click(submitForm);
         });
         window.addEventListener("message", function (e) {
+        e.preventDefault();
             if (e.data.messageType == "nitropack-connect") {
                 $("#nitro_site_id").val(e.data.api.key);
                 $("#nitro_site_secret").val(e.data.api.secret);
                 $("#handshake_connection_method").val("automatic");
+
                 $("#nitro_connect").click();
                 connectPopup.close();
                 connectPopup = null;
             }
         });
 
-        function validationError(field, message) {
+        function validationError(message) {
             let infoElement = $('#nitropack-info-div');
-            let fieldElement = $(field);
-
             infoElement.children('p').html(message);
-            infoElement.detach().prependTo(fieldElement.parent());
-            infoElement.on('click', function (e) {
-                infoElement.hide();
-            });
             infoElement.show();
-        }
+            setTimeout(function (){
+            infoElement.hide();
+            },2000);
 
-        function displayError(errorHtml) {
-            //$('#connect-form').show();
-            $('#nitropack-error-message').html(errorHtml);
-            $('#nitropack-alert-error').show();
-            $('#nitro_site_id').css('border-color','#FF3333');
-            $('#nitro_site_secret').css('border-color','#FF3333');
-            $('#nitropack-error-message').css('color','#FF3333');
-            $('#manual-connect-fields').show();
-            $('.e-submit-body').hide();
-           // $('#nitropack-site-connect').hide();
-            //$('#nitropack-error-close').show();
         }
 
         function submitForm(event) {
             event.preventDefault();
 
             if ($('#nitro_site_id').val() == '') {
-                validationError('#nitro_site_id', 'API Key field cannot be blank. <a class="text-white pl-2 pr-2" href="https://nitropack.io/blog/post/how-to-get-your-site-id-and-site-secret" target="_blank">See how&nbsp;<sup><small><i class="fa fa-external-link"></i></small></sup></a> to get yours.');
+                validationError('API Key field cannot be blank. <a class="text-blue" href="https://nitropack.io/blog/post/how-to-get-your-site-id-and-site-secret" target="_blank">See how&nbsp;</a>to get yours.');
+                return;
+            }
+            if (!preg_match('^([a-zA-Z0-9]{64})$', $('#nitro_site_id').val()) && !preg_match('^([a-zA-Z0-9]{64})$', $('#nitro_site_secret').val())) {
+                validationError('Invalid API Key and API Secret');
                 return;
             }
             if (!preg_match('^([a-zA-Z]{32})$', $('#nitro_site_id').val())) {
-                validationError('#nitro_site_id', 'Invalid API Key');
+                validationError('Invalid API Key');
                 return;
             }
 
             if ($('#nitro_site_secret').val() == '') {
-                validationError('#nitro_site_secret', 'Site Secret field cannot be blank. <a class="text-white pl-2 pr-2" href="https://nitropack.io/blog/post/how-to-get-your-site-id-and-site-secret" target="_blank">See how&nbsp;<sup><small><i class="fa fa-external-link"></i></small></sup></a> to get yours.');
+                validationError('API Secret Key field cannot be blank. <a class="text-blue" href="https://nitropack.io/blog/post/how-to-get-your-site-id-and-site-secret" target="_blank">See how&nbsp;</a>to get yours.');
                 return;
             }
             if (!preg_match('^([a-zA-Z0-9]{64})$', $('#nitro_site_secret').val())) {
-                validationError('#nitro_site_secret', 'Invalid API Secret Key');
+                validationError('Invalid API Secret Key');
                 return;
             }
-            let $loader = $('body').loader();
-            $loader.loader('show');
+            // let $loader = $('body').loader();
+            // $loader.loader('show');
+            $('#npConnectLoading').show();
+            $('#nitro_connect').attr('disabled','disabled');
             $.ajax({
                 url: saveUrl,
                 method: 'POST',
@@ -182,13 +213,20 @@
         }
 
         function connectSuccess(response) {
+            $('#nitro_connect').removeAttr('disabled');
             if (response.connected) {
+                $('#connection-screen').hide();
+                $('#connection-success').show();
+                var buttonId = "go-to-dashboard";
+                var buttonLink = response.redirect;
+                $("#" + buttonId).wrap("<a href='" + buttonLink + "'></a>");
                 window.location = response.redirect;
             } else {
+                $('#npConnectLoading').hide();
                 let $loader = $('body').loader();
                 $loader.loader('destroy');
                 let errorHtml = response.errors;
-                displayError(errorHtml);
+                validationError(errorHtml);
             }
         }
 
@@ -196,15 +234,17 @@
             let $loader = $('body').loader();
             $loader.loader('destroy');
             let errorHtml = "Type: " + errType + "<br/>Message:" + msg;
-            displayError(errorHtml);
+            validationError(errorHtml);
+            $('#npConnectLoading').hide();
+            $('#nitro_connect').removeAttr('disabled');
         }
+
 
         $('#nitropack-error-close').on('click', function (e) {
             $('#nitropack-error-close').hide();
             $('#nitropack-alert-error').hide();
             $('#connect-form').show();
             $('#nitropack-site-connect').show();
-
         });
 
         $(document).on('click', '#toggle-password', function (e) {
@@ -212,10 +252,8 @@
 
             if ($(target).attr('type') == 'password') {
                 $(target).attr('type', 'text');
-                $(this).find('.fa-eye').removeClass('fa-eye').addClass('fa-eye-slash');
             } else {
                 $(target).attr('type', 'password');
-                $(this).find('.fa-eye-slash').removeClass('fa-eye-slash').addClass('fa-eye');
             }
         });
 
@@ -236,7 +274,7 @@
                 let windowHeight = 700;
                 let leftPos = window.top.outerWidth / 2 + window.top.screenX - (windowWidth / 2);
                 let topPos = window.top.outerHeight / 2 + window.top.screenY - (windowHeight / 2);
-                connectPopup = window.open("https://auth.nitropack.io/auth/integration?intent=integration&integration_url=" + homePageUrl+"&integration_platform=magento&integration_name="+storeName, "QuickConnect", "width=" + windowWidth + ",height=" + windowHeight + ",left=" + leftPos + ",top=" + topPos);
+                connectPopup = window.open("https://auth.nitropack.io/auth/integration?intent=integration&integration_url=" + homePageUrl + "&integration_platform=magento&integration_name=" + storeName, "QuickConnect", "width=" + windowWidth + ",height=" + windowHeight + ",left=" + leftPos + ",top=" + topPos);
             } else if (connectPopup && connectPopup.window) {
                 connectPopup.focus();
             }
@@ -244,4 +282,11 @@
         });
 
     });
+    function connectDirectly(){
+        document.getElementById('nitropack-info-div').style.display = 'none';
+        document.getElementById('manual-connect-fields').style.display = 'none';
+        document.getElementsByClassName('e-submit-body')[0].style.display = 'block';
+        document.getElementsByClassName('back')[0].style.display = 'none';
+        document.getElementById('api-details-form-submit').click();
+    }
 </script>

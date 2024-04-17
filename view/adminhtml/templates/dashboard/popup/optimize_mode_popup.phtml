@@ -1,0 +1,51 @@
+<div style="z-index: 999; background: rgb(42, 0, 122, 0.5); display: none;"
+     class="fixed inset-0 z-30 flex items-center justify-center overflow-auto"
+     x-show="showOptimizeModeModal">
+    <div
+        class="h-auto max-w-full rounded-lg pad-24 bg-white border border-gray-200 rounded-md shadow items-center popup-container">
+        <!-- Modal inner -->
+        <div class="flex justify-right" style="float: right; clear: both;">
+            <button type="button" class="z-50 cursor-pointer"
+                    @click="showOptimizeModeModal = false, toggleOverflow(false)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="flex flex-row items-center justify-center">
+            <div class="flex items-center justify-center">
+                <img src="<?= $block->getImage("info.svg"); ?>" alt="After Processing Image" width="46"
+                  class="rotate-180 img-pop-align"   height="46">
+            </div>
+
+
+        </div>
+        <div class="flex flex-row items-center justify-center mt-8">
+            <h3 class="text-base font-bold text-gray-900 optimize-page-head text-center modal-heading">Change optimization
+                mode?</h3>
+        </div>
+        <div class="flex flex-row items-center justify-center mt-8">
+            <p class="text-l font-inter text-gray-500 text-lite-gray items-center justify-center text-center popup-text ">
+                This action will change some of your current settings with the <br> predefined of the
+                selected mode.
+            </p>
+        </div>
+        <div class="flex flex-row items-center justify-center mt-10 items-center">
+            <div class="flex items-center justify-center">
+                <button @click="showOptimizeModeModal = false, toggleOverflow(false)" type="button"
+                        class="bg-transparent text-purple-700 font-medium font-inter border border-purple-500 rounded cancel-btn">
+                    Cancel
+                </button>
+            </div>
+            <div class="flex items-center justify-center">
+                <button type="button"
+                        @click="showOptimizeModeModal = false, toggleOverflow(false) , window.selectOptimize(optimizeValue)"
+                        id="selectOptimize"
+                        class="text-white font-medium font-inter border border-purple-500 rounded disconnectBtn">Switch Mode
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

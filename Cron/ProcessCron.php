@@ -5,7 +5,7 @@ namespace NitroPack\NitroPack\Cron;
 use Magento\Store\Model\StoreManagerInterface;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
 use NitroPack\NitroPack\Helper\RedisHelper;
-use Psr\Log\LoggerInterface;
+use NitroPack\NitroPack\Logger\Logger;
 
 class ProcessCron
 {
@@ -26,25 +26,26 @@ class ProcessCron
      * */
     protected $redisHelper;
     /**
-     * @var LoggerInterface $logger
-     * */
+     * @var Logger
+     */
     protected $logger;
     /**
      * @var \Magento\Store\Api\GroupRepositoryInterface
      * */
     protected $storeRepo;
+
     /**
      * @param NitroServiceInterface $nitro
      * @param StoreManagerInterface $storeManager
      * @param RedisHelper $redisHelper
-     * @param LoggerInterface $logger
+     * @param Logger $logger
      * @param \Magento\Store\Api\GroupRepositoryInterface $storeRepo
-     * */
+     */
     public function __construct(
         NitroServiceInterface $nitro,
         StoreManagerInterface $storeManager,
         RedisHelper           $redisHelper,
-        LoggerInterface       $logger,
+        Logger                $logger,
         \Magento\Store\Api\GroupRepositoryInterface $storeRepo
     )
     {

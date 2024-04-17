@@ -99,6 +99,7 @@ class EnableCaches extends StoreAwareAction
                 if($this->_helper->isVarnishConfigured($baseUrl)){
                     $this->configWriter->save(\NitroPack\NitroPack\Api\NitroService::XML_VARNISH_PAGECACHE_NITRO_ENABLED,1,ScopeConfigInterface::SCOPE_TYPE_DEFAULT,  0);
                 }
+                $this->configWriter->save('full_page_cache/fields/caching_application/value', \NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK_VALUE,ScopeConfigInterface::SCOPE_TYPE_DEFAULT,  0);
                 $types = array_keys($this->cacheTypeList->getTypes());
                 foreach ($types as $type) {
                     $this->cacheFrontendPool->get($type)->getBackend()->clean();
@@ -107,15 +108,11 @@ class EnableCaches extends StoreAwareAction
             }
             $this->cacheState->persist();
             //Check the cache is enabled so Extension Should enabled
-            $eventUrl = $this->nitro->integrationUrl('extensionEvent');
             $setting = $this->nitro->getSettings();
             if (isset($setting->previous_extension_status) && !$setting->previous_extension_status) {
                 $extension_enabled = false;
-                $this->nitro->nitroEvent('disable_extension', $eventUrl, $this->storeGroup);
             } else {
-
-                $this->nitro->nitroEvent('enable_extension', $eventUrl, $this->storeGroup);
-                $this->_helper->setBoolean('enabled', true);
+           $this->_helper->setBoolean('enabled', true);
                 $this->nitro->persistSettings();
                 $extension_enabled = true;
             }

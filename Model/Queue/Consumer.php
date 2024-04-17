@@ -10,7 +10,7 @@ use Magento\Framework\DB\Adapter\ConnectionException;
 use Magento\Framework\DB\Adapter\DeadlockException;
 use Magento\Framework\DB\Adapter\LockWaitException;
 use Magento\Framework\Exception\LocalizedException;
-use Psr\Log\LoggerInterface;
+use NitroPack\NitroPack\Logger\Logger;
 
 class Consumer
 {
@@ -41,12 +41,19 @@ class Consumer
      * */
     protected $scopeConfig;
 
+    /**
+     * @param JsonHelper $jsonHelper
+     * @param CacheCleanHelper $cacheCleanHelper
+     * @param ScopeConfigInterface $scopeConfig
+     * @param \NitroPack\NitroPack\Helper\InvalidationHelper $invalidationHelper
+     * @param Logger $logger
+     */
     public function __construct(
         JsonHelper $jsonHelper,
         CacheCleanHelper $cacheCleanHelper,
         ScopeConfigInterface $scopeConfig,
         \NitroPack\NitroPack\Helper\InvalidationHelper $invalidationHelper,
-        LoggerInterface $logger
+        Logger $logger
 
     ) {
         $this->invalidationHelper = $invalidationHelper;

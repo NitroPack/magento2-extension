@@ -11,7 +11,7 @@ use NitroPack\HttpClient\HttpClient;
 use NitroPack\NitroPack\Api\NitroService;
 use NitroPack\NitroPack\Helper\ApiHelper;
 use NitroPack\SDK\NitroPack;
-use Psr\Log\LoggerInterface;
+use NitroPack\NitroPack\Logger\Logger;
 
 class NitroPackCacheChecker implements ObserverInterface
 {
@@ -40,8 +40,8 @@ class NitroPackCacheChecker implements ObserverInterface
     protected $apiHelper;
 
     /**
-     * @var LoggerInterface
-     * */
+     * @var Logger
+     */
     protected $logger;
     /**
      * @var \Magento\Framework\App\ProductMetadataInterface
@@ -53,13 +53,15 @@ class NitroPackCacheChecker implements ObserverInterface
         DirectoryList $directoryList,
         \Magento\Framework\Filesystem\Driver\File $fileDriver,
         ApiHelper $apiHelper,
-        \Magento\Framework\Serialize\SerializerInterface $serializer
+        \Magento\Framework\Serialize\SerializerInterface $serializer,
+        Logger $logger
     ) {
         $this->state = $state;
         $this->serializer = $serializer;
         $this->fileDriver = $fileDriver;
         $this->apiHelper = $apiHelper;
         $this->directoryList = $directoryList;
+        $this->logger = $logger;
     }
 
     public function execute(Observer $observer)

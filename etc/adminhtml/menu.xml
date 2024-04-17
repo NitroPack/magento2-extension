@@ -1,7 +1,14 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
 	<menu>
-		<add id="NitroPack_NitroPack::menuSection" title="NitroPack" translate="title" module="NitroPack_NitroPack" parent="Magento_Backend::system" sortOrder="9999" dependsOnModule="NitroPack_NitroPack" resource="NitroPack_NitroPack::menuSection"/>
-		<add id="NitroPack_NitroPack::menuSection_settings" title="Settings" translate="title" module="NitroPack_NitroPack" parent="NitroPack_NitroPack::menuSection" sortOrder="1" dependsOnModule="NitroPack_NitroPack" action="NitroPack/settings" resource="NitroPack_NitroPack::menuSection_settings"/>
+        <add id="NitroPack_NitroPack::nitropack"
+             title="NitroPack"
+             module="NitroPack_NitroPack"
+             sortOrder="50"
+             resource="NitroPack_NitroPack::menuSection"
+        />
+
+        <add id="NitroPack_NitroPack::menuSection" title="NitroPack" translate="title" module="NitroPack_NitroPack" parent="NitroPack_NitroPack::nitropack" sortOrder="9999" dependsOnModule="NitroPack_NitroPack" resource="NitroPack_NitroPack::menuSection"/>
+		<add id="NitroPack_NitroPack::menuSection_settings" title="Settings" translate="title" module="NitroPack_NitroPack" parent="NitroPack_NitroPack::nitropack" sortOrder="1" dependsOnModule="NitroPack_NitroPack" action="NitroPack/settings" resource="NitroPack_NitroPack::menuSection_settings"/>
 	</menu>
 </config>

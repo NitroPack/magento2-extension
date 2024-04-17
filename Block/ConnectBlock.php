@@ -9,6 +9,7 @@ use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\RequestInterface;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
+use Magento\Framework\View\Asset\Repository;
 
 class ConnectBlock extends Template
 {
@@ -28,6 +29,9 @@ class ConnectBlock extends Template
      * @var Store
      * */
     protected $store;
+
+    protected $assetRepository;
+
     /**
      * @param  Context $context
      * @param  NitroServiceInterface $nitro
@@ -44,6 +48,7 @@ class ConnectBlock extends Template
         StoreManagerInterface $storeManager, // dependency injection'ed
         RequestInterface $request, // dependency injection'ed
         Store $store,
+        Repository $assetRepository,
         array $data = [] // required as part of the Magento\Backend\Block\Template constructor
     )
     {
@@ -53,6 +58,7 @@ class ConnectBlock extends Template
         $this->_backendUrl = $backendUrl;
         $this->_storeManager = $storeManager;
         $this->_request = $request;
+        $this->assetRepository = $assetRepository;
     }
 
     public function getSaveUrl()
@@ -106,5 +112,11 @@ class ConnectBlock extends Template
             $this->storeGroup = $this->_storeManager->getGroup($storeGroupId);
         }
         return $this->storeGroup;
+    }
+
+
+    public function getImage($imageName)
+    {
+        return $this->assetRepository->getUrl("NitroPack_NitroPack::img/$imageName");
     }
 }

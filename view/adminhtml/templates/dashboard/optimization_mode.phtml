@@ -1,0 +1,159 @@
+<?php
+$viewModel = $block->getOptimizationMode();
+
+?>
+<div id="quicksetup-widget"
+     class="h-auto max-w-full card-radius pad-24 bg-white border border-gray-200 rounded-md shadow items-center">
+    <div class="flex flex-row items-center" x-data="{ showTooltip: false }">
+        <div  x-show="showTooltip" id="tooltip-optimization" role="tooltip" class="tooltip-container visible" style="display: none;">
+            <?= __("Select from our range of predefined optimization modes to boost your site's performance."); ?>
+            <div class="tooltip-arrow" data-popper-arrow></div>
+        </div>
+        <h6 class="text-base font-bold text-gray-900 optimize-page-head"> Optimization mode </h6>
+        <span class="pl-2 pt-1">
+            <span class="tooltip-icon" data-tooltip-target="tooltip-optimization">
+            <img src="<?= $block->getImage('info.svg'); ?>" @mouseenter="showTooltip = true" @mouseleave="showTooltip = false">
+          </span>
+
+    </div>
+    <div class="flex flex-row items-center mt-8">
+        <div class="w-full border border-gray-200 rounded-md inline-flex pt-2 pb-2 pl-1 pr-1"
+             x-data="{ 'showOptimizeModeModal': false,'optimizeValue':0 }"
+             @keydown.escape="showOptimizeModeModal = false">
+            <!---Active Branch bg-blue-500 -->
+            <button @click="showOptimizeModeModal = true, toggleOverflow(true) , optimizeValue= 1 "
+                    type="button" data-target-value="1" id="optimize-mode-standard"
+                    class="optimizeMode flex-1 px-4 py-3 focus:outline-none rounded-md transition duration-300 ease-in-out hover:bg-purple-500 hover:text-white text-gray-700 text-lite-gray font-inter">Standard
+            </button>
+            <button
+                @click="showOptimizeModeModal = true, toggleOverflow(true), optimizeValue= 2 " type="button"
+                data-target-value="2" id="optimize-mode-medium"
+                class="optimizeMode flex-1 px-4 py-3 focus:outline-none rounded-md transition duration-300 ease-in-out hover:bg-purple-500 hover:text-white text-gray-700  text-lite-gray font-inter">Medium
+            </button>
+            <button
+                @click="showOptimizeModeModal = true, toggleOverflow(true) , optimizeValue= 3" type="button"
+                data-target-value="3" id="optimize-mode-strong"
+                class="optimizeMode flex-1 px-4 py-3 focus:outline-none rounded-md transition duration-300 ease-in-out hover:bg-purple-500 hover:text-white text-gray-700  text-lite-gray font-inter">Strong
+            </button>
+            <button
+                @click="showOptimizeModeModal = true, toggleOverflow(true), optimizeValue= 4" type="button"
+                data-target-value="4" id="optimize-mode-ludicrous"
+                class="optimizeMode flex-1 px-4 py-3 focus:outline-none rounded-md transition duration-300 ease-in-out hover:bg-purple-500 hover:text-white text-gray-700  text-lite-gray font-inter">Ludicrous
+            </button>
+            <button
+                @click="showOptimizeModeModal = true, toggleOverflow(true), optimizeValue= 5" type="button"
+                data-target-value="5" id="optimize-mode-custom"
+                class="optimizeMode flex-1 px-4 py-3 focus:outline-none rounded-md transition duration-300 ease-in-out hover:bg-purple-500 hover:text-white text-gray-700  text-lite-gray font-inter">Custom
+            </button>
+            <input type="hidden" id="optimize_mode_value" value=""/>
+            <?= $this->getChildHtml('OptimizeModePopup'); ?>
+        </div>
+    </div>
+
+    <script>
+        function toggleOverflow() {
+            document.getElementById('body-html').classList.toggle('overflow-hidden');
+        }
+    </script>
+    <?= $this->getChildHtml('CompareModePopup'); ?>
+</div>
+
+<script>
+
+    require(['jquery', 'NitroPack_NitroPack/js/overlay'], function ($, cardOverlay) {
+
+        $('.modes .mode').on("mouseenter", function () {
+            var columnIndex = $(this).index();
+            $(this).addClass('current-highlight')
+            $('.modes .mode:nth-child(' + (columnIndex + 1) + ')').addClass("highlight-column");
+            // Add the background class to all cells in the same column
+        }).on("mouseleave", function () {
+            $('.modes .mode').removeClass("highlight-column current-highlight");
+            // Remove the background class from all cells
+        });
+
+        const classValue = {
+            1: 'standard',
+            2: 'medium',
+            3: 'strong',
+            4: 'ludicrous',
+            5: 'custom',
+        };
+        const detailValue = {
+            1: 'Standard optimization features enabled for your site. Ideal choice for maximum stability.',
+            2: 'Adds image lazy loading to standard optimizations. Uses built-in browser techniques for loading resources.',
+            3: 'Includes smart resource loading on top of Medium optimizations. Balances speed boost with stability.',
+            4: 'Applies deferred JS and advanced resource loading for optimal performance and Core Web Vitals.',
+            5: 'Activated when manual setups are made. Ideal for advanced NitroPack optimizations.',
+        };
+        var getQuickSetup = _ => {
+            var url = '<?= $viewModel->getOptimizeModeUrl(); ?>';
+
+            ((s, e, f) => {
+                if (window.fetch) {
+                    fetch(url)
+                        .then(resp => resp.json())
+                        .then(s)
+                        .catch(e)
+                        .finally(f);
+                } else {
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: s,
+                        error: e,
+                        complete: f
+                    })
+                }
+            })(data => {
+                $('#optimize-mode-' + classValue[data.optimization_level]).addClass('active-btn');
+                $('#activeOptimizeMode').html(classValue[data.optimization_level]);
+                $('#activeDetailOptimizeMode').html(detailValue[data.optimization_level]);
+                //data.optimization_level
+                $('#manual-settings-url').attr('href', data.manual_settings_url);
+                $('#optimize_mode_value').val(data.optimization_level);
+                $("#quicksetup-widget").cardOverlay("clear");
+            }, __ => {
+                $("#quicksetup-widget").cardOverlay("error", {message: "<?=  __('Error while fetching the optimization level settings'); ?>"});
+            }, __ => {
+            });
+        }
+
+
+        $("#quicksetup-widget").cardOverlay("loading", {message: "Loading settings"});
+        $(window).on("load", function () {
+            getQuickSetup();
+            window.selectOptimize = function (selectOptimize) {
+                $('.optimizeMode').removeClass('active-btn');
+                 $(".optimizeMode[data-target-value='" + selectOptimize + "']").addClass('active-btn');
+                $('#optimize_mode_value').val(selectOptimize);
+                return new Promise((resolve, reject) => {
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("POST", '<?= $viewModel->getSaveOptimizeMode() ?>', true);
+                    //Send the proper header information along with the request
+                    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                    xhr.onreadystatechange = function () { // Call a function when the state changes.
+                        if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                            $('#activeOptimizeMode').html(classValue[selectOptimize]);
+                            $('#activeDetailOptimizeMode').html(detailValue[selectOptimize]);
+                            Notification.info("Optimization mode changed to&nbsp;<span style='text-transform: capitalize; font-weight: bold'>"+classValue[selectOptimize]+"</span>.");
+                            resolve();
+                        }
+                    }
+                    xhr.send("setting=" + selectOptimize);
+                });
+            }
+        });
+
+    });
+
+    function toggleOverflow(hide) {
+        if (hide) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+</script>

@@ -13,6 +13,7 @@ use NitroPack\NitroPack\Helper\FastlyHelper;
 use NitroPack\NitroPack\Helper\RedisHelper;
 use NitroPack\NitroPack\Model\FullPageCache\PurgeInterface;
 use NitroPack\SDK\NitroPack;
+use NitroPack\NitroPack\Logger\Logger;
 
 class Clear implements ObserverInterface
 {
@@ -48,6 +49,8 @@ class Clear implements ObserverInterface
      * */
     protected $fastlyHelper;
 
+    protected $logger;
+
     /**
      * @param DirectoryList $directoryList
      * @param ApiHelper $apiHelper
@@ -64,8 +67,8 @@ class Clear implements ObserverInterface
         PurgeInterface       $purgeInterface,
         RedisHelper          $redisHelper,
         ScopeConfigInterface $scopeConfig,
-        StateInterface       $_cacheState
-
+        StateInterface       $_cacheState,
+        Logger $logger
     )
     {
         $this->fastlyHelper = $fastlyHelper;
@@ -75,6 +78,7 @@ class Clear implements ObserverInterface
         $this->redisHelper = $redisHelper;
         $this->directoryList = $directoryList;
         $this->_cacheState = $_cacheState;
+        $this->logger = $logger;
     }
 
     public function execute(Observer $observer)
@@ -83,11 +87,15 @@ class Clear implements ObserverInterface
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $storeRepo = $objectManager->create(\Magento\Store\Api\GroupRepositoryInterface::class);
         $storeGroup = $storeRepo->getList();
-        if (!is_null(
-                $this->_scopeConfig->getValue('system/full_page_cache/caching_application')
-            ) && in_array($this->_scopeConfig->getValue(
-                'system/full_page_cache/caching_application'
+        if ($this->_scopeConfig->getValue(NitroService::FULL_PAGE_CACHE_NITROPACK)
+            && in_array($this->_scopeConfig->getValue(
+                NitroService::FULL_PAGE_CACHE_NITROPACK
             ), [NitroService::FULL_PAGE_CACHE_NITROPACK_VALUE, NitroService::FASTLY_CACHING_APPLICATION_VALUE]) && $this->_cacheState->isEnabled('full_page')) {
+
+            if($this->fastlyHelper->isFastlyAndNitroDisable()){
+
+                return false;
+            }
 
             foreach ($storeGroup as $storesData) {
                 $settingsFilename = $this->apiHelper->getSettingsFilename($storesData->getCode());
@@ -136,6 +144,7 @@ class Clear implements ObserverInterface
 
                         }
                     } catch (\Exception $e) {
+                        $this->logger->error($e->getMessage());
                         $file = $objectManager->create('\Magento\Framework\Filesystem\Driver\File');
                         $cachePath = $rootPath . 'nitro_cache' . DIRECTORY_SEPARATOR . $this->settings->siteId;
                         if ($file->isDirectory($cachePath)) {

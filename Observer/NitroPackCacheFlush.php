@@ -7,12 +7,14 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Filesystem\DirectoryList;
+use Mageplaza\Smtp\Model\Log;
 use NitroPack\NitroPack\Helper\ApiHelper;
 use NitroPack\NitroPack\Helper\RedisHelper;
 use NitroPack\NitroPack\Model\FullPageCache\PurgeInterface;
 use NitroPack\SDK\NitroPack;
 use Magento\Cron\Model\Config;
 use Magento\Cron\Model\Schedule;
+use NitroPack\NitroPack\Logger\Logger;
 
 class NitroPackCacheFlush implements ObserverInterface
 {
@@ -56,6 +58,8 @@ class NitroPackCacheFlush implements ObserverInterface
      * @var \Magento\Framework\Filesystem\Driver\File
      * */
     public $fileDriver;
+
+    protected $logger;
     /**
      * @param DirectoryList $directoryList
      * @param ApiHelper $apiHelper
@@ -76,7 +80,8 @@ class NitroPackCacheFlush implements ObserverInterface
         Config $cronConfig,
         \Magento\Framework\Filesystem\Driver\File $fileDriver,
         \Magento\Store\Api\GroupRepositoryInterface $storeGroupRepo,
-        Schedule $cronSchedule
+        Schedule $cronSchedule,
+        Logger $logger
 
     ) {
 
@@ -89,6 +94,7 @@ class NitroPackCacheFlush implements ObserverInterface
         $this->directoryList = $directoryList;
         $this->cronConfig = $cronConfig;
         $this->storeGroupRepo = $storeGroupRepo;
+        $this->logger = $logger;
    }
 
     public function execute(Observer $observer)
@@ -144,6 +150,7 @@ class NitroPackCacheFlush implements ObserverInterface
                         $this->cleanupStaleCache();
                         $this->runCronRecord();
                 } catch (\Exception $e) {
+                    $this->logger->error('SDK exception: ' . $e->getMessage());
                     $file = $this->fileDriver;
                     $cachePath = $rootPath . 'nitro_cache' . DIRECTORY_SEPARATOR . $this->settings->siteId;
                     if ($file->isDirectory($cachePath)) {

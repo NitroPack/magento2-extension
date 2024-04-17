@@ -44,10 +44,7 @@ class SettingsBlock extends Template
      * @var Store
      * */
     protected $store;
-    /**
-     * @var  CollectionFactory
-     * */
-    protected $attributeCollectionFactory;
+
 
     /***
      * @param Context $context
@@ -57,7 +54,6 @@ class SettingsBlock extends Template
      * @param RequestInterface $request
      * @param ScopeConfigInterface $scopeConfig
      * @param TypeListInterface $cacheTypeList
-     * @param CollectionFactory $attributeCollectionFactory
      * @param Store $store
      * @param array $data
      **/
@@ -69,7 +65,6 @@ class SettingsBlock extends Template
         RequestInterface      $request, // dependency injection'ed
         ScopeConfigInterface  $scopeConfig, // dependency injection'ed
         TypeListInterface     $cacheTypeList, // dependency injection'ed
-        CollectionFactory     $attributeCollectionFactory,
         Store                 $store, // dependency injection'ed
         array                 $data = [] // required as part of the Magento\Backend\Block\Template constructor
     )
@@ -81,7 +76,6 @@ class SettingsBlock extends Template
         $this->_scopeConfig = $scopeConfig;
         $this->_cacheTypeList = $cacheTypeList;
         $this->store = $store;
-        $this->attributeCollectionFactory = $attributeCollectionFactory;
         self::$instance = $this;
     }
 
@@ -177,6 +171,11 @@ class SettingsBlock extends Template
         return $this->getBackendUrl('NitroPack/cache/purge', false, true);
     }
 
+
+    public function getNumberOfPageStoreWise()
+    {
+        return $this->getBackendUrl('NitroPack/settings/NumberOfPageCountStoreWise', true, false);
+    }
     public function getCacheManagementUrl()
     {
         // route the magento System > Tools > Cache management page
@@ -267,20 +266,4 @@ class SettingsBlock extends Template
         return $this->_cacheTypeList->getTypeLabels();
     }
 
-    public function getNitroPackAttribute()
-    {
-        $attributeCollection = $this->attributeCollectionFactory->create();
-        $attributeCollection->addFieldToFilter('frontend_label', array('notnull' => true))->setOrder('frontend_label', 'ASC')
-            ->setPageSize(10)
-        ->setCurPage(1);
-
-
-        return $attributeCollection->toArray();
-    }
-
-    public function getProductAttributeUrl()
-    {
-        // route the magento System -> Configuration -> Advanced -> Full Page Cache
-        return $this->getBackendUrl('catalog/product_attribute/index', false, false);
-    }
 }

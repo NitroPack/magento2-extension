@@ -4,13 +4,27 @@
         <title>
             NitroPack Settings
         </title>
-        <css src="NitroPack_NitroPack::css/admin.css"/>
-        <css src="NitroPack_NitroPack::css/connect.css"/>
-        <css src="NitroPack_NitroPack::css/font-awesome.min.css"/>
-        <css src="NitroPack_NitroPack::css/nitro_bootstrap.css"/>
+        <css src="NitroPack_NitroPack::css/settings.min.css"/>
+        <css src="NitroPack_NitroPack::css/tailwind-rewrite.css" rel="stylesheet" />
     </head>
     <body>
-
+        <referenceContainer name="header" remove="true" />
+        <referenceContainer name="page.wrapper">
+            <block  class="NitroPack\NitroPack\Block\DiagnosticsBlock" name="LogoBlock" template="NitroPack_NitroPack::logo.phtml" after="notices.wrapper"  />
+            <block class="NitroPack\NitroPack\Block\Dashboard\GeneralBlock" template="NitroPack_NitroPack::dashboard/notifications.phtml" after="LogoBlock"/>
+        </referenceContainer>
+        <referenceContainer name="page.main.actions">
+            <block class="Magento\Backend\Block\Store\Switcher" name="store_switcher"  template="NitroPack_NitroPack::store/switcher.phtml">
+                <action method="setUseConfirm">
+                    <argument name="params" xsi:type="string">0</argument>
+                </action>
+                <arguments>
+                    <argument name="switch_store_groups" xsi:type="string">1</argument>
+                    <argument name="switch_store_views" xsi:type="string">0</argument>
+                </arguments>
+            </block>
+            <container name="header.inner.right" after="page.main.actions"/>
+        </referenceContainer>
         <referenceContainer name="content">
             <block class="NitroPack\NitroPack\Block\SupportBlock" template="NitroPack_NitroPack::support.phtml"/>
         </referenceContainer>

@@ -11,6 +11,7 @@
         <policy id="connect-src">
             <values>
                 <value id="nitropack" type="host">*.getnitropack.com</value>
+                <value id="nitropack_io" type="host">nitropack.io</value>
                 <value id="nitropack_zendesk" type="host">*.intercom.io</value>
                 <value id="nitropack_zdassets" type="host">*.zdassets.com</value>
                 <value id="nitropack_cdn" type="host">*.nitrocdn.com</value>
@@ -21,21 +22,26 @@
         </policy>
         <policy id="script-src">
             <values>
+                <value id="maxcdn-bootstrapcdn" type="host">https://cdn.tailwindcss.com/</value>
+                <value id="nitropack_io" type="host">nitropack.io</value>
                 <value id="nitropack_intercom" type="host">*.intercom.io</value>
                 <value id="nitropack_cdn" type="host">*.nitrocdn.com</value>
                 <value id="nitropack_generic" type="host">nitroscripts.com</value>
                 <value id="intercomcdn_cdn" type="host">*.intercomcdn.com</value>
                 <value id="bob_script" type="host">blob: 'self'</value>
+                <value id="cdnjs_jsdelivr_script" type="host">cdn.jsdelivr.net</value>
             </values>
         </policy>
         <policy id="font-src">
             <values>
+                <value id="nitropack_io" type="host">nitropack.io</value>
                 <value id="nitropack_cdn" type="host">*.nitrocdn.com</value>
                 <value id="bob_font" type="host">blob: 'self'</value>
             </values>
         </policy>
         <policy id="img-src">
             <values>
+                <value id="nitropack_io" type="host">nitropack.io</value>
                 <value id="nitropack_cdn" type="host">*.nitrocdn.com</value>
                 <value id="bob_img" type="host">blob: 'self'</value>
             </values>
@@ -44,13 +50,16 @@
             <values>
                 <value id="nitropack_io" type="host">nitropack.io</value>
                 <value id="bob_frame" type="host">blob: 'self'</value>
+                <value id="cdnjs_jsdelivr_script" type="host">cdn.jsdelivr.net</value>
             </values>
         </policy>
         <policy id="style-src">
             <values>
-                <value id="nitropack_cdn" type="host">*.nitrocdn.com</value>
+                <value id="nitropack_io" type="host">nitropack.io</value>
+                <value id="cdnjs_cloudflare" type="host">cdnjs.cloudflare.com</value>
                 <value id="nitropack_cdn" type="host">*.nitrocdn.com</value>
                 <value id="bob_style" type="host">blob: 'self'</value>
+                <value id="cdnjs_jsdelivr_script" type="host">cdn.jsdelivr.net</value>
             </values>
         </policy>
     </policies>

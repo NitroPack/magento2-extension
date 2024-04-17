@@ -17,7 +17,7 @@ use NitroPack\NitroPack\Api\NitroService;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
 use NitroPack\NitroPack\Helper\RedisHelper;
 use NitroPack\NitroPack\Model\FullPageCache\PurgeInterface;
-use Psr\Log\LoggerInterface;
+use NitroPack\NitroPack\Logger\Logger;
 
 
 class DataPatch implements DataPatchInterface, PatchRevertableInterface
@@ -51,7 +51,7 @@ class DataPatch implements DataPatchInterface, PatchRevertableInterface
      * */
     protected $nitro;
     /**
-     * @var LoggerInterface
+     * @var Logger
      */
     private $logger;
     /**
@@ -110,15 +110,15 @@ class DataPatch implements DataPatchInterface, PatchRevertableInterface
      * @param \Magento\Framework\Filesystem\Driver\File $fileDrive
      * @param \Magento\Framework\Serialize\SerializerInterface $serializer
      * @param \Magento\Store\Api\StoreRepositoryInterface $storeRepository
-     * @param RedisHelper $redisHelper
-     * @param LoggerInterface $logger
      * @param ModuleListInterface $moduleList
      * @param ResourceInterface $moduleResource
-     * @param Store $store
-     * @param WriterInterface $configWriter
+     * @param RedisHelper $redisHelper
+     * @param Logger $logger
      * @param PurgeInterface $purgeInterface
      * @param ScopeConfigInterface $scopeConfig
-     **/
+     * @param WriterInterface $configWriter
+     * @param Store $store
+     */
     public function __construct(
         ModuleDataSetupInterface $moduleDataSetup,
         \NitroPack\NitroPack\Model\NitroPackEvent\Trigger $trigger,
@@ -133,7 +133,7 @@ class DataPatch implements DataPatchInterface, PatchRevertableInterface
         ModuleListInterface $moduleList,
         ResourceInterface $moduleResource,
         RedisHelper $redisHelper,
-        LoggerInterface $logger,
+        Logger $logger,
         PurgeInterface $purgeInterface,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         WriterInterface $configWriter,

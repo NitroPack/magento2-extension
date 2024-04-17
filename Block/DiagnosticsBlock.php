@@ -7,6 +7,7 @@ use Magento\Backend\Block\Template\Context;
 use Magento\Backend\Model\UrlInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
+use NitroPack\NitroPack\Api\LogContentInterface;
 
 class DiagnosticsBlock extends Template
 {
@@ -20,16 +21,20 @@ class DiagnosticsBlock extends Template
      * */
     protected $storeManager;
 
+    protected $logContent;
+
     public function __construct(
         Context               $context, // required as part of the Magento\Backend\Block\Template constructor
         UrlInterface          $backendUrl,
         StoreManagerInterface $storeManager, // dependency injection'ed
+        LogContentInterface   $logContent,
         array                 $data = [] // required as part of the Magento\Backend\Block\Template constructor
     )
     {
         parent::__construct($context, $data);
         $this->_backendUrl = $backendUrl;
         $this->_storeManager = $storeManager;
+        $this->logContent = $logContent;
     }
 
     public function getDiagnosticsReport()
@@ -50,4 +55,43 @@ class DiagnosticsBlock extends Template
         }
         return $this->_storeManager->getGroup($storeGroupId);
     }
+
+    /**
+     * @return string
+     */
+    public function getLogContent(): string
+    {
+        return $this->logContent->getLogContent();
+    }
+
+    /**
+     * @return string
+     */
+    public function getSendEmailUrl(): string
+    {
+        $params = [];
+        $params['group'] = $this->getStoreGroup()->getId();
+        $params['form_key'] = $this->getFormKey();
+
+        return $this->_backendUrl->getUrl('NitroPack/report/SendLogReport', $params);
+    }
+
+    public function getDownloadLogUrl(): string
+    {
+        $params = [];
+        $params['group'] = $this->getStoreGroup()->getId();
+        $params['form_key'] = $this->getFormKey();
+
+        return $this->_backendUrl->getUrl('NitroPack/report/DownloadLog', $params);
+    }
+
+    public function getDiagnosticsReportUrl(): string
+    {
+        $params = [];
+        $params['group'] = $this->getStoreGroup()->getId();
+        $params['form_key'] = $this->getFormKey();
+
+        return $this->_backendUrl->getUrl('NitroPack/report/SendDiagnosticsReport', $params);
+    }
+
 }

@@ -17,8 +17,7 @@ use Magento\Store\Model\StoreManagerInterface;
 use NitroPack\HttpClient\HttpClient;
 use NitroPack\NitroPack\Api\NitroService;
 use NitroPack\SDK\NitroPack;
-use Psr\Log\LoggerInterface;
-
+use NitroPack\NitroPack\Logger\Logger;
 
 class ApiHelper extends AbstractHelper
 
@@ -75,19 +74,19 @@ class ApiHelper extends AbstractHelper
      * @param DirectoryList $directoryList
      * @param \Magento\Framework\Filesystem\Driver\File $fileDriver
      * @param \Magento\Framework\Serialize\SerializerInterface $serializer
-     * @param LoggerInterface $logger
+     * @param Logger $logger
      * @param \Magento\Customer\Model\GroupFactory $groupFactory
      * @param ObjectManagerInterface $objectManager
      * @param StoreManagerInterface $storeManager
      * @param \Magento\Framework\App\ProductMetadataInterface $productMetaData
-     * */
+     */
     public function __construct(
         Context                                          $context,
         \Magento\Framework\App\State                     $state,
         DirectoryList                                    $directoryList,
         \Magento\Framework\Filesystem\Driver\File        $fileDriver,
         \Magento\Framework\Serialize\SerializerInterface $serializer,
-        LoggerInterface                                  $logger,
+        Logger                                           $logger,
         \Magento\Customer\Model\GroupFactory             $groupFactory,
         ObjectManagerInterface                           $objectManager,
         StoreManagerInterface                            $storeManager,
@@ -104,7 +103,6 @@ class ApiHelper extends AbstractHelper
         $this->objectManager = $objectManager;
         $this->directoryList = $directoryList;
         $this->storeManager = $storeManager;
-        parent::__construct($context);
     }
 
     public function getSettingsFilename($storeName = null)

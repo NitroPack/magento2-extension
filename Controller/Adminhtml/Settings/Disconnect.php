@@ -48,6 +48,7 @@ class Disconnect extends StoreAwareAction
             $this->nitro->getApi()->unsetWebhook("config");
             $this->nitro->getApi()->unsetWebhook("cache_clear");
             $this->nitro->getApi()->unsetWebhook("cache_ready");
+            $this->nitro->getSdk()->disableSafeMode();
             $eventUrl = $this->nitro->integrationUrl('extensionEvent');
             $eventSent = $this->nitro->nitroEvent('disconnect', $eventUrl, $this->storeGroup);
             $this->nitro->purgeLocalCache(true);

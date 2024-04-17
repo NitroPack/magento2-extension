@@ -2,7 +2,6 @@
 
 namespace NitroPack\NitroPack\Observer;
 
-
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Event\Observer;
@@ -11,6 +10,7 @@ use NitroPack\NitroPack\Api\NitroService;
 use NitroPack\NitroPack\Helper\ApiHelper;
 use NitroPack\NitroPack\Model\FullPageCache\PurgeInterface;
 use NitroPack\SDK\NitroPack;
+use NitroPack\NitroPack\Logger\Logger;
 
 class MaintenanceModeObserver implements ObserverInterface
 {
@@ -47,6 +47,9 @@ class MaintenanceModeObserver implements ObserverInterface
      * @var   \Magento\Store\Api\GroupRepositoryInterface
      * */
     protected $groupRepository;
+
+    protected $logger;
+
     /**
      * @param   \Magento\Framework\Filesystem\Driver\File        $fileDriver
      * @param DirectoryList $directoryList
@@ -64,9 +67,8 @@ class MaintenanceModeObserver implements ObserverInterface
         \Magento\Framework\Serialize\SerializerInterface $serializer,
         ScopeConfigInterface $_scopeConfig,
         \Magento\Store\Api\GroupRepositoryInterface $groupRepository,
-        PurgeInterface $purgeInterface
-
-
+        PurgeInterface $purgeInterface,
+        Logger $logger
     )
     {
         $this->directoryList = $directoryList;
@@ -76,6 +78,7 @@ class MaintenanceModeObserver implements ObserverInterface
         $this->groupRepository = $groupRepository;
         $this->apiHelper = $apiHelper;
         $this->_scopeConfig = $_scopeConfig;
+        $this->logger = $logger;
     }
 
     /**
@@ -122,6 +125,7 @@ class MaintenanceModeObserver implements ObserverInterface
                         );
                         $this->purgeInterface->purge();
                 } catch (\Exception $e) {
+                    $this->logger->error('SDK exception: ' . $e->getMessage());
                     $cachePath = $rootPath . 'nitro_cache' . DIRECTORY_SEPARATOR . $this->settings->siteId;
                     if ($this->fileDriver->isDirectory($cachePath)) {
                         $this->fileDriver->deleteDirectory($cachePath);

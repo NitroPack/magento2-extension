@@ -1,0 +1,32 @@
+<?php $viewModel = $block->getProductAttributeBlock(); ?>
+<div class="h-auto max-w-full card-radius p-5 bg-white pad-24 border border-gray-200 rounded-md shadow items-center">
+    <div class="flex flex-row items-center justify-between">
+        <h6 class="text-base font-bold text-gray-900 optimize-page-head">Product attributes cache behavior</h6>
+    </div>
+
+    <div class="flex flex-row items-center border-b border-gray-200 mt-2" style="padding-bottom: 2.0rem;">
+        <h6 class="general-font-size font-inter text-gray-500 text-lite-gray">This section shows whether the cache will be purged when a product attribute is updated.</h6>
+
+    </div>
+    <div class="flex flex-row items-center pb-2 pl-1 pr-1">
+        <table class="w-full border-collapse">
+            <tbody>
+            <tr class="border-b border-gray-200">
+                <td class="text-left font-inter pt-5 pb-5 font-bold general-color">Attribute</td>
+                <td class="text-left pt-5 pb-5 font-inter font-bold general-color">Nitro purge cache</td>
+            </tr>
+            <?php foreach ($viewModel->getNitroPackAttribute()['items'] as $value): ?>
+            <tr class="border-b border-gray-200">
+                <td class="text-left pt-5 pb-5 font-inter general-color" style="font-weight: 500;"><?= $value['frontend_label']; ?></td>
+                <td class="text-left pb-5 pt-5 font-inter general-color" style="font-weight: 500;"><?= $value['nitro_purge'] == 1 ? 'Yes' : 'No'; ?></td>
+            </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <div class="flex flex-row items-center pt-3 ml-10 mt-5">
+        <button onclick="location.href='<?= $block->getProductAttributeUrl(); ?>'" type="button"
+                class="ml-auto bg-transparent text-purple-700 font-medium  py-2 px-4 border border-purple-500 rounded manage-sub font-inter">Manage all attributes
+        </button>
+    </div>
+    </div>

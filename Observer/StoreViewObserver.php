@@ -4,20 +4,20 @@ namespace NitroPack\NitroPack\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Psr\Log\LoggerInterface;
+use NitroPack\NitroPack\Logger\Logger;
 
 class StoreViewObserver implements ObserverInterface
 {
     /**
-     * @var LoggerInterface
-     * */
+     * @var Logger
+     */
     protected $logger;
     /**
      * @var \NitroPack\NitroPack\Helper\NitroPackConfigHelper
      * */
     private $nitroPackConfigHelper;
 
-    public function __construct(LoggerInterface $logger, \NitroPack\NitroPack\Helper\NitroPackConfigHelper $nitroPackConfigHelper)
+    public function __construct(Logger $logger, \NitroPack\NitroPack\Helper\NitroPackConfigHelper $nitroPackConfigHelper)
     {
         $this->nitroPackConfigHelper = $nitroPackConfigHelper;
         $this->logger = $logger;

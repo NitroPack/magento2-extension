@@ -109,7 +109,7 @@ class WidgetDeletedObserver implements ObserverInterface
                 ];
                 $this->publisher->publish($this->getTopicName(), $this->json->serialize($rawData));
             }
-        $types = ['block_html','layout'];
+        $types = ['full_page'];
         foreach ($types as $type) {
             $this->cacheTypeList->cleanType($type);
         }

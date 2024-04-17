@@ -1,0 +1,90 @@
+<?php $viewModel = $block->getSubscriptionBlock(); ?>
+<div class="h-auto max-w-full card-radius pad-24 bg-white border border-gray-200 rounded-md shadow items-center" id="plan-details-widget">
+    <div class="flex flex-row items-center justify-between border-b border-gray-200">
+        <h6 class="text-base font-bold text-gray-900 optimize-page-head mb-8"> Subscription </h6>
+    </div>
+
+    <div class="flex flex-row items-center border-b border-gray-200 mt-5 pb-5">
+        <h6 class="text-base font-bold text-gray-900 optimize-page-head " data-plan-title > Unknown </h6>
+        <a target="_blank" href="https://nitropack.io/user/billing" class="ml-auto ">
+        <button type="button"
+                class="bg-transparent text-purple-700 font-medium py-2 px-4 border border-purple-500 rounded manage-sub font-inter">
+            Manage subscription
+        </button>
+        </a>
+    </div>
+    <div class="flex flex-row items-center border-b border-gray-200 pl-1 pr-1" style="padding-bottom: 2.0rem;">
+        <table class="w-full border-collapse" id="plan-quotas">
+            <tbody>
+            <tr>
+                <td class="text-left pt-10 font-inter"><?= __('Next reset'); ?></td>
+                <td class="text-right font-bold pt-10 font-inter" data-next-reset><?= __('No ETA'); ?></td>
+            </tr>
+            <tr>
+                <td class="text-left pt-5 font-inter"><?= __('Next billing'); ?></td>
+                <td class="text-right font-bold pt-5 font-inter" data-next-billing><?= __('No ETA'); ?></td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div class="flex flex-row items-center mt-8">
+        <span class="pl-2 font-inter text-gray-500 text-lite-gray " > You will be notified by email when your website reaches the subscription resource limits. </span>
+    </div>
+
+</div>
+<script>
+    require(['jquery', 'NitroPack_NitroPack/js/overlay'], function ($, cardOverlay) {
+        $("#plan-details-widget").cardOverlay("loading", {message: "Loading plan data"});
+        var getPlan = _ => {
+            var url = '<?= $viewModel->getPlanDetailUrl(); ?>';
+            ((s, e, f) => {
+                if (window.fetch) {
+                    fetch(url)
+                        .then(resp => resp.json())
+                        .then(s)
+                        .catch(e)
+                        .finally(f);
+                } else {
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: s,
+                        error: e,
+                        complete: f
+                    })
+                }
+            })(data => {
+                $('[data-plan-title]').text(data.plan_title);
+                $('[data-next-billing]').text(data.next_billing ? data.next_billing : 'N/A');
+                $('[data-next-reset]').text(data.next_reset ? data.next_reset : 'N/A');
+                for (prop in data) {
+                    if (prop.indexOf("show_") === 0) continue;
+                    if (prop.indexOf("label_") === 0) continue;
+                    if (prop.indexOf("max_") === 0) continue;
+                    if (
+                        typeof data["show_" + prop] != "undefined" &&
+                        data["show_" + prop] &&
+                        typeof data["label_" + prop] != "undefined" &&
+                        typeof data["max_" + prop] != "undefined"
+                    ) {
+                        let propertyLabel = data["label_" + prop];
+                        let propertyValue = data[prop];
+                        $("#plan-quotas").append('<tr><td class="text-left pt-5 font-inter">'+propertyLabel+'</td><td class="text-right font-bold pt-5 font-inter">'+propertyValue+'</td></tr>');
+                    }
+                }
+
+                $("#plan-details-widget").cardOverlay("clear");
+            }, __ => {
+                $("#plan-details-widget").cardOverlay("error", {message: "<?= __('Error while fetching plan data'); ?>"});
+            }, __ => {
+            });
+        }
+        $(window).on("load",function() {
+
+            getPlan();
+        });
+        });
+</script>

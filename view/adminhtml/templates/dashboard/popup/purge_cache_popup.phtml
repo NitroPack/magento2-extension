@@ -1,0 +1,45 @@
+
+    <div style="z-index: 999; background: rgb(42, 0, 122, 0.5); display: none;"
+         class="fixed inset-0 z-30 flex items-center justify-center overflow-auto" x-show="showPurgeCacheModal">
+        <div
+            class="h-auto max-w-full rounded-lg pad-24 bg-white border border-gray-200 rounded-md shadow items-center popup-container">
+            <!-- Modal inner -->
+            <div class="flex justify-right" style="float: right; clear: both;">
+                <button type="button" class="z-50 cursor-pointer" @click="showPurgeCacheModal = false, toggleOverflow(false)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="flex flex-row items-center justify-center">
+                <div class="flex items-center justify-center">
+                    <img src="<?= $block->getImage("info.svg"); ?>" alt="After Processing Image" width="46"
+                      class="rotate-180 img-pop-align"  height="46">
+                </div>
+            </div>
+            <div class="flex flex-row items-center justify-center mt-6">
+                <h3 class="text-base font-bold text-gray-900 optimize-page-head modal-heading">Are you sure you want to purge your cache?</h3>
+            </div>
+            <div class="flex flex-row items-center justify-center mt-6">
+                <p class="text-l font-inter text-gray-500 text-center text-lite-gray popup-text">
+                    It will take us a few minutes to re-optimize all your pages and start <br>serving optimized content to your visitors.
+                </p>
+            </div>
+            <div class="flex flex-row items-center justify-center mt-10 items-center">
+                <div class="flex items-center justify-center">
+                    <button @click="showPurgeCacheModal = false, toggleOverflow(false)" type="button"
+                            class="bg-transparent text-purple-700 font-medium font-inter border border-purple-500 rounded cancel-btn">
+                        Cancel
+                    </button>
+                </div>
+                <div class="flex items-center justify-center">
+
+                    <button type="button"  @click="showPurgeCacheModal = false, toggleOverflow(false)" id="purge-cache-confirm"
+                            class="text-white font-medium font-inter border border-purple-500 rounded px-[8px] py-[12px] disconnectBtn">Purge cache now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>

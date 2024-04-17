@@ -2,20 +2,19 @@
 
 namespace NitroPack\NitroPack\Helper;
 
-
+use Exception;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\StoreManagerInterface;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
 use NitroPack\NitroPack\Api\TaggingServiceInterface;
-use NitroPack\NitroPack\Observer\DeleteObserver;
-use Psr\Log\LoggerInterface;
+use NitroPack\NitroPack\Logger\Logger;
 use NitroPack\SDK\PurgeType;
 
 class CacheCleanHelper extends AbstractHelper
 {
     /**
-     * @var LoggerInterface
+     * @var Logger
      */
     private $logger;
     /**
@@ -34,14 +33,14 @@ class CacheCleanHelper extends AbstractHelper
 
     /**
      * @param Context $context
-     * @param LoggerInterface $logger
+     * @param Logger $logger
      * @param NitroServiceInterface $nitro
      * @param TaggingServiceInterface $tagger
      * @param StoreManagerInterface $storeManager
-     * */
+     */
     public function __construct(
         Context $context,
-        LoggerInterface $logger,
+        Logger $logger,
         NitroServiceInterface $nitro,
         TaggingServiceInterface $tagger,
         StoreManagerInterface $storeManager
@@ -67,8 +66,7 @@ class CacheCleanHelper extends AbstractHelper
         $this->logger->debug(sprintf('Invalidating tag %s because: %s', $tag, $reason));
         try {
             return $this->nitro->getSdk()->invalidateCache(null, $tag, $reason);
-        } catch (\Exception $e) {
-
+        } catch (Exception $e) {
             throw new $e->getMessage();
         }
         }
@@ -105,7 +103,7 @@ class CacheCleanHelper extends AbstractHelper
                     'X-Magento-Tags-Pattern' => ' .*'
                 ]);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new  $e->getMessage();
         }
     }

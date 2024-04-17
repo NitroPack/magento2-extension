@@ -6,7 +6,7 @@ var config = {
     },
     shim: {
         'js/overlay': {
-            deps: ['jQuery']
+            deps: ['jquery']
         }
     }
 };

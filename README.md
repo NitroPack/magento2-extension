@@ -8,10 +8,21 @@ Installation Instructions: https://support.nitropack.io/hc/en-us/articles/127062
 
 # Release Notes
 
-###   2.9.2:
+### 3.0.0:
 #### Compatible with Magento Open Source : 2.4
 #### Stability: Stable Build
-#### Description: Improvements:  Enhance the ignore tag functionality for tagging items with a specific pattern.
+#### Description: 
+- Improvement: Implemented a UI Revamp for the NitroPack extension, making it easier to navigate and use.
+- Improvement: Added support for multiple store views XML on cache warmup. Now, distinct XML files are generated for different store views, ensuring efficient caching.
+- Improvement: Minor cache warmup improvements.
+- Improvement: Added a log feature to the NitroPack extension, facilitating easier troubleshooting.
+
+
+
+### 2.9.2:
+#### Compatible with Magento Open Source : 2.4
+#### Stability: Stable Build
+#### Description: Improvements: Enhance the [ignore tag functionality](https://support.nitropack.io/en/articles/9144958-how-to-use-ignored-cache-tags-in-nitropack-for-magento-extensions) for tagging items with a specific pattern.
 
 ###   2.9.1:
 #### Compatible with Magento Open Source : 2.4
@@ -23,8 +34,8 @@ Installation Instructions: https://support.nitropack.io/hc/en-us/articles/127062
 #### Compatible with Magento Open Source : 2.4
 #### Stability: Stable Build
 #### Description: Improvements:
-- Improvement: Added integration for Fastly CDN.
-- Improvement: Code revamp for Varnish integration.
+- Improvement: Added integration for [Fastly CDN](https://support.nitropack.io/en/articles/9013996-how-to-configure-fastly-cdn-with-nitropack-for-optimal-magento-performance).
+- Improvement: Code revamp for [Varnish integration](https://support.nitropack.io/en/articles/9014014-how-to-configure-varnish-with-nitropack-for-optimal-magento-performance).
 - Bug fix: Resolved the issue where enabling Varnish caused the Full Page Cache option to change to NitroPack.
 
 
@@ -32,7 +43,7 @@ Installation Instructions: https://support.nitropack.io/hc/en-us/articles/127062
 #### Compatible with Magento Open Source : 2.4
 #### Stability: Stable Build
 #### Description: Improvements:
-- Ignore cache tags - Users can enhance performance by specifying which cache tags to ignore during the purging process.
+- [Ignore cache tags](https://support.nitropack.io/en/articles/9144958-how-to-use-ignored-cache-tags-in-nitropack-for-magento-extensions) - Users can enhance performance by specifying which cache tags to ignore during the purging process.
 - Onboarding email - Introduction of an onboarding email for users who have not connected their extension.
 - Code refactoring - removing the use of ObjectManager class and obsolete information parameters from the setting JSON that are no longer in use.
 
@@ -168,10 +179,10 @@ Improvement:
 #### Description:
 
 - Tagging System Improvements: The new version of NitroPack includes improvements to the tagging system, specifically implementing Magento native tags. This enhancement allows for better management and control of caching based on Magento's native tagging system.
-- Improved Varnish Compatibility: URLs excluded from NitroPack caching (by using the NitroPack Exclude URLs feature) are now cacheable by Varnish. This improvement ensures more seamless integration between NitroPack and Varnish caching.
+- Improved Varnish Compatibility: URLs excluded from NitroPack caching (by using the NitroPack Exclude URLs feature) are now cacheable by Varnish. This improvement ensures more seamless [integration between NitroPack and Varnish caching](https://support.nitropack.io/en/articles/9014014-how-to-configure-varnish-with-nitropack-for-optimal-magento-performance).
 - Improved Varnish Compatibility: Varnish invalidation process updated. With this update, the Varnish invalidation process now depends on the system configuration, allowing it to work seamlessly based on the specific configuration settings. This ensures more accurate and effective invalidation of the Varnish cache when necessary.
 - NitroPack Safe Mode Integration: The new version introduces the integration of NitroPack Safe Mode. Safe Mode is a feature that allows users to easily enable or disable NitroPack optimization functionality without affecting the website's performance. This integration gives users greater flexibility and control over NitroPack caching and optimization features.
-- Cacheable Third-Party Custom URLs: The new version of NitroPack introduces the ability to cache all third-party custom URLs. This enhancement allows NitroPack to effectively cache and optimize not only the website's own content but also custom URLs from third-party integrations, providing a more comprehensive caching solutio
+- Cacheable Third-Party Custom URLs: The new version of NitroPack introduces the ability to cache all third-party custom URLs. This enhancement allows NitroPack to effectively cache and optimize not only the website's own content but also custom URLs from third-party integrations, providing a more comprehensive caching solution
 
 ###   2.2.3:
 #### Compatible with Magento Open Source : 2.4

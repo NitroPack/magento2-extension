@@ -61,6 +61,7 @@ class EnableSafeMode extends StoreAwareAction
 
     public function nitroExecute()
     {
+
         if (!$this->formKeyValidator->validate($this->getRequest())) {
             throw new LocalizedException(__('Invalid form key.'));
         }
@@ -70,7 +71,7 @@ class EnableSafeMode extends StoreAwareAction
             $setting = $this->nitro->getSettings();
             try {
 
-                $this->purgeInterface->purge();
+                //$this->purgeInterface->purge();
 
                 if ($enabled) {
                     $this->nitro->getSdk()->enableSafeMode();

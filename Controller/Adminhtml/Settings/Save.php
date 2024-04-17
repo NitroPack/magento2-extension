@@ -126,8 +126,12 @@ class Save extends StoreAwareAction
                     }
                 }
                 //EVENT TRIGGER
-                $this->nitroPackConfigHelper->setBoolean('previous_extension_status', $value);
+                if ($option === 'enabled') {
+                    $this->nitroPackConfigHelper->setBoolean('previous_extension_status', $value);
+                }
+
                 $this->nitroPackConfigHelper->setBoolean($option, $value);
+
                 $shouldSave = true;
             }
 
@@ -139,7 +143,7 @@ class Save extends StoreAwareAction
                 $sitemapUrl = $this->getWarmupSitemapUrl(
                     $this->getStoreGroup()->getId(),
                     $this->getStoreGroup()->getCode(),
-                    $this->nitro
+                    $this->nitro->getSettings()
                 );
                 $this->nitro->getApi()->setWarmupHomepage($this->getStoreUrl());
                 $this->nitro->getApi()->setWarmupSitemap($sitemapUrl);
@@ -176,9 +180,9 @@ class Save extends StoreAwareAction
         }
     }
 
-    protected function getWarmupSitemapUrl($storeGroupId, $storeGroupCode, $nitro)
+    protected function getWarmupSitemapUrl($storeGroupId, $storeGroupCode, $nitroSetting)
     {
-        return $this->sitemapHelper->getSiteMapPath($storeGroupId, $storeGroupCode, $nitro);
+        return $this->sitemapHelper->getSiteMapPath($storeGroupId, $storeGroupCode, $nitroSetting);
     }
 
     public function getStoreUrl()

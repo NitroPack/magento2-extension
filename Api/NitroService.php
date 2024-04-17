@@ -2,6 +2,7 @@
 
 namespace NitroPack\NitroPack\Api;
 
+use Exception;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\State;
 use Magento\Framework\App\Area;
@@ -10,7 +11,7 @@ use Magento\Framework\Filesystem\DirectoryList;
 use NitroPack\NitroPack\Helper\RedisHelper;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Customer\Model\Session;
-use Psr\Log\LoggerInterface;
+use NitroPack\NitroPack\Logger\Logger;
 use \NitroPack\SDK\Api\Varnish as NitroPackVarnish;
 use \NitroPack\SDK\NitroPack;
 use Magento\Framework\App\RequestInterface;
@@ -23,7 +24,7 @@ use Magento\Framework\UrlInterface;
 class NitroService implements NitroServiceInterface
 {
 
-    const EXTENSION_VERSION = '2.9.1';  // Do not change this line manually. It is updated automatically by the build script.
+    const EXTENSION_VERSION = '3.0.0';  // Do not change this line manually. It is updated automatically by the build script.
 
     const FULL_PAGE_CACHE_NITROPACK = 'system/full_page_cache/caching_application';
     const FULL_PAGE_CACHE_NITROPACK_VALUE = 3;
@@ -41,8 +42,8 @@ class NitroService implements NitroServiceInterface
         'contact_index_index' => 'contact'
     );
     /**
-     * @var LoggerInterface
-     * */
+     * @var Logger
+     */
     protected $logger;
 
     protected $connected = false;
@@ -104,29 +105,31 @@ class NitroService implements NitroServiceInterface
      * @var \Magento\Framework\App\ProductMetadataInterface
      * */
     protected $productMetadata;
+
     /**
      * @param State $appState
      * @param DirectoryList $directoryList
      * @param \Magento\Framework\Filesystem\Driver\File $fileDriver
      * @param \Magento\Framework\Serialize\SerializerInterface $serializer
-     * @param LoggerInterface $logger
+     * @param Logger $logger
      * @param RedisHelper $redisHelper
      * @param ScopeConfigInterface $_scopeConfig
      * @param UrlInterface $urlBuilder
      * @param \Magento\Store\Model\Store $store
-     * @param \Magento\Framework\App\ProductMetadataInterface  $productMetadata
+     * @param \Magento\Framework\App\ProductMetadataInterface $productMetadata
      * @param RequestInterface $request
      * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
      * @param StoreManagerInterface $storeManager
      * @param Session $session
-     * */
+     * @throws FileSystemException
+     */
     public function __construct(
 
         State                                            $appState,
         DirectoryList                                    $directoryList,
         \Magento\Framework\Filesystem\Driver\File        $fileDriver,
         \Magento\Framework\Serialize\SerializerInterface $serializer,
-        LoggerInterface                                  $logger,
+        Logger                                           $logger,
         RedisHelper                                      $redisHelper,
         ScopeConfigInterface                             $_scopeConfig,
         UrlInterface                                     $urlBuilder,
@@ -165,7 +168,7 @@ class NitroService implements NitroServiceInterface
             //  $this->sdk->purgeLocalCache(true);
             //exit;
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->debug('SDK exception:' . $e->getMessage());
             throw $e;
         }
@@ -206,13 +209,13 @@ class NitroService implements NitroServiceInterface
                 $this->sdk = $this->initializeSdk($url);
                 if (is_null($this->sdk)) {
                     if (!$this->isConnected()) {
-                        throw new \Exception('SDK exception: re-verification and throw error');
+                        throw new Exception('SDK exception: re-verification and throw error');
                     } else {
-                        throw new \Exception('SDK exception: Disconnected and throw error');
+                        throw new Exception('SDK exception: Disconnected and throw error');
                     }
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->debug('SDK exception: ' . $e->getMessage());
             throw $e;
         }
@@ -239,7 +242,6 @@ class NitroService implements NitroServiceInterface
             isset($this->settings->siteId) && !empty($this->settings->siteId) &&
             isset($this->settings->siteSecret) && !empty($this->settings->siteSecret)
         );
-        $this->logger->debug('Is connected: ' . ($connectConditions ? 'YES' : 'NO'));
 
         return $connectConditions;
     }
@@ -417,7 +419,7 @@ class NitroService implements NitroServiceInterface
             if (!is_null($this->settings->pageTypes->custom->{$route}) && $this->settings->pageTypes->custom->{$route} == 0) {
                 return true;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return false;
         }
         if (!isset($this->settings->pageTypes->custom->{$route})) {
@@ -488,7 +490,7 @@ class NitroService implements NitroServiceInterface
             }
             try {
                 $this->settings = json_decode($contents);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->logger->debug("Read file error:" . $e->getMessage());
             }
             if ($this->settings) {
@@ -557,8 +559,8 @@ class NitroService implements NitroServiceInterface
 
         try {
             return new NitroPack($this->settings->siteId, $this->settings->siteSecret, null, $url, $cachePath);
-        } catch (\Exception $e) {
-
+        } catch (Exception $e) {
+            $this->logger->debug('SDK exception:' . $e->getMessage());
             return null;
         }
     }
@@ -590,11 +592,13 @@ class NitroService implements NitroServiceInterface
             $client = new \NitroPack\HttpClient\HttpClient($httpClientData);
             $client->doNotDownload = true;
             $client->fetch();
+
             if ($client->getStatusCode() === 200) {
                 return true;
             }
             return false;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
+            $this->logger->debug('Exception:' . $e->getMessage());
             return false;
         }
     }

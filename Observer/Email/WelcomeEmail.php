@@ -8,7 +8,7 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Email\Model\Template\SenderResolver;
 use Magento\Store\Model\StoreManagerInterface;
-use Psr\Log\LoggerInterface;
+use NitroPack\NitroPack\Logger\Logger;
 use Magento\User\Model\UserFactory;
 use Magento\Backend\Model\UrlInterface;
 use Magento\Framework\HTTP\Client\Curl;
@@ -34,8 +34,8 @@ class WelcomeEmail implements ObserverInterface
     protected $storeManager;
 
     /**
-     * @var LoggerInterface
-     * */
+     * @var Logger
+     */
     protected $logger;
     /**
      * @var UserFactory
@@ -50,7 +50,7 @@ class WelcomeEmail implements ObserverInterface
         TransportInterfaceFactory                        $transportFactory,
         SenderResolver                                   $senderResolver,
         StoreManagerInterface                            $storeManager,
-        LoggerInterface                                  $logger,
+        Logger                                           $logger,
         \Magento\Framework\Serialize\SerializerInterface $serializer,
         UrlInterface              $urlBuilder,
         UserFactory                                      $userFactory

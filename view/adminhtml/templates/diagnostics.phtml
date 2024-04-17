@@ -1,94 +1,190 @@
 <?php
+
+/** @var $block \NitroPack\NitroPack\Block\DiagnosticsBlock */
+/** @var $escaper \Magento\Framework\Escaper */
 $diagnosticsReport = $block->getDiagnosticsReport();
+$sendLogReportUrl = $block->getSendEmailUrl();
+$downloadLogUrl = $block->getDownloadLogUrl();
+$diagnosticsReportUrl = $block->getDiagnosticsReportUrl();
 $diagnosticsReportStoreGroupId = $block->getStoreGroup()->getId()
 ?>
-<div>
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <div class="card-overlay-blurrable np-widget" id="diagnostic-widget">
-                <div class="card card-d-item">
-                    <div class="card-body">
-                        <h3 class="card-title"><?= __(" Diagnostics report") ?></h3>
-                        <ul class="diagnostic__data-grid">
-                            <li class="diagnostic__data-item px-0 d-flex justify-content-between align-items-center">
-                <span id="loading-general-info" class="diagnostic__data-item-text">
-                  <?= __("Include NitroPack info(version, methods, environment)"); ?>
-                </span>
-                                <span id="general-info-toggle">
-                  <label id="general-info-slider" class="switch">
-                    <input type="checkbox" class="diagnostic-option" id="general-info-status" checked>
-                    <span class="slider round"></span>
-                  </label>
-                </span>
-                            </li>
-                            <li class="diagnostic__data-item px-0 d-flex justify-content-between align-items-center">
-                <span id="loading-plugins-status" class="diagnostic__data-item-text">
-                  <?= __("Include active plugins list"); ?>
-                </span>
-                                <span id="active-plugins-toggle">
-                  <label id="active-plugins-slider" class="switch">
-                    <input type="checkbox" class="diagnostic-option" id="active-plugins-status" checked>
-                    <span class="slider round"></span>
-                  </label>
-                </span>
-                            </li>
-                            <li class="diagnostic__data-item px-0 d-flex justify-content-between align-items-center">
-                <span id="conflicting-plugins-info" class="diagnostic__data-item-text">
-        <?= __("Include conflicting plugins list"); ?>
-                </span>
-                                <span id="conflicting-plugins-toggle">
-                  <label id="conflicting-plugins-slider" class="switch">
-                    <input type="checkbox" class="diagnostic-option" id="conflicting-plugins-status" checked>
-                    <span class="slider round"></span>
-                  </label>
-                </span>
-                            </li>
-                            <li class="diagnostic__data-item px-0 d-flex justify-content-between align-items-center">
-                <span id="loading-user-config" class="diagnostic__data-item-text">
-                   <?= __("Include user config"); ?>
-                </span>
-                                <span id="user-config-toggle">
-                  <label id="user-config-slider" class="switch">
-                    <input type="checkbox" class="diagnostic-option" id="user-config-status" checked>
-                    <span class="slider round"></span>
-                  </label>
-                </span>
-                            </li>
-                            <li class="diagnostic__data-item px-0 d-flex justify-content-between align-items-center">
-                <span id="loading-dir-info" class="diagnostic__data-item-text">
-                  <?= __("Include directory info(structure,permissions)"); ?>
-                </span>
-                                <span id="dir-info-toggle">
-                  <label id="dir-info-slider" class="switch">
-                    <input type="checkbox" class="diagnostic-option" id="dir-info-status" checked>
-                    <span class="slider round"></span>
-                  </label>
-                </span>
-                            </li>
-                            <li class="diagnostic__data-item px-0 d-flex justify-content-between align-items-center">
-                <span style="margin-top: 1rem; margin-bottom: 1rem; ">
-                  <a id="gen-report-btn" href="javascript:void(0);" class="btn btn-primary btn-sm ml-3"><i
-                          class="fa fa-refresh fa-spin" style="display:none"
-                          id="diagnostics-loader"></i>&nbsp;&nbsp;<?= __("Generate Report"); ?></a>
-                </span>
-                            </li>
-                        </ul>
-                        <p style="margin-top: 1rem;"><i class="fa fa-info-circle text-primary"
-                                                        aria-hidden="true"></i> <?= __("The generated report will be saved to your computer and can later be attached to your ticket."); ?>
-                        </p>
+
+<div class="bg-white grid grid-cols-3 xl:grid-cols-3 gap-4 pad-24 border border-gray-200 card-radius shadow">
+    <div class="w-full card-radius col-span-2">
+        <h3 class="text-base font-inter text-grey-700 font-bold mb-4"><?= $escaper->escapeHtml(__("System Info Report")) ?></h3>
+        <p class="text-grey-600"><?= $escaper->escapeHtml(__("This system info report serves as a valuable told for troubleshooting any issues with
+            NitroPack. By sharing this detailed report with our support team, you enable them to
+            efficiently diagnose and address any concerns, ensuring a swift resolution to enchance your
+            overall experience with NitroPack.")); ?></p>
+
+        <div class="grid gap-6 mb-6 mt-6 md:grid-cols-2">
+            <div>
+                <form id="email-report-form" action="" data-mage-init='{"validation":{}}'>
+                    <input type="text" id="email_report" data-validate="{required:true, 'validate-email':true}"
+                           class="bg-white font-inter border border-gray-300 text-gray-900 text-m rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                           placeholder="<?= $escaper->escapeHtml(__("support@nitropack.com")) ?>" />
+            </div>
+
+            <div>
+                <button
+                    class="border-solid border bg-purple border-purple rounded-lg float-left font-medium text-white font-inter py-2 px-6 hover:bg-purple-200 hover:text-white h-[36px] py-[4px] px-[16px]"
+                    id="send-report-button">
+                    <?= $escaper->escapeHtml(__("Send Email")) ?>
+                </button>
+            </div>
+            </form>
+        </div>
+    </div>
+    <div class="w-full rounded-lg col-span">
+        <button id="gen-report-btn"
+                class="flex gap-2 justify-center items-center border-solid border border-purple rounded-lg float-right hover:bg-purple-100 text-purple font-medium font-inter hover:text-purple stroke-purple h-[36px] py-[4px] px-[16px]">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M14 10V12.6667C14 13.0203 13.8595 13.3594 13.6095 13.6095C13.3594 13.8595 13.0203 14 12.6667 14H3.33333C2.97971 14 2.64057 13.8595 2.39052 13.6095C2.14048 13.3594 2 13.0203 2 12.6667V10"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M4.66663 6.66663L7.99996 9.99996L11.3333 6.66663" stroke-linecap="round"
+                      stroke-linejoin="round"/>
+                <path d="M8 10V2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <?= $escaper->escapeHtml(__("Download")) ?>
+        </button>
+    </div>
+
+    <div class="w-full col-span-full">
+        <div class="m-2 space-y-2">
+            <div x-data="{ expanded: false }">
+                <div @click="expanded = ! expanded">
+                    <div class="flex flex-col gap-2 cursor-pointer items-center justify-between">
+                    <span
+                        class="flex items-center text-purple font-inter"><?= $escaper->escapeHtml(__("Customize report")) ?> <svg
+                            width="17" height="16"
+                            viewBox="0 0 17 16"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+<path d="M4.5 6L8.5 10L12.5 6" stroke="#4600CC" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+                    </div>
+                </div>
+                    <div x-show="expanded" x-collapse.duration.1000ms style=" display: none;">
+
+                        <div class="relative overflow-x-auto sm:rounded-lg">
+                            <table
+                                class="w-full text-left rtl:text-right text-gray-700 text-sm font-medium font-inter">
+                                <tbody>
+                                <tr class="bg-white border-b">
+                                    <td class="py-8"><?= $escaper->escapeHtml(__("Include NitroPack info (version, methods, environment)")) ?></td>
+                                    <td class="pt-2">
+                                        <label class="inline-flex items-center me-5  pt-1 align-middle float-right cursor-pointer">
+                                            <input id="general-info-status" type="checkbox" name="general-info-status"
+                                                   value="0" class="diagnostic-option sr-only peer" checked>
+                                            <div class="toggle-height toggle-width relative bg-lite-purple-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[4px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:transition-all peer-checked:bg-purple"></div>
+
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr class="bg-white border-b">
+                                    <td class="py-8"><?= $escaper->escapeHtml(__("Include active plugins list")) ?></td>
+                                    <td class="pt-2">
+                                        <label class="inline-flex items-center me-5 float-right cursor-pointer">
+                                            <input id="active-plugins-status" type="checkbox" name="enabled" value="0"
+                                                   class="diagnostic-option sr-only peer" checked>
+                                            <div class="toggle-height toggle-width relative bg-lite-purple-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[4px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:transition-all peer-checked:bg-purple"></div>
+
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr class="bg-white border-b">
+                                    <td class="py-8"><?= $escaper->escapeHtml(__("Include conflict plugins list")) ?></td>
+                                    <td class="pt-2">
+                                        <label class="inline-flex items-center me-5 float-right cursor-pointer">
+                                            <input id="conflicting-plugins-status" type="checkbox" name="enabled"
+                                                   value="0" class="diagnostic-option sr-only peer" checked>
+                                            <div class="toggle-height toggle-width relative bg-lite-purple-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[4px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:transition-all peer-checked:bg-purple"></div>
+
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr class="bg-white">
+                                    <td class="py-8"><?= $escaper->escapeHtml(__("Include user config")) ?></td>
+                                    <td class="pt-2">
+                                        <label class="inline-flex items-center me-5 float-right cursor-pointer">
+                                            <input id="user-config-status" type="checkbox" name="enabled" value="0"
+                                                   class="diagnostic-option sr-only peer" checked>
+                                            <div class="toggle-height toggle-width relative bg-lite-purple-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[4px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:transition-all peer-checked:bg-purple"></div>
+                                        </label>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+
+<div class="bg-white mt-8 grid grid-cols-3 xl:grid-cols-3 gap-4 pad-24 border border-gray-200 card-radius shadow">
+    <div class="w-full col-span-2">
+        <h3 class="text-base text-grey-700 font-bold mb-4 font-inter"><?= $escaper->escapeHtml(__("NitroPack log")) ?></h3>
+        <p class="text-grey-600"><?= $escaper->escapeHtml(__("These logs offer insights into the communication between your Magento application and
+            the NitroPack core
+            service, highlighting connection attempts and any errors. For your convenience, the latest 100 lines are
+            displayed in reverse order, allowing easy review. Please note that editing the file is not supported in
+            this
+            interface.")) ?></p>
+
+        <form id="email-log-form" action="" data-mage-init='{"validation":{}}'>
+            <div class="grid gap-6 mb-6 mt-6 md:grid-cols-2">
+                <div>
+                    <input type="text" id="e-mail-address" data-validate="{required:true, 'validate-email':true}"
+                           class="bg-white border border-gray-300 text-gray-900 text-m rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+                           placeholder="support@nitropack.com" required/>
+                </div>
+                <div>
+                    <button
+                        class="border-solid border bg-purple border-purple rounded-lg float-left font-medium font-inter text-white hover:bg-purple-200 hover:text-white h-[36px] py-[4px] px-[16px]"
+                        id="send-email-button">
+                        <?= $escaper->escapeHtml(__("Send Email")) ?>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+<div class="w-full rounded-xl col-span">
+    <button
+        class="flex gap-2 justify-center items-center border-solid border border-purple font-inter rounded-lg float-right hover:bg-purple-100 text-purple font-medium font-inter hover:text-purple py-2 px-6 stroke-purple h-[36px] py-[4px] px-[16px]"
+        id="download-log">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+                d="M14 10V12.6667C14 13.0203 13.8595 13.3594 13.6095 13.6095C13.3594 13.8595 13.0203 14 12.6667 14H3.33333C2.97971 14 2.64057 13.8595 2.39052 13.6095C2.14048 13.3594 2 13.0203 2 12.6667V10"
+                stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4.66663 6.66663L7.99996 9.99996L11.3333 6.66663" stroke-linecap="round"
+                  stroke-linejoin="round"/>
+            <path d="M8 10V2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <?= $escaper->escapeHtml(__("Download")) ?>
+    </button>
+</div>
+
+<div class="w-full rounded-xl col-span-full">
+    <div class="relative rounded-xl overflow-auto border rounded scroller">
+        <div
+            class="overflow-y-scroll h-72 relative mx-auto bg-white shadow-lg ring-1 ring-black/5 rounded-xl flex flex-col divide-y">
+            <div class="flex items-center gap-4 p-4">
+                <p class="text-grey-600 font-inter"><?= $block->getLogContent() ?>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 <script>
-    require(['jquery'], function ($) {
+    require(['jquery', 'mage/validation'], function ($, validation) {
         let isReportGenerating = false;
-
         $("#gen-report-btn").on("click", function (e) {
             if (isReportGenerating) return;
-
             $.ajax({
                 url: "<?= $diagnosticsReport; ?>",
                 type: "POST",
@@ -115,8 +211,6 @@ $diagnosticsReportStoreGroupId = $block->getStoreGroup()->getId()
                     }
                 },
                 success: function (response, status, xhr) {
-
-
                     if (response.length > 1) {
                         var filename = "";
                         var disposition = xhr.getResponseHeader('Content-Disposition');
@@ -141,7 +235,7 @@ $diagnosticsReportStoreGroupId = $block->getStoreGroup()->getId()
                                 var a = document.createElement("a");
                                 // safari doesn't support this yet
                                 if (typeof a.download === 'undefined') {
-                     //               window.location.href = downloadUrl;
+                                    //               window.location.href = downloadUrl;
                                 } else {
                                     a.href = downloadUrl;
                                     a.download = filename;
@@ -149,7 +243,7 @@ $diagnosticsReportStoreGroupId = $block->getStoreGroup()->getId()
                                     a.click();
                                 }
                             } else {
-                   //             window.location.href = downloadUrl;
+                                //             window.location.href = downloadUrl;
                             }
 
                             setTimeout(function () {
@@ -158,11 +252,155 @@ $diagnosticsReportStoreGroupId = $block->getStoreGroup()->getId()
                         }
                         Notification.success("<?= __('Report generated successfully.'); ?>");
                     } else {
-                        Notification.error("<?= __('Response is empty. Report generation failed.'); ?>");
+                        Notification.warning("<?= __('Response is empty. Report generation failed.'); ?>");
                     }
                 },
                 error: function () {
-                    Notification.error("<?= __('There was an error while generating the report.'); ?>");
+                    Notification.warning("<?= __('There was an error while generating the report.'); ?>");
+                },
+                complete: function () {
+                    $("#diagnostics-loader").hide();
+                    isReportGenerating = false;
+                }
+            });
+        });
+
+        $("#send-email-button").on("click", function (event) {
+            event.preventDefault();
+            var dataForm = $('#email-log-form');
+
+            if(dataForm.validation('isValid') === false){
+                return false;
+            }
+            $(this).addClass('disabled');
+            $.ajax({
+                url: '<?= $sendLogReportUrl ?>',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    email: $("#e-mail-address").prop('value')
+                },
+                success: function (response) {
+                    $('#send-email-button').removeClass('disabled');
+                    if (response.result) {
+                        Notification.success('Email sent successfully');
+                    } else {
+                        Notification.warning('Something went wrong');
+                    }
+                },
+                error: function () {
+                    Notification.warning('Something went wrong');
+                }
+            })
+        });
+
+
+        $("#download-log").on("click", function (event) {
+            event.preventDefault();
+            $.ajax({
+                url: '<?= $downloadLogUrl ?>',
+                method: 'POST',
+                dataType: 'text',
+                data: {
+                    download: '1'
+                },
+                success: function (response, status, xhr) {
+                    if (response.length > 1) {
+                        var filename = "";
+                        var disposition = xhr.getResponseHeader('Content-Disposition');
+                        if (disposition && disposition.indexOf('attachment') !== -1) {
+                            var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                            var matches = filenameRegex.exec(disposition);
+                            if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+                        }
+
+                        var type = xhr.getResponseHeader('Content-Type');
+                        var blob = new Blob([response], {type: type});
+
+                        if (typeof window.navigator.msSaveBlob !== 'undefined') {
+                            // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
+                            window.navigator.msSaveBlob(blob, filename);
+                        } else {
+                            var URL = window.URL || window.webkitURL;
+                            var downloadUrl = URL.createObjectURL(blob);
+
+                            if (filename) {
+                                // use HTML5 a[download] attribute to specify filename
+                                var a = document.createElement("a");
+                                // safari doesn't support this yet
+                                if (typeof a.download === 'undefined') {
+                                    //               window.location.href = downloadUrl;
+                                } else {
+                                    a.href = downloadUrl;
+                                    a.download = filename;
+                                    document.body.appendChild(a);
+                                    a.click();
+                                }
+                            } else {
+                                //             window.location.href = downloadUrl;
+                            }
+
+                            setTimeout(function () {
+                                URL.revokeObjectURL(downloadUrl);
+                            }, 100);
+                        }
+                        Notification.success("<?= __('Log generated successfully.'); ?>");
+                    } else {
+                        Notification.warning("<?= __('Log is empty. Log generation failed.'); ?>");
+                    }
+                },
+
+            })
+        });
+
+        $("#send-report-button").on("click", function (event) {
+            event.preventDefault();
+            var dataForm = $('#email-report-form');
+
+            if(dataForm.validation('isValid') === false){
+                return false;
+            }
+            $(this).addClass('disabled');
+            // if (isReportGenerating) return;
+
+            $.ajax({
+                url: "<?= $diagnosticsReportUrl; ?>",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    action: 'nitropack_generate_report',
+                    group: <?= $diagnosticsReportStoreGroupId; ?>,
+                    email: $("#email_report").prop('value'),
+                    toggled: {
+                        "general-info-status": $("#general-info-status:checked").length,
+                        "active-plugins-status": $("#active-plugins-status:checked").length,
+                        "conflicting-plugins-status": $("#conflicting-plugins-status:checked").length,
+                        "user-config-status": $("#user-config-status:checked").length,
+                        "dir-info-status": $("#dir-info-status:checked").length
+                    }
+                },
+                beforeSend: function (xhr, sett) {
+                    if ($(".diagnostic-option:checked").length > 0) {
+                        $("#diagnostics-loader").show();
+                        isReportGenerating = true;
+                        return true;
+                    } else {
+                        alert("<?= __('Please select at least one of the report options'); ?>");
+                        return false;
+                    }
+                },
+                success: function (response) {
+                    $('#send-report-button').removeClass('disabled');
+                    if (response.result) {
+
+                        Notification.success('Email sent successfully');
+
+                    } else {
+                        Notification.warning('Something went wrong');
+                    }
+                },
+                error: function () {
+                    Notification.warning('Something went wrong');
                 },
                 complete: function () {
                     $("#diagnostics-loader").hide();

@@ -12,14 +12,14 @@ use NitroPack\NitroPack\Api\NitroService;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
 use NitroPack\NitroPack\Helper\ApiHelper;
 use NitroPack\SDK\HealthStatus;
-use Psr\Log\LoggerInterface;
+use NitroPack\NitroPack\Logger\Logger;
 
 class LoginObserver implements ObserverInterface
 {
 
     /**
-     * @var LoggerInterface
-     * */
+     * @var Logger
+     */
     protected $logger;
     /**
      * @var StoreManagerInterface
@@ -48,7 +48,7 @@ class LoginObserver implements ObserverInterface
     protected $serializer;
 
     public function __construct(
-        LoggerInterface                                  $logger,
+        Logger                                           $logger,
         Context                                          $context,
         NitroServiceInterface                            $nitroService,
         ApiHelper                                        $apiHelper,

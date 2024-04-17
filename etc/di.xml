@@ -26,4 +26,20 @@
     <preference for="NitroPack\NitroPack\Model\FullPageCache\IntegratedCacheInterface" type="NitroPack\NitroPack\Model\FullPageCache\IntegratedCache"/>
     <preference for="NitroPack\NitroPack\Model\FullPageCache\PurgeInterface" type="NitroPack\NitroPack\Model\FullPageCache\PurgeCache"/>
 
+    <preference for="NitroPack\NitroPack\Api\LogContentInterface" type="NitroPack\NitroPack\Model\LogData\LogContent"/>
+    <preference for="NitroPack\NitroPack\Api\SendEmailInterface" type="NitroPack\NitroPack\Model\LogData\SendEmail"/>
+
+    <type name="NitroPack\NitroPack\Logger\Handler">
+        <arguments>
+            <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
+        </arguments>
+    </type>
+    <type name="NitroPack\NitroPack\Logger\Logger">
+        <arguments>
+            <argument name="name" xsi:type="string">nitroPackLogger</argument>
+            <argument name="handlers" xsi:type="array">
+                <item name="system" xsi:type="object">NitroPack\NitroPack\Logger\Handler</item>
+            </argument>
+        </arguments>
+    </type>
 </config>

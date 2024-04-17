@@ -10,7 +10,7 @@ use Magento\Store\Model\StoreManagerInterface;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
 use NitroPack\NitroPack\Api\TaggingServiceInterface;
 use NitroPack\NitroPack\Observer\DeleteObserver;
-use Psr\Log\LoggerInterface;
+use NitroPack\NitroPack\Logger\Logger;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 
 class CatalogProductImportBunchSaveAfter implements ObserverInterface
@@ -34,8 +34,8 @@ class CatalogProductImportBunchSaveAfter implements ObserverInterface
      * */
     protected $storeManager;
     /**
-     * @var LoggerInterface
-     * */
+     * @var Logger
+     */
     protected $logger;
 
     /**
@@ -73,7 +73,7 @@ class CatalogProductImportBunchSaveAfter implements ObserverInterface
         \Magento\Framework\Serialize\Serializer\Json         $json,
         \Magento\Framework\MessageQueue\DefaultValueProvider $defaultQueueValueProvider,
         ProductRepositoryInterface                           $productRepository,
-        LoggerInterface                                      $logger
+        Logger                                               $logger
     )
     {
         $this->logger = $logger;
@@ -103,7 +103,7 @@ class CatalogProductImportBunchSaveAfter implements ObserverInterface
 
                 $this->productSave($product);
             }
-        } catch (\Execption $e) {
+        } catch (\Exception $e) {
             $this->logger->info($e->getMessage());
         }
     }

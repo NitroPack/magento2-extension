@@ -140,7 +140,7 @@ class WidgetSaveObserver implements ObserverInterface
                 "Magento cache flush remove all page cache due to widget added"
             );
         }
-        $types = ['block_html','layout'];
+        $types = [  'full_page'];
         foreach ($types as $type) {
             $this->cacheTypeList->cleanType($type);
         }

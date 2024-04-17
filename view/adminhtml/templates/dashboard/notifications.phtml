@@ -1,0 +1,209 @@
+<?php
+$nitroPackConfigHelper = $this->helper('NitroPack\NitroPack\Helper\NitroPackConfigHelper');
+$nitroPackInvalidationHelper = $this->helper('NitroPack\NitroPack\Helper\InvalidationHelper');
+$fastlyHelper = $this->helper('NitroPack\NitroPack\Helper\FastlyHelper');
+$enabledMagentoCaches = $nitroPackConfigHelper->getDisabledCaches();
+$enableCachesUrl = $block->getEnableCachesUrl();
+?>
+
+<div class="ml-10 mr-10">
+    <div class="warning-bg p-5 rounded shadow grid grid-cols-3 mb-5 hidden" id="test-mode-warning" role="warning">
+        <div class="col-span-2">
+            <div class="flex gap-2">
+        <img src="<?= $block->getImage("info.svg"); ?>" alt="Test mode is enabled" width="14" height="14"  />
+                <p class="alert-content text-grey-600">Test mode is enabled for your site and visitors are accessing your unoptimized pages. Make sure to disable it once you are done testing.</p>
+            </div>
+        </div>
+    </div>
+    <?php if (!$nitroPackInvalidationHelper->checkInvalidationAndPurgeProcess() && !$nitroPackInvalidationHelper->checkCronJobIsSetup()) {
+
+    } else {
+    $cacheLabels = $block->getCacheLabels();
+    if (!empty($enabledMagentoCaches) && !$nitroPackConfigHelper->getFullPageCacheValue()) {
+    ?>
+        <div x-data="{show: true}" class="row ">
+            <div x-show="show" class="mb-5" style=" display: none;">
+                <div class="bg-red-500 p-10 rounded shadow grid grid-cols-3" id="config-caches-warning" role="warning">
+                    <div class="col-span-2">
+                        <div class="flex gap-2">
+                            <svg width="18" height="22" viewBox="0 0 18 22" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M7.69065 4.73717L1.20521 15.5641C1.07149 15.7957 1.00074 16.0582 0.999993 16.3256C0.999244 16.593 1.06852 16.8559 1.20094 17.0882C1.33336 17.3205 1.52429 17.5141 1.75475 17.6497C1.98521 17.7853 2.24717 17.8582 2.51455 17.8612H15.4854C15.7528 17.8582 16.0148 17.7853 16.2452 17.6497C16.4757 17.5141 16.6666 17.3205 16.799 17.0882C16.9314 16.8559 17.0007 16.593 17 16.3256C16.9992 16.0582 16.9285 15.7957 16.7948 15.5641L10.3093 4.73717C10.1728 4.51214 9.98063 4.32608 9.75128 4.19696C9.52194 4.06783 9.26318 4 8.99999 4C8.73679 4 8.47804 4.06783 8.24869 4.19696C8.01934 4.32608 7.82715 4.51214 7.69065 4.73717Z"
+                                    stroke="#CF0C35" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M9 8.75V11.75" stroke="#CF0C35" stroke-linecap="round"
+                                      stroke-linejoin="round"/>
+                                <path d="M9 14.75H9.0075" stroke="#CF0C35" stroke-linecap="round"
+                                      stroke-linejoin="round"/>
+                            </svg>
+
+                            <h5 class="font-bold mb-4 font-inter text-grey-600">The NitroPack extension is disabled! Incompatible Full Page Cache and Caching Application Setting:
+                            </h5>
+                        </div>
+                        <p class="alert-content text-grey-600">NitroPack requires to be set as <a
+                                href="<?= $block->getCacheManagementUrl() ?>">Caching Application</a> and <a
+                                href="<?= $block->getApplicationCacheUrl() ?>">Full Page Caching</a> enabled
+                        </p>
+                    </div>
+                    <div class="col-span-1">
+                        <div class="flex gap-2 float-right">
+                            <button
+                                class="border-solid border bg-red-600 border-red-600 rounded-lg float-right font-semibold font-inter text-white py-2 px-6 hover:text-red-600 focus:text-red-600"
+                                id="enable-caches">
+                                <?= $escaper->escapeHtml(__("Apply Fix Automatically")) ?>
+                            </button>
+
+                            <button @click="show = !show"
+                                    class="flex gap-2 justify-center items-center border-solid border text-red-600 border-red-600 font-inter rounded-lg float-right hover:bg-red-600 font-semibold font-inter hover:text-white py-2 px-6 hover:border-transparent stroke-purple hover:stroke-white"
+                                    id="dismiss"> Dismiss
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            <?php
+            } else {
+            if (!empty($enabledMagentoCaches)) {
+            ?>
+            <div x-data="{show: true}" class="row ">
+                <div x-show="show" class="mb-5" style=" display: none;">
+                    <div class="bg-red-500 p-10 rounded shadow grid grid-cols-3" id="config-caches-warning"
+                         role="warning">
+                        <div class="col-span-2">
+                            <div class="flex gap-2">
+                                <svg width="18" height="22" viewBox="0 0 18 22" fill="none"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M7.69065 4.73717L1.20521 15.5641C1.07149 15.7957 1.00074 16.0582 0.999993 16.3256C0.999244 16.593 1.06852 16.8559 1.20094 17.0882C1.33336 17.3205 1.52429 17.5141 1.75475 17.6497C1.98521 17.7853 2.24717 17.8582 2.51455 17.8612H15.4854C15.7528 17.8582 16.0148 17.7853 16.2452 17.6497C16.4757 17.5141 16.6666 17.3205 16.799 17.0882C16.9314 16.8559 17.0007 16.593 17 16.3256C16.9992 16.0582 16.9285 15.7957 16.7948 15.5641L10.3093 4.73717C10.1728 4.51214 9.98063 4.32608 9.75128 4.19696C9.52194 4.06783 9.26318 4 8.99999 4C8.73679 4 8.47804 4.06783 8.24869 4.19696C8.01934 4.32608 7.82715 4.51214 7.69065 4.73717Z"
+                                        stroke="#CF0C35" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M9 8.75V11.75" stroke="#CF0C35" stroke-linecap="round"
+                                          stroke-linejoin="round"/>
+                                    <path d="M9 14.75H9.0075" stroke="#CF0C35" stroke-linecap="round"
+                                          stroke-linejoin="round"/>
+                                </svg>
+                                <h5 class="font-bold mb-4 font-inter text-grey-600">The NitroPack extension is disabled! Incompatible Full
+                                    Page
+                                    Cache:
+                                </h5>
+                            </div>
+                                <p class="alert-content text-grey-600">NitroPack requires Full Page Caching enabled. Go
+                                    to <a
+                                        href="<?= $block->getCacheManagementUrl() ?>">Full Page Caching settings</a>
+                                </p>
+                            </div>
+                                <div class="col-span-1">
+                                    <div class="flex gap-2 float-right">
+                                        <button
+                                            class="border-solid border bg-red-600 border-red-600 rounded-lg float-right font-semibold font-inter text-white py-2 px-6 hover:text-red-600 focus:text-red-600"
+                                            id="enable-caches">
+                                            <?= $escaper->escapeHtml(__("Apply Fix Automatically")) ?>
+                                        </button>
+
+                                        <button @click="show = !show"
+                                                class="flex gap-2 justify-center items-center border-solid border text-red-600 border-red-600 font-inter rounded-lg float-right hover:bg-red-600 font-semibold font-inter hover:text-white py-2 px-6 hover:border-transparent stroke-purple hover:stroke-white"
+                                                id="dismiss"> Dismiss
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <?php
+                    } else {
+                        if (!$nitroPackConfigHelper->getFullPageCacheValue() && !$fastlyHelper->isFastlyAndNitroPackEnabled()) {
+                            ?>
+                            <div x-data="{show: true}" class="row ">
+                                <div x-show="show" class="mb-5" style=" display: none;">
+                                    <div class="bg-red-500 p-10 rounded shadow grid grid-cols-3"
+                                         id="config-caches-warning"
+                                         role="warning">
+                                        <div class="col-span-2">
+                                            <div class="flex gap-2">
+                                                <svg width="18" height="22" viewBox="0 0 18 22" fill="none"
+                                                     xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M7.69065 4.73717L1.20521 15.5641C1.07149 15.7957 1.00074 16.0582 0.999993 16.3256C0.999244 16.593 1.06852 16.8559 1.20094 17.0882C1.33336 17.3205 1.52429 17.5141 1.75475 17.6497C1.98521 17.7853 2.24717 17.8582 2.51455 17.8612H15.4854C15.7528 17.8582 16.0148 17.7853 16.2452 17.6497C16.4757 17.5141 16.6666 17.3205 16.799 17.0882C16.9314 16.8559 17.0007 16.593 17 16.3256C16.9992 16.0582 16.9285 15.7957 16.7948 15.5641L10.3093 4.73717C10.1728 4.51214 9.98063 4.32608 9.75128 4.19696C9.52194 4.06783 9.26318 4 8.99999 4C8.73679 4 8.47804 4.06783 8.24869 4.19696C8.01934 4.32608 7.82715 4.51214 7.69065 4.73717Z"
+                                                        stroke="#CF0C35" stroke-linecap="round"
+                                                        stroke-linejoin="round"/>
+                                                    <path d="M9 8.75V11.75" stroke="#CF0C35" stroke-linecap="round"
+                                                          stroke-linejoin="round"/>
+                                                    <path d="M9 14.75H9.0075" stroke="#CF0C35" stroke-linecap="round"
+                                                          stroke-linejoin="round"/>
+                                                </svg>
+
+                                                <h5 class="font-bold mb-4 font-inter text-grey-600"><?= $escaper->escapeHtml(__("The NitroPack extension is disabled! Incompatible Caching application setting:")) ?></h5>
+                                            </div>
+
+                                            <p class="alert-content text-grey-600">NitroPack must be selected as a Cache Application. Go
+                                                to <a href="<?= $block->getApplicationCacheUrl() ?>"><?= $escaper->escapeHtml(__("Full Page Caching Application settings")) ?></a></p>
+                                        </div>
+                                        <div class="col-span-1">
+                                            <div class="flex gap-2 float-right">
+                                                <button
+                                                    class="border-solid border bg-red-600 border-red-600 rounded-lg float-right font-semibold font-inter text-white py-2 px-6 hover:text-red-600 focus:text-red-600"
+                                                    id="enable-caches">
+                                                    <?= $escaper->escapeHtml(__("Apply Fix Automatically")) ?>
+                                                </button>
+
+                                                <button @click="show = !show"
+                                                        class="flex gap-2 justify-center items-center border-solid border text-red-600 border-red-600 font-inter rounded-lg float-right hover:bg-red-600 font-semibold font-inter hover:text-white py-2 px-6 hover:border-transparent stroke-purple hover:stroke-white"
+                                                        id="dismiss"> Dismiss
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php
+                        }
+                    }
+                    }
+                    } ?>
+                </div>
+                <script type="text/javascript">
+                    require(['jquery', 'Magento_Ui/js/modal/alert', 'NitroPack_NitroPack/js/overlay'], function ($, magentoAlert, cardOverlay) {
+                        $(document).ready(function () {
+                            $('#enable-caches').click(function (event) {
+                                $('#enable-caches').addClass('disabled');
+
+                                event.preventDefault();
+                                $.ajax({
+                                    url: '<?= $enableCachesUrl ?>',
+                                    method: 'POST',
+                                    dataType: 'json',
+                                    data: {run: 1},
+                                    success: function (response) {
+                                        if (response.enabled) { // we expect disabled to be true if we have successfully disabled the system caches
+                                            $('#nitroPackDisabled').remove();
+                                            <?php if (!empty($enabledMagentoCaches) && !$nitroPackConfigHelper->getFullPageCacheValue()) { ?>
+                                            Notification.success('Successfully Enabled system caches and The Caching application successfully set to NitroPack');
+                                            <?php }else {if (!empty($enabledMagentoCaches) ){?>
+                                            Notification.success('Successfully Enabled system caches ');
+                                            <?php }else {if (!$nitroPackConfigHelper->getFullPageCacheValue() ){ ?>
+                                            Notification.success('The Caching application successfully set to NitroPack');
+                                            <?php }}} ?>
+                                            $('#system-caches-warning').remove();
+                                            $('#config-caches-warning').remove();
+                                            $('#system-config-caches-warning').remove();
+                                            $('#status').removeAttr('disabled');
+                                            $('#enabledMagentoCachesWarning').remove();
+                                            if (response.extension_enabled) {
+                                                if ($('#status').val() == 0) {
+                                                    $('#status').val(1);
+                                                }
+                                            }
+                                            $('#status').click();
+                                            $('#system_messages').remove();
+                                         //   window.location.reload();
+
+                                        } else {
+                                            Notification.danger('Failed disabling the system caches');
+                                        }
+                                    }
+                                });
+                            })
+                        });
+                    });
+                </script>

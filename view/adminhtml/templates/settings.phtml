@@ -1,497 +1,250 @@
 <?php
 
 $nitroPackConfigHelper = $this->helper('NitroPack\NitroPack\Helper\NitroPackConfigHelper');
-$nitroPackInvalidationHelper = $this->helper('NitroPack\NitroPack\Helper\InvalidationHelper');
-$fastlyHelper = $this->helper('NitroPack\NitroPack\Helper\FastlyHelper');
 $enabledMagentoCaches = $nitroPackConfigHelper->getDisabledCaches();
-$settings = $block->getSettings();
 $saveUrl = $block->getSaveUrl();
-$varnishPurgeUrl = $block->getVarnishPurgeUrl();
 $purgeUrl = $block->getCachePurgeUrl();
-$warmupSaveUrl = $block->getCacheWarmupSaveUrl();
+$numberOfPageStoreWiseUrl = $block->getNumberOfPageStoreWise();
 $warmupStartUrl = $block->getStartWarmupUrl();
-$warmupConfig = $block->getWarmupConfig();
 $warmupPauseUrl = $block->getPauseWarmupUrl();
 $enableCachesUrl = $block->getEnableCachesUrl();
 $safeModeEnableUrl = $block->getSafeModeEnableUrl();
 $storeCurrencies = $block->getAvailableCurrencies();
 $storeLocales = $block->getAvailableLocales();
-$builtInPageRoutes = $block->getBuiltInPageTypeRoutes();
-$builtInPageTypes = array_keys($builtInPageRoutes);
-$fastlyHelper = $this->helper('NitroPack\NitroPack\Helper\FastlyHelper');
-
+$settings = $block->getSettings();
 ?>
-<div id="tab_element">
-    <ul class="tabs-horiz">
-        <li>
-            <a href="#tab1_content">
-                <span>
-                    <?php echo __("Dashboard"); ?>
-                </span>
-            </a>
-        </li>
-        <li>
-            <a href="#tab2_content">
-                <span>
-                    <?php echo __("Diagnostics Report"); ?>
-                </span>
-            </a>
-        </li>
 
+
+<div class="mb-4 mt-8 border-b dark:border-gray-700 nitro-top-tab-bar" style="border-color: #e3e3e3;">
+    <ul class="flex flex-wrap -mb-px text-sm font-medium text-left" id="default-styled-tab"
+        data-tabs-toggle="#default-styled-tab-content"
+        data-tabs-active-classes="text-purple-600 hover:text-purple-600 dark:text-purple-500 dark:hover:text-purple-500 border-purple-600 dark:border-purple-500"
+        data-tabs-inactive-classes="dark:border-transparent text-gray-500 hover:text-gray-600 dark:text-gray-400 border-gray-100 hover:border-gray-300 dark:border-gray-700 dark:hover:text-gray-300"
+        role="tablist" style="height: 47px !important;">
+        <li class="me-2" role="presentation">
+            <button class="tab-btn inline-block pt-5 pb-5 text-gray-900 text-center tab-btn-active"
+                    id="dashboard-styled-tab"
+                    data-tabs-target="dashboard" type="button" role="tab" aria-controls="dashboard"
+                    aria-selected="false" style="margin-right: 1rem;">Dashboard
+            </button>
+        </li>
+        <li role="presentation">
+            <button class="tab-btn inline-block pt-5 pb-5 text-center" data-tabs-target="system-info" type="button"
+                    role="tab"
+                    aria-controls="contacts" aria-selected="false" style="margin-right: 1rem;">System Info
+            </button>
+        </li>
     </ul>
 </div>
-<div id="tab_element_content">
-    <div id="tab1_content">
-
-        <div class="nitro">
-            <?php
-
-            if (!$nitroPackInvalidationHelper->checkInvalidationAndPurgeProcess() && !$nitroPackInvalidationHelper->checkCronJobIsSetup()) {
-
-            } else {
-                $cacheLabels = $block->getCacheLabels();
-                if (!empty($enabledMagentoCaches) && !$nitroPackConfigHelper->getFullPageCacheValue()) {
-                    ?>
-                    <div class="row">
-                        <div class="col mb-5">
-                            <div class="message message-warning" id="system-config-caches-warning" role="warning">
-                                <div class="alert-heading">The NitroPack extension is disabled! Incompatible Full Page
-                                    Cache
-                                    and
-                                    Caching Application Setting:
-                                </div>
-                                <p class="alert-content">NitroPack requires to be set as <a
-                                        href="<?= $block->getCacheManagementUrl() ?>">Caching Application</a> and <a
-                                        href="<?= $block->getApplicationCacheUrl() ?>">Full Page Caching</a> enabled
-                                </p>
-                                <button id="enable-caches" class="btn btn-primary">Apply Fix Automatically</button>
-                            </div>
-                        </div>
+<div id="default-styled-tab-content">
+    <div class="tab-content py-4" id="dashboard" role="tabpanel" aria-labelledby="profile-tab">
+        <form id="nitro_settings">
+            <div class="grid grid-cols-2 md:grid-cols gap-8">
+                <div class="gap-8">
+                    <div class="row mb-8">
+                        <!-- Optimized Pages Card -->
+                        <?= $this->getChildHtml('OptimizedPages'); ?>
                     </div>
-
-
-                    <?php
-                } else {
-                    if (!empty($enabledMagentoCaches)) {
-                        ?>
-                        <div class="row">
-                            <div class="col mb-5">
-                                <div class="message message-warning" id="system-caches-warning" role="warning">
-                                    <div class="alert-heading">The NitroPack extension is disabled! Incompatible Full
-                                        Page
-                                        Cache:
-                                    </div>
-                                    <p class="alert-content">NitroPack requires Full Page Caching enabled. Go to <a
-                                            href="<?= $block->getCacheManagementUrl() ?>">Full Page Caching settings</a>
-                                    </p>
-                                    <button id="enable-caches" class="btn btn-primary">Apply Fix Automatically</button>
-                                </div>
-                            </div>
-                        </div>
-                        <?php
-                    } else {
-                        if (!$nitroPackConfigHelper->getFullPageCacheValue() && !$fastlyHelper->isFastlyAndNitroPackEnabled()) {
-                            ?>
-                            <div class="row">
-                                <div class="col mb-5">
-                                    <div class="message message-warning" id="config-caches-warning" role="warning">
-                                        <div class="alert-heading">The NitroPack extension is disabled! Incompatible
-                                            Caching
-                                            application setting:
-                                        </div>
-                                        <p class="alert-content">NitroPack must be selected as a Cache Application. Go
-                                            to <a
-                                                href="<?= $block->getApplicationCacheUrl() ?>">Full Page Caching
-                                                Application
-                                                settings </a></p>
-                                        <button id="enable-caches" class="btn btn-primary">Apply Fix Automatically
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <?php
-                        }
-                    }
-                }
-            } ?>
-
-            <form id="nitro_settings">
-                <div class="row">
-                    <div class="col-md-4 mb-5">
-                        <div class="card nitro-row">
-                            <div class="iframe-container iframe-container-small">
-                                <iframe scrolling="no"
-                                        data-text-loading-invalidate-cache="text_loading_invalidate_cache"
-                                        data-url-invalidate-cache="invalidate"
-                                        data-text-loading-purge-cache="text_loading_purge_cache"
-                                        data-url-purge-cache="<?= $saveUrl ?>" id="optimizations"
-                                        data-src="<?= $block->getIntegrationUrl('optimizations') ?>"></iframe>
-                            </div>
-                        </div>
+                    <div class="row mb-8">
+                        <!-- Optimized Pages Card End -->
+                        <!-- Optimization Mode Card Start -->
+                        <?= $this->getChildHtml('OptimizationMode'); ?>
                     </div>
-                    <div class="col-md-4 mb-5">
-                        <div class="card nitro-row-one">
-
-                            <div class="card-body" id="setting-widget">
-                                <h5 class="card-title">General Settings</h5>
-                                <div class="form-group row">
-
-                                    <label class="col-md-10 col-form-label pl-0">
-                                        Extension Status<br>
-                                        <small class="text-secondary">Master ON/OFF switch for the extension.</small>
-                                    </label>
-                                    <div class="col-xs-2 text-right">
-                                        <label class="switch">
-                                            <input id="status" type="checkbox" name="enabled"<?php
-                                            if (!empty($enabledMagentoCaches) || !$nitroPackConfigHelper->getFullPageCacheValue() && !$fastlyHelper->isFastlyAndNitroPackEnabled()) {
-                                                echo "disabled";
-                                            } ?>
-                                                   value="<?= ($settings->enabled ? 1 : 0) ?>" <?= ($settings->enabled ? 'checked' : '') ?>>
-                                            <span class="slider round"></span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <?php
-                                if (!empty($enabledMagentoCaches) || !$nitroPackConfigHelper->getFullPageCacheValue() && !$fastlyHelper->isFastlyAndNitroPackEnabled()) { ?>
-                                    <div class="form-group row" id="enabledMagentoCachesWarning">
-                                        <div class="messages">
-                                            <div class="message message-warning warning">
-                                                <div class="general-message" data-ui-id="messages-message-warning">
-                                                    NitroPack is disabled due to incompatible Caching setting
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <?php
-                                } ?>
-                                <div class="form-group row">
-                                    <label class="col-md-10 col-form-label pl-0">
-                                        Cache Warmup<br>
-                                        <small class="text-secondary">Automatically re-optimizes purged/invalidated
-                                            pages.</small>
-                                    </label>
-                                    <div class="col-xs-2 text-right">
-
-                                        <label class="switch">
-                                            <input id="cache_warmup" type="checkbox"
-                                                   name="cacheWarmup" <?= ($settings->cacheWarmup ? 'checked' : '') ?>/>
-                                            <span class="slider round"></span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-md-10 col-form-label pl-0">Enhanced Caching With Caching Variation<br>
-                                        <small class="text-secondary">Cache different versions of a page based on customer group, selected store, currency, language, and customer logged in or not .</small>
-                                    </label>
-                                    <div class="col-xs-2 text-right">
-                                        <label class="switch">
-                                            <input id="cache_to_customer_login" type="checkbox"
-                                                   name="cache_to_login_customer" <?= (isset($settings->cache_to_login_customer) && $settings->cache_to_login_customer ? 'checked' : '') ?>/>
-                                            <span class="slider round"></span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-md-10 col-form-label pl-0">
-                                        Test Mode<br>
-                                        <small class="text-secondary">Learn more about this feature
-                                            <a href="https://support.nitropack.io/hc/en-us/articles/360060910574-Safe-Mode"
-                                               target="_blank" rel="noreferrer noopener">here</a>
-                                        </small>
-                                    </label>
-                                    <div class="col-xs-2 text-right">
-                                        <label class="switch">
-                                            <input id="safe_mode" type="checkbox"
-                                                   name="safeMode" <?= (isset($settings->safeMode) && $settings->safeMode ? 'checked' : '') ?>/>
-                                            <span class="slider round"></span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <?php if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) && strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false) {
-
-
-                                   $getHeader = get_headers($block->getStoreUrls(), true);
-
-                                    if(isset($getHeader['Content-Encoding']) && $getHeader['Content-Encoding'] != 'gzip'){
-
-                                    ?>
-                                <div class="form-group row">
-                                    <label class="col-md-10 col-form-label pl-0">
-                                        GZIP Compression<br>
-                                        <small class="text-secondary">ON/OFF switch for HTML compression by NitroPack</small>
-                                    </label>
-                                    <div class="col-xs-2 text-right">
-                                        <label class="switch">
-                                            <input id="gzip_mode" type="checkbox"
-                                                   name="gzip" <?= (isset($settings->gzip) && $settings->gzip ? 'checked' : '') ?>/>
-                                            <span class="slider round"></span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <?php }} ?>
-                                <div class="form-group row" style="margin-bottom: 0; clear: both;">
-
-                                    <small class="text-secondary" style="width: 100%;clear: both;">
-                                        <span style="width: 70%; float: left; padding-top: 1em">Adjust Optimization Settings at your NitroPack Dashboard</span>
-                                        <span style="width: 30%; float: right;"><a target="_blank"
-                                                                                   href="https://nitropack.io/user/login"
-                                                                                   class="btn btn-primary btn-sm ml-3"
-                                                                                   style="font-size: 13px; padding: 6px; width: 100%; float: right; ">
-                                    <svg width="30" height="18" viewBox="0 0 35 18" fill="none"
-                                         xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            d="M17.5031 2.96727C25.5536 2.96727 32.0828 9.60919 32.0828 17.8099H35C35 7.97532 27.1624 0 17.5031 0C7.84386 0 0 7.97532 0 17.8099H2.91719C2.91719 9.61545 9.44643 2.96727 17.5031 2.96727Z"
-                                            fill="#25F5CE"/>
-                                        <path
-                                            d="M14.7989 16.4698C14.1729 15.1051 14.9742 13.5025 16.4265 13.2146L26.6868 10.8232L18.2983 17.2899C17.1465 18.2414 15.4249 17.8408 14.7989 16.4698Z"
-                                            fill="#25F5CE"/>
-                                    </svg>
-                                    Dashboard</a><span></small>
-                                </div>
-                            </div>
-                        </div>
-
-
+                    <!-- Optimization Mode Card End -->
+                    <!-- General Block Card Start -->
+                    <div class="row mb-8">
+                        <?= $this->getChildHtml('GeneralBlock'); ?>
                     </div>
-                    <div class="col-md-4">
-                        <div class="card nitro-plan">
-                            <div class="iframe-container iframe-container-small">
-                                <iframe scrolling="no" id="plan"
-                                        data-src="<?= $block->getIntegrationUrl('plan') ?>"></iframe>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-5">
-                        <div class="card">
-                            <div class="iframe-container iframe-container-small">
-                                <iframe scrolling="no" id="quicksetup"
-                                        data-src="<?= $block->getIntegrationUrl('quicksetup') ?>"></iframe>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Service Status</h5>
-                                <div class="form-group mb-4">
-                                    <p class="col-form-label">API Key</p>
-                                    <div>
-                                        <p id="site-id"><?= $settings->siteId; ?></p>
-                                    </div>
-                                </div>
-                                <div class="form-group mb-4">
-                                    <p class="col-form-label">Site</p>
-                                    <div>
-                                        <p id="site"><?= $block->getStoreUrls(); ?></p>
-                                    </div>
-                                </div>
-                                <div class="form-group mb-4">
-                                    <p>Cache Warmup Status</p>
-                                    <?php
-                                    if ($settings->cacheWarmup): ?>
-                                        <p><small><span class="warmup-stats"><i
-                                                        class="fa fa-circle text-success"></i> Enabled</span></small>
-                                        </p>
-                                    <?php
-                                    else: ?>
-                                        <p><small><span class="warmup-stats"><i
-                                                        class="fa fa-circle text-danger"></i> Disabled</span></small>
-                                        </p>
-                                    <?php
-                                    endif; ?>
-                                </div>
-                            </div>
-                            <div class="card-footer">
-                                <small class="pull-left">
-							<span data-connection="connected" class="text-secondary" style="display: inline;">
-								<i class="fa fa-circle text-success"></i> Extension Active
-							</span>
-                                    <span data-connection="disabled" class="text-secondary" style="display: none;">
-								<i class="fa fa-circle text-danger"></i> Extension Disabled
-							</span>
-                                </small>
-                                <small class="pull-right">
-                                    <a href="javascript:void(0);" id="disconnect" data-loading-text="Disconnecting..."
-                                       class="card-link text-secondary">
-                                        <i class="fa fa-power-off"></i> Disconnect
-                                    </a>
-                                </small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-5">
-
-
-                        <div class="card">
-                            <div class="iframe-container iframe-container-medium">
-                                <iframe scrolling="no" id="beforeafter"
-                                        data-src="<?= $block->getIntegrationUrl('beforeafter') ?>"></iframe>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Product Attributes Cache Behavior</h5>
-                            <p><small>This section shows whether the cache will be purged when a product attribute is
-                                    updated.</small></p>
-                            <br>
-                            <div class="form-group row"
-                                 style="border-bottom: solid 1px #ddd;  height: 25px;">
-                                <div class="col-md-6"><h6><strong>Attribute</strong></h6></div>
-                                <div class="col-md-6"><h6><strong>Purge Nitro Cache</strong></h6></div>
-                                <div class="clearfix"></div>
-                            </div>
-
-                            <?php foreach ($block->getNitroPackAttribute()['items'] as $value): ?>
-                                <div class="form-group row"
-                                     style="border-bottom: solid 1px #ddd;  height: 25px;">
-                                    <div class="col-md-6"><p><?= $value['frontend_label']; ?></p></div>
-                                    <div class="col-md-6"><p><?= $value['nitro_purge'] == 1 ? 'Yes' : 'No'; ?></p>
-                                    </div>
-                                    <div class="clearfix"></div>
-                                </div>
-                            <?php endforeach; ?>
-                            <div class="form-group row">
-                                <div class="col-md-8"></div>
-                                <div class="col-md-4">
-                                    <a  href="<?= $block->getProductAttributeUrl(); ?>" class="btn btn-primary btn-sm ml-3" style="font-size: 13px; padding: 6px; width: 100%; float: right; ">
-                                        Manage All Attributes</a>
-                                </div>
-
-                            </div>
-                        </div>
-
-                    </div>
+                    <!-- General Block Card End -->
 
                 </div>
-
-                </div>
-            </form>
-            <script id="template-nitropack-notification-success" type="text/template">
-                <div id="nitropack-notification" class="nitro" data-type="success">
-                    <div class="alert alert-success" id="nitropack-notification-message">{message}</div>
-                </div>
-            </script>
-            <script id="template-nitropack-notification-danger" type="text/template">
-                <div id="nitropack-notification" class="nitro" data-type="danger">
-                    <div class="alert alert-danger" id="nitropack-notification-message">{message}</div>
-                </div>
-            </script>
-            <script id="template-nitropack-notification-warning" type="text/template">
-                <div id="nitropack-notification" class="nitro" data-type="warning">
-                    <div class="alert alert-warning" id="nitropack-notification-message">{message}</div>
-                </div>
-            </script>
-            <script id="template-nitropack-notification-info" type="text/template">
-                <div id="nitropack-notification" class="nitro" data-type="info">
-                    <div class="alert alert-info" id="nitropack-notification-message">{message}</div>
-                </div>
-            </script>
-
-
-        </div>
-        <div id="cacheWarmupTemplates" style="display: none">
-            <div id="cacheWarmupModal">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <h5 class="modal-heading mb-2">Store Views</h5>
-                        {%STORE_VIEWS%}
-                        <hr>
-                        <h5 class="modal-heading mb-2">Currencies</h5>
-                        <div class="cacheWarmupCurrencyContainer">
-                            {%CURRENCIES%}
-                        </div>
-                        <hr>
-                        <h5 class="modal-heading mb-2">Pages</h5>
-                        {%PAGE_TYPES%}
+                <div class="gap-8">
+                    <!-- Subscription Block Card Start -->
+                    <div class="row mb-8">
+                        <?= $this->getChildHtml('SubscriptionBlock'); ?>
+                        <!-- Subscription Block Card End -->
+                    </div>
+                    <div class="row mb-8">
+                        <!-- Product Attribute Block Card Start -->
+                        <?= $this->getChildHtml('ProductAttributeBlock'); ?>
+                        <!-- Product Attribute Block Card End  -->
                     </div>
                 </div>
             </div>
-            <div id="cacheWarmupStoreView">
-                <div class="row mb-3">
-                    <div class="col-xs-8 col-form-label">
-                        {%STORE_NAME%}
-                        {%STORE_CODE%}
+        </form>
+        <script id="template-nitropack-notification-success" type="text/template">
+            <div id="nitropack-notification" class="nitro nitropack-notification" data-type="success">
+                <div class="alert alert-success" id="nitropack-notification-message">
+                    <div class="notification-message flex align-items-center">
+                        <div class="notification-icon flex mr-2">
+                            <svg width="28" height="28" viewBox="0 0 28 28" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <rect width="28" height="28" rx="14" fill="#E9FFFB"/>
+                                <path d="M16.5 11.5L13.5 15.5L12 14" stroke="#00C7A2" stroke-linecap="round"
+                                      stroke-linejoin="round"/>
+                                <path
+                                    d="M14 20.6667C17.6819 20.6667 20.6667 17.6819 20.6667 14C20.6667 10.3181 17.6819 7.33337 14 7.33337C10.3181 7.33337 7.33337 10.3181 7.33337 14C7.33337 17.6819 10.3181 20.6667 14 20.6667Z"
+                                    stroke="#00C7A2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div class="message-content flex"> {message}</div>
+                        <button id="closebutton" class="close-button flex">
+                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                      d="M3.86361 3.86375C4.03238 3.69502 4.26126 3.60024 4.49991 3.60024C4.73855 3.60024 4.96743 3.69502 5.13621 3.86375L8.99991 7.72745L12.8636 3.86375C12.9466 3.77779 13.0459 3.70923 13.1557 3.66206C13.2655 3.61489 13.3836 3.59006 13.5031 3.58902C13.6226 3.58798 13.7412 3.61076 13.8518 3.65601C13.9624 3.70126 14.0629 3.76809 14.1474 3.85259C14.2319 3.9371 14.2987 4.03758 14.3439 4.14819C14.3892 4.2588 14.412 4.37731 14.4109 4.49681C14.4099 4.61631 14.3851 4.73441 14.3379 4.84421C14.2907 4.95402 14.2222 5.05333 14.1362 5.13635L10.2725 9.00005L14.1362 12.8637C14.3001 13.0335 14.3909 13.2608 14.3888 13.4968C14.3868 13.7328 14.2921 13.9585 14.1252 14.1254C13.9584 14.2923 13.7326 14.3869 13.4967 14.389C13.2607 14.391 13.0333 14.3003 12.8636 14.1363L8.99991 10.2726L5.13621 14.1363C4.96646 14.3003 4.73912 14.391 4.50314 14.389C4.26717 14.3869 4.04144 14.2923 3.87457 14.1254C3.7077 13.9585 3.61305 13.7328 3.611 13.4968C3.60895 13.2608 3.69966 13.0335 3.86361 12.8637L7.72731 9.00005L3.86361 5.13635C3.69488 4.96757 3.6001 4.7387 3.6001 4.50005C3.6001 4.2614 3.69488 4.03252 3.86361 3.86375Z"
+                                      fill="#1B004E"/>
+                            </svg>
+                        </button>
                     </div>
-                    <div class="col-xs-4 text-right">
-                        {%STORE_SWITCH%}
-                    </div>
-                </div>
-            </div>
-            <div id="cacheWarmupCurrency">
-                <div class="row mb-3">
-                    <div class="col-xs-8 col-form-label">
-                        {%CURRENCY_LABEL%}
-                        {%STORE_CODES%}
-                    </div>
-                    <div class="col-xs-4 text-right">
-                        {%CURRENCY_SWITCH%}
-                    </div>
-                </div>
-            </div>
-            <div id="cacheWarmupEmptyCurrencies">
-                <div class="row mb-3">
-                    <div class="col-xs-8 col-form-label">
-                        Enable the warmup for at least one store view to select currencies.
-                    </div>
-                    <div class="col-xs-4 text-right">
-                        <!-- no switch -->
-                    </div>
-                </div>
-            </div>
-            <div id="cacheWarmupPageType">
-                <div class="row mb-2">
-                    <div class="col-xs-8 col-form-label">{%PAGE_LABEL%}</div>
-                    <div class="col-xs-4 text-right">
-                        {%PAGE_SWITCH%}
+                    <div class="toast-progress">
+                        <div class="progress-bar"></div>
                     </div>
                 </div>
             </div>
-            <div id="cacheWarmupStoreCodeBadge">
-                <span class="badge" customstyle="">{%STORE_CODE%}</span>
+        </script>
+        <script id="template-nitropack-notification-danger" type="text/template">
+            <div id="nitropack-notification" class="nitro nitropack-notification" data-type="danger">
+                <div class="alert alert-danger" id="nitropack-notification-message">
+                    <div class="notification-message flex align-items-center">
+                        <div class="notification-icon flex mr-2">
+
+                            <svg width="28" height="28" viewBox="0 0 28 28" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <rect width="28" height="28" rx="14" fill="#FBECEF"/>
+                                <path
+                                    d="M12.6907 6.73715L6.20522 17.5641C6.07151 17.7956 6.00075 18.0582 6.00001 18.3256C5.99926 18.593 6.06854 18.8559 6.20095 19.0882C6.33337 19.3205 6.52431 19.5141 6.75477 19.6497C6.98523 19.7853 7.24718 19.8582 7.51456 19.8612H20.4854C20.7528 19.8582 21.0148 19.7853 21.2452 19.6497C21.4757 19.5141 21.6666 19.3205 21.799 19.0882C21.9315 18.8559 22.0007 18.593 22 18.3256C21.9992 18.0582 21.9285 17.7956 21.7948 17.5641L15.3093 6.73715C15.1728 6.51212 14.9806 6.32607 14.7513 6.19694C14.522 6.06782 14.2632 5.99998 14 5.99998C13.7368 5.99998 13.478 6.06782 13.2487 6.19694C13.0194 6.32607 12.8272 6.51212 12.6907 6.73715Z"
+                                    stroke="#CF0C35" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M14 11V13.6667" stroke="#CF0C35" stroke-linecap="round"
+                                      stroke-linejoin="round"/>
+                                <path d="M14 16.3333H14.0067" stroke="#CF0C35" stroke-linecap="round"
+                                      stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div class="message-content flex">{message}</div>
+                        <button id="closebutton" class="close-button flex">
+                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                      d="M3.86361 3.86375C4.03238 3.69502 4.26126 3.60024 4.49991 3.60024C4.73855 3.60024 4.96743 3.69502 5.13621 3.86375L8.99991 7.72745L12.8636 3.86375C12.9466 3.77779 13.0459 3.70923 13.1557 3.66206C13.2655 3.61489 13.3836 3.59006 13.5031 3.58902C13.6226 3.58798 13.7412 3.61076 13.8518 3.65601C13.9624 3.70126 14.0629 3.76809 14.1474 3.85259C14.2319 3.9371 14.2987 4.03758 14.3439 4.14819C14.3892 4.2588 14.412 4.37731 14.4109 4.49681C14.4099 4.61631 14.3851 4.73441 14.3379 4.84421C14.2907 4.95402 14.2222 5.05333 14.1362 5.13635L10.2725 9.00005L14.1362 12.8637C14.3001 13.0335 14.3909 13.2608 14.3888 13.4968C14.3868 13.7328 14.2921 13.9585 14.1252 14.1254C13.9584 14.2923 13.7326 14.3869 13.4967 14.389C13.2607 14.391 13.0333 14.3003 12.8636 14.1363L8.99991 10.2726L5.13621 14.1363C4.96646 14.3003 4.73912 14.391 4.50314 14.389C4.26717 14.3869 4.04144 14.2923 3.87457 14.1254C3.7077 13.9585 3.61305 13.7328 3.611 13.4968C3.60895 13.2608 3.69966 13.0335 3.86361 12.8637L7.72731 9.00005L3.86361 5.13635C3.69488 4.96757 3.6001 4.7387 3.6001 4.50005C3.6001 4.2614 3.69488 4.03252 3.86361 3.86375Z"
+                                      fill="#1B004E"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="toast-progress">
+                        <div class="progress-bar"></div>
+                    </div>
+                </div>
             </div>
-            <div id="cacheWarmupSwitch">
-                <label class="switch">
-                    <input type="checkbox" class="cacheWarmupSwitch" value="1" customattributes="">
-                    <span class="slider round" data-toggle="tooltip" title="{%SWITCH_TITLE%}"></span>
-                </label>
+        </script>
+        <script id="template-nitropack-notification-warning" type="text/template">
+            <div id="nitropack-notification" class="nitro nitropack-notification" data-type="warning">
+                <div class="alert alert-warning" id="nitropack-notification-message">
+                    <div class="notification-message flex align-items-center">
+                        <div class="notification-icon flex mr-2">
+
+                            <svg width="28" height="28" viewBox="0 0 28 28" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <rect width="28" height="28" rx="14" fill="#FBECEF"/>
+                                <path
+                                    d="M12.6907 6.73715L6.20522 17.5641C6.07151 17.7956 6.00075 18.0582 6.00001 18.3256C5.99926 18.593 6.06854 18.8559 6.20095 19.0882C6.33337 19.3205 6.52431 19.5141 6.75477 19.6497C6.98523 19.7853 7.24718 19.8582 7.51456 19.8612H20.4854C20.7528 19.8582 21.0148 19.7853 21.2452 19.6497C21.4757 19.5141 21.6666 19.3205 21.799 19.0882C21.9315 18.8559 22.0007 18.593 22 18.3256C21.9992 18.0582 21.9285 17.7956 21.7948 17.5641L15.3093 6.73715C15.1728 6.51212 14.9806 6.32607 14.7513 6.19694C14.522 6.06782 14.2632 5.99998 14 5.99998C13.7368 5.99998 13.478 6.06782 13.2487 6.19694C13.0194 6.32607 12.8272 6.51212 12.6907 6.73715Z"
+                                    stroke="#CF0C35" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M14 11V13.6667" stroke="#CF0C35" stroke-linecap="round"
+                                      stroke-linejoin="round"/>
+                                <path d="M14 16.3333H14.0067" stroke="#CF0C35" stroke-linecap="round"
+                                      stroke-linejoin="round"/>
+                            </svg>
+
+                        </div>
+                        <div class="message-content flex"> {message}</div>
+                        <button id="closebutton" class="close-button flex">
+                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                      d="M3.86361 3.86375C4.03238 3.69502 4.26126 3.60024 4.49991 3.60024C4.73855 3.60024 4.96743 3.69502 5.13621 3.86375L8.99991 7.72745L12.8636 3.86375C12.9466 3.77779 13.0459 3.70923 13.1557 3.66206C13.2655 3.61489 13.3836 3.59006 13.5031 3.58902C13.6226 3.58798 13.7412 3.61076 13.8518 3.65601C13.9624 3.70126 14.0629 3.76809 14.1474 3.85259C14.2319 3.9371 14.2987 4.03758 14.3439 4.14819C14.3892 4.2588 14.412 4.37731 14.4109 4.49681C14.4099 4.61631 14.3851 4.73441 14.3379 4.84421C14.2907 4.95402 14.2222 5.05333 14.1362 5.13635L10.2725 9.00005L14.1362 12.8637C14.3001 13.0335 14.3909 13.2608 14.3888 13.4968C14.3868 13.7328 14.2921 13.9585 14.1252 14.1254C13.9584 14.2923 13.7326 14.3869 13.4967 14.389C13.2607 14.391 13.0333 14.3003 12.8636 14.1363L8.99991 10.2726L5.13621 14.1363C4.96646 14.3003 4.73912 14.391 4.50314 14.389C4.26717 14.3869 4.04144 14.2923 3.87457 14.1254C3.7077 13.9585 3.61305 13.7328 3.611 13.4968C3.60895 13.2608 3.69966 13.0335 3.86361 12.8637L7.72731 9.00005L3.86361 5.13635C3.69488 4.96757 3.6001 4.7387 3.6001 4.50005C3.6001 4.2614 3.69488 4.03252 3.86361 3.86375Z"
+                                      fill="#1B004E"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="toast-progress">
+                        <div class="progress-bar"></div>
+                    </div>
+                </div>
             </div>
-        </div>
+        </script>
+        <script id="template-nitropack-notification-info" type="text/template">
+            <div id="nitropack-notification" class="nitro nitropack-notification" data-type="info">
+                <div class="alert alert-info" id="nitropack-notification-message">
+
+                    <div class="notification-message flex align-items-center">
+                        <div class="notification-icon flex mr-2">
+                            <svg width="28" height="28" viewBox="0 0 28 28" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <rect width="28" height="28" rx="14" fill="#E1EFFE"/>
+                                <g clip-path="url(#clip0_2995_607)">
+                                    <path
+                                        d="M14 20.6667C17.6819 20.6667 20.6667 17.6819 20.6667 14C20.6667 10.3181 17.6819 7.33334 14 7.33334C10.3181 7.33334 7.33334 10.3181 7.33334 14C7.33334 17.6819 10.3181 20.6667 14 20.6667Z"
+                                        stroke="#1A56DB" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M14 16.6667V14" stroke="#1A56DB" stroke-linecap="round"
+                                          stroke-linejoin="round"/>
+                                    <path d="M14 11.3333H14.0067" stroke="#1A56DB" stroke-linecap="round"
+                                          stroke-linejoin="round"/>
+                                </g>
+                                <defs>
+                                    <clipPath id="clip0_2995_607">
+                                        <rect width="16" height="16" fill="white" transform="translate(6 6)"/>
+                                    </clipPath>
+                                </defs>
+                            </svg>
+                        </div>
+                        <div class="message-content flex"> {message}</div>
+                        <button id="closebutton" class="close-button flex">
+
+                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                      d="M3.86361 3.86375C4.03238 3.69502 4.26126 3.60024 4.49991 3.60024C4.73855 3.60024 4.96743 3.69502 5.13621 3.86375L8.99991 7.72745L12.8636 3.86375C12.9466 3.77779 13.0459 3.70923 13.1557 3.66206C13.2655 3.61489 13.3836 3.59006 13.5031 3.58902C13.6226 3.58798 13.7412 3.61076 13.8518 3.65601C13.9624 3.70126 14.0629 3.76809 14.1474 3.85259C14.2319 3.9371 14.2987 4.03758 14.3439 4.14819C14.3892 4.2588 14.412 4.37731 14.4109 4.49681C14.4099 4.61631 14.3851 4.73441 14.3379 4.84421C14.2907 4.95402 14.2222 5.05333 14.1362 5.13635L10.2725 9.00005L14.1362 12.8637C14.3001 13.0335 14.3909 13.2608 14.3888 13.4968C14.3868 13.7328 14.2921 13.9585 14.1252 14.1254C13.9584 14.2923 13.7326 14.3869 13.4967 14.389C13.2607 14.391 13.0333 14.3003 12.8636 14.1363L8.99991 10.2726L5.13621 14.1363C4.96646 14.3003 4.73912 14.391 4.50314 14.389C4.26717 14.3869 4.04144 14.2923 3.87457 14.1254C3.7077 13.9585 3.61305 13.7328 3.611 13.4968C3.60895 13.2608 3.69966 13.0335 3.86361 12.8637L7.72731 9.00005L3.86361 5.13635C3.69488 4.96757 3.6001 4.7387 3.6001 4.50005C3.6001 4.2614 3.69488 4.03252 3.86361 3.86375Z"
+                                      fill="#1B004E"/>
+                            </svg>
+
+                        </button>
+                    </div>
+                    <div class="toast-progress">
+                        <div class="progress-bar"></div>
+                    </div>
+                </div>
+            </div>
+        </script>
+
     </div>
-    <div id="tab2_content">
+    <div class="tab-content hidden py-4" id="system-info" role="tabpanel" aria-labelledby="contacts-tab">
         <?php echo $this->getChildHtml('DiagnosticsBlock'); ?>
     </div>
 </div>
 
 <script type="text/javascript">
-    require(["jquery", "mage/backend/tabs"], function ($) {
-        $(function () {
-            $('#tab_element').tabs({
-                active: 'tab1_content',  // active tab elemtn id
-                destination: '#tab_element_content', // tab content destination element id
-                shadowTabs: []
+    // JavaScript for tab functionality
+    const tabButton = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabButton.forEach(button => {
+        button.addEventListener('click', () => {
+            const target = button.getAttribute('data-tabs-target');
+            document.querySelectorAll('.tab-btn').forEach(tabBtn => {
+                tabBtn.classList.remove('tab-btn-active');
             });
+            tabContents.forEach(tabContent => {
+                tabContent.classList.add('hidden');
+
+            });
+            document.getElementById(target).classList.remove('hidden');
+            button.classList.add('tab-btn-active');
         });
+
     });
+</script>
+<script type="text/javascript">
     require(['jquery', 'Magento_Ui/js/modal/alert', 'NitroPack_NitroPack/js/overlay'], function ($, magentoAlert, cardOverlay) {
         $(document).ready(function () {
-
-            if ($('.nitro-row-one').height() >= $('.nitro-plan').height()) {
-                $('.nitro-plan').css('height', $('.nitro-row-one').height());
-                $('.nitro-row').css('height', $('.nitro-row-one').height());
-            }
-            let currentStoreCode = <?= json_encode($block->getStoreGroup()->getCode()) ?>;
-            let builtInPageTypes = <?= json_encode($builtInPageTypes) ?>;
-
-            $('iframe[data-src]').each((index, iframe) => {
-                $(iframe).attr('src', $(iframe).attr('data-src'));
-            });
-
             let extensionStatus = $('input[name=enabled]').val();
             if (extensionStatus == 1) {
                 $('span[data-connection="connected"]').show();
@@ -511,27 +264,15 @@ $fastlyHelper = $this->helper('NitroPack\NitroPack\Helper\FastlyHelper');
 
                 switch (setting) {
                     case 'cacheWarmup':
-                        updateCacheWarmupStatus(!!value);
-
+                        saveRequest = false;
                         break;
                     case 'enabled':
-                        if (data[setting] == 1) {
-                            $('input[name=enabled]').val(1);
-                            $('span[data-connection="connected"]').show();
-                            $('span[data-connection="disabled"]').hide();
-                        } else {
-                            $('input[name=enabled]').val(0);
-                            $('span[data-connection="connected"]').hide();
-                            $('span[data-connection="disabled"]').show();
-                        }
+                        saveRequest = false;
                         break;
                     case 'safeMode':
                         saveRequest = false;
                         break;
-                    case 'custom_route_status':
-                        saveRequest = false;
-                        saveCustomRoutes();
-                        break;
+
                 }
 
                 if (saveRequest) {
@@ -543,221 +284,213 @@ $fastlyHelper = $this->helper('NitroPack\NitroPack\Helper\FastlyHelper');
                         success: function (response) {
                             if (response.saved) {
                                 Notification.success('Saved successfully');
-                                if (<?= $block->checkVarnishEnable()?>) {
-                                    $.get('<?=  $block->getVarnishPurgeUrl() ?>', function (data) {
-                                    });
-                                }
+
                             } else {
                                 Notification.danger('Something went wrong');
                             }
                         }
-                    })
+                    });
                 }
             });
-            var toggleActiveStoreCacheWarmup = (newState) => {
-                $('#cache_warmup').prop('checked', newState);
-                updateCacheWarmupStatus(newState);
-            };
 
-            var updateCacheWarmupStatus = (newState) => {
-                if (newState) {
-                    $('.warmup-stats').html('<small><span class="warmup-stats"><i class="fa fa-circle text-success"></i> Enabled</span></small>');
-                } else {
-                    $('.warmup-stats').html('<small><span class="warmup-stats"><i class="fa fa-circle text-danger"></i> Disabled</span></small>');
+            window.enableExtension = function (enabled) {
+                $('#status').attr('disabled', 'disabled')
+                var enabledValue = 0;
+                if (enabled) {
+                    enabledValue = 1;
                 }
+                $.ajax({
+                    url: '<?= $saveUrl ?>',
+                    method: 'POST',
+                    dataType: 'json',
+                    data: {"enabled": enabledValue},
+                    success: function (response) {
+                        $('#status').removeAttr('disabled');
+                        if (response.saved) {
+                            Notification.success('Saved successfully');
+                            if (<?= $block->checkVarnishEnable()?>) {
+                                $.get('<?=  $block->getVarnishPurgeUrl() ?>', function (data) {
+                                });
+                            }
+                        } else {
+                            Notification.danger('Something went wrong');
+                        }
+                    }
+                });
             }
 
-            $('#cache_warmup').change(function () {
-                let warmupEnabled = $(this).is(':checked');
-                setCacheWarmupTypes(warmupEnabled);
-                setRunWarmupButtonStatus(warmupEnabled);
-            });
 
-            $('#disconnect').on('click', function (event) {
-                event.preventDefault();
-                $(this).html($(this).attr('data-loading-text'));
-                //debugger;
-                if (confirm('NitroPack will be disconnected. Are you sure?')) {
+            window.setCacheWarmup = function (warmupEnabled) {
+
+                $('#npCacheWarmupLoading').removeClass('hidden');
+                $('.warmup-status-message').html('Estimating Optimization Usage');
+                if (warmupEnabled) {
                     $.ajax({
-                        url: '<?= $block->getDisconnectUrl() ?>',
-                        method: 'GET',
+                        url: '<?= $warmupStartUrl ?>',
+                        method: 'POST',
+                        dataType: 'json',
+                        data: {run: 1},
                         success: function (response) {
-                            if (response.disconnected == true) {
-                                if (<?= $block->checkVarnishEnable()?>) {
-                                    $.get('<?=  $block->getVarnishPurgeUrl() ?>', function (data) {
-                                        window.location = '<?= $block->getConnectUrl() ?>';
+                            // @TODO proper response handling
+                            if (response.success) {
 
-                                    });
-                                } else {
-                                    window.location = '<?= $block->getConnectUrl() ?>';
-                                }
+                                Notification.success('Successfully started warmup');
+                            } else if (response.permissionsIssue) {
+                                Notification.danger('[Un]Successfully did not start warmup. Permissions issue');
+                            } else {
+                                Notification.danger('[Un]Successfully did not start warmup');
                             }
+
+                            $('#showEstimateLoadHeading').html('Estimating Optimization Usage');
+                            $('#cacheWarmupPopup').hide();
                         }
                     });
                 } else {
-                    $(this).html('<a href="javascript:void(0);" id="disconnect" data-loading-text="Disconnecting..." class="card-link text-secondary"> <i class="fa fa-power-off"></i> Disconnect </a>');
-                }
-            });
-
-            $('#start-warmup').click(function (event) {
-                event.preventDefault();
-                $.ajax({
-                    url: '<?= $warmupStartUrl ?>',
-                    method: 'POST',
-                    dataType: 'json',
-                    data: {run: 1},
-                    success: function (response) {
-                        // @TODO proper response handling
-                        if (response.success) {
-                            console.log('Successfully started warmup', response);
-                            $('#start-warmup').css('display', 'none').attr('disabled', true);
-                            $('#pause-warmup').css('display', 'block').attr('disabled', false);
-                        } else {
-                            console.log('[Un]Successfully did not start warmup', response);
-                        }
-                    }
-                });
-            });
-
-            $('#pause-warmup').click(function (event) {
-                event.preventDefault();
-                $.ajax({
-                    url: '<?= $warmupPauseUrl ?>',
-                    method: 'POST',
-                    dataType: 'json',
-                    data: {run: 1},
-                    success: function (response) {
-                        // @TODO proper response handling
-                        if (response.paused) {
-                            $('#pause-warmup').css('display', 'none').attr('disabled', true);
-                            $('#start-warmup').css('display', 'block').attr('disabled', false);
-                        } else {
-                            console.log('Pause failed', response);
-                        }
-                    }
-                });
-            });
-
-            $('#enable-caches').click(function (event) {
-                event.preventDefault();
-                $.ajax({
-                    url: '<?= $enableCachesUrl ?>',
-                    method: 'POST',
-                    dataType: 'json',
-                    data: {run: 1},
-                    success: function (response) {
-                        // @TODO proper response handling
-                        if (response.enabled) { // we expect disabled to be true if we have successfully disabled the system caches
-                            <?php if (!empty($enabledMagentoCaches) && !$nitroPackConfigHelper->getFullPageCacheValue()) { ?>
-                            Notification.success('Successfully Enabled system caches and The Caching application successfully set to NitroPack');
-                            <?php }else {if (!empty($enabledMagentoCaches) ){?>
-                            Notification.success('Successfully Enabled system caches ');
-                            <?php }else {if (!$nitroPackConfigHelper->getFullPageCacheValue() ){ ?>
-                            Notification.success('The Caching application successfully set to NitroPack');
-                            <?php }}} ?>
-                            $('#system-caches-warning').remove();
-                            $('#config-caches-warning').remove();
-                            $('#system-config-caches-warning').remove();
-                            $('#status').removeAttr('disabled');
-                            $('#enabledMagentoCachesWarning').remove();
-                            if (response.extension_enabled) {
-                                if ($('#status').val() == 0) {
-                                    $('#status').click();
-                                    $('#status').val(1);
-                                }
+                    $.ajax({
+                        url: '<?= $warmupPauseUrl ?>',
+                        method: 'POST',
+                        dataType: 'json',
+                        data: {run: 1},
+                        success: function (response) {
+                            // @TODO proper response handling
+                            if (response.paused) {
+                            } else {
+                                console.log('Pause failed', response);
                             }
-                            $('#system_messages').remove();
-                            $('.nitro-row-one').css('height', $('.nitro-plan').height());
-                        } else {
-                            Notification.danger('Failed disabling the system caches');
                         }
-                    }
-                });
-            })
-            $("#safe_mode").on("click", function (e) {
-                let isEnabled = $(this).is(":checked");
-                if (isEnabled) {
-                    enableSafemode();
-                } else {
-                    $('#test-mode-disable').hide();
-                    let confirmHtml = '<p><strong>Purge Cache?</strong></p>' +
-                        '<p>It is recommended to perform a full cache purge so all changes are correctly applied.</p>' +
-                        '<p>Would you like to purge the cache now?</p>' +
-                        '<p><a href="javascript:void(0);" onclick="closeModalOverlay()" class="btn btn-default btn-sm">No</a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="performCachePurge()" class="btn btn-info btn-sm">Yes (Recommended)</a></p>';
-                    $("#setting-widget").cardOverlay("notify", {message: confirmHtml, dismissable: false});
-                    disableSafeMode();
+                    });
                 }
-            });
-
-
-
-            function setCacheWarmupTypes(enabled) {
-                $('[name^="warmupTypes-"]').attr('disabled', !enabled);
             }
 
-            function setRunWarmupButtonStatus(enabled) {
-                if (enabled) {
-                    $('#start-warmup').attr('disabled', false);
-                    $('#start-warmup').css('display', 'block');
-                    $('#pause-warmup').css('display', 'none');
-                } else {
-                    $('#start-warmup').attr('disabled', true);
-                    $('#start-warmup').css('display', 'none');
-                    $('#pause-warmup').css('display', 'none');
+            $('.disconnect').on('click', function (event) {
+                $(this).addClass('disabled');
+                event.preventDefault();
+                $('.npDisconnectLoading').show();
+                $.ajax({
+                    url: '<?= $block->getDisconnectUrl() ?>',
+                    method: 'GET',
+                    success: function (response) {
+                        $('.npDisconnectLoading').hide();
+                        if (response.disconnected == true) {
+                            $('.npDisconnectSuccess').show();
+                            $('disconnect').removeClass('disabled');
+                            if (<?= $block->checkVarnishEnable()?>) {
+                                $.get('<?=  $block->getVarnishPurgeUrl() ?>', function (data) {
+                                    window.location = '<?= $block->getConnectUrl() ?>';
+
+                                });
+                            } else {
+                                window.location = '<?= $block->getConnectUrl() ?>';
+                            }
+                        }
+                    }
+                });
+            });
+
+            window.safeModeActive = function () {
+                $('#safe_mode_active').addClass('disabled');
+                enableSafemode();
+            }
+
+            window.safeModeDeactive = function (purge) {
+                $('#safe_mode_deactive').addClass('disabled');
+                disableSafeMode();
+                if (purge == 'purge') {
+                    performCachePurge()
                 }
+
             }
 
             function pushAlertNotification(msg, status) {
                 $('#container > .nitro').prepend('<div class="row"><div class="col"><div class="alert alert-' + status + ' alert-dismissible fade show" role="alert">' + msg + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">&times;</span> </button></div></div></div>');
             }
 
-
-            NitroPack.Optimizations.setPurgeCacheHandler(async function (success, error) {
-                if ($('#status').val() == 1) {
-                    purgeCache().then(function () {
-                        success();
-                    }, function () {
-                        error();
-                    });
-                } else {
-                    Notification.danger("NitroPack is disabled. The Cache Purge option is not possible");
-                }
-            });
-
         });
         var safeModeUrl = "<?= $safeModeEnableUrl; ?>";
 
         var enableSafemode = () => {
+
+            $('#safe_mode').attr('disabled', 'disabled');
+
             $.post(safeModeUrl, {
                 action: 'nitropack_enable_safemode'
             }, function (response) {
-                var resp = JSON.parse(response);
-                if (resp.type == "success") {
-                    Notification.success('Success! Safe mode has been enabled successfully!');
+                $('#safe_mode').removeAttr('disabled');
+                if (response.safe_mode == true) {
+                    $('#safe_mode').prop("checked", true);
+                    Notification.success('Success! Test mode has been enabled successfully!');
                     // Success notification
                 } else {
-                    Notification.error('Error! There was an error while enabling safe mode!');
+                    Notification.warning('Error! There was an error while enabling Test mode!');
                 }
             });
         }
 
         var disableSafeMode = () => {
+            $('#safe_mode').attr('disabled', 'disabled');
+
             $.post(safeModeUrl, {
                 action: 'nitropack_disable_safemode'
             }, function (response) {
-                var resp = JSON.parse(response);
-                if (resp.type == "success") {
+                $('#safe_mode').removeAttr('disabled');
+                if (response.safe_mode == false) {
                     // Success notification
-                    Notification.success('Success! Safe mode has been disabled successfully!');
+                    Notification.success('Success! Test mode has been disabled successfully!');
                 } else {
                     // Error notification
-                    Notification.error('Error! There was an error while enabling safe mode!');
+                    Notification.warning('Error! There was an error while enabling test mode!');
                 }
             });
         }
 
+        window.removeDisabledSafeModeBtn = function () {
+
+            $('#safe_mode_active').removeClass('disabled');
+
+            $('#safe_mode_deactive').removeClass('disabled');
+        }
+        window.loadNumberOfPageCount = 0;
+        window.loadNumberOfPage = function () {
+            //app.showCacheWarmupModal =true;
+            if (window.loadNumberOfPageCount == 0) {
+                $.get('<?= $numberOfPageStoreWiseUrl ?>', function (data) {
+                    if (data.number_of_pages) {
+                        $('#cacheWarmupPage').html(data.number_of_pages);
+                        window.loadNumberOfPageCount = data.number_of_pages;
+                        $('#npCacheWarmupLoading').addClass('hidden');
+                        $('.warmup-status-message').html("Enabling cache warmup will optimize " + data.number_of_pages + " pages.");
+                    }
+                });
+
+            } else {
+                setTimeout(function () {
+
+                    $('.warmup-status-message').html("Enabling cache warmup will optimize " + window.loadNumberOfPageCount + " pages.");
+                    $('#npCacheWarmupLoading').addClass('hidden');
 
 
+                }, 1000);
+            }
+
+        }
+
+        window.isTestModeEnabled = <?= (isset($settings->safeMode) && $settings->safeMode ? "true" : "false");?>
+
+
+        window.setTestMode = function (mode) {
+            window.isTestModeEnabled = mode;
+        }
+
+        window.isTestMode = function () {
+
+            if (window.isTestModeEnabled) {
+                $('#test-mode-enabled').removeClass('hidden');
+                $('#test-mode-disabled').addClass('hidden');
+            } else {
+                $('#test-mode-enabled').addClass('hidden');
+                $('#test-mode-disabled').removeClass('hidden');
+            }
+        }
 
         window.closeModalOverlay = function () {
             $("#setting-widget").cardOverlay("clear");
@@ -773,8 +506,12 @@ $fastlyHelper = $this->helper('NitroPack\NitroPack\Helper\FastlyHelper');
                 success: function (response) {
                     if (response.purged) {
                         Notification.success(response.message);
+                        let purgeEvent = new Event("cache.purge.success");
+                        window.dispatchEvent(purgeEvent);
+
                     } else {
                         Notification.danger(response.message);
+
                     }
                 },
                 error: function (response, errType, msg) {

@@ -1,49 +1,66 @@
 require(['jquery'], function ($) {
-	window.Notification = (_ => {
-		var status = true;
-		var timeout;
 
-		var display = (msg, type) => {
-			if (!status) return;
+    $(document).on('click','#closebutton',function(){
+        $('#nitropack-notification').remove();
+    });
 
-			if ($('#nitropack-notification[data-type=' + type + ']').length) {
-				var messageElement = $('#nitropack-notification[data-type=' + type + ']').find("#nitropack-notification-message");
+    window.Notification = (_ => {
+        var status = true;
+        var timeout;
+        var remainingTime = 0;
 
-				$(messageElement).html(
-					$(messageElement).html().concat(' ').concat(msg)
-				);
-			} else {
-				clearTimeout(timeout);
+        var display = (msg, type) => {
+            if (!status) return;
+            clearTimeout(timeout);
+            var notification = $(
+                $('#template-nitropack-notification-'.concat(type)).html()
+                    .replace(/{message}/g, msg)
+            ).attr('id', 'nitropack-notification');
+            $('body').append(notification);
+            if (remainingTime > 0) {
+                timeout = setTimeout(_ => {
+                    $('#nitropack-notification').remove();
+                }, remainingTime);
+            } else {
+                timeout = setTimeout(_ => {
+                    $('#nitropack-notification').remove();
+                }, 1500);
+            }
 
-				$('#nitropack-notification').remove();
+            notification.on('mouseenter', function() {
+                clearTimeout(timeout);
+                remainingTime = Math.max(0, remainingTime - (new Date() - startTime));
+            });
 
-				$('body').append(
-					$('#template-nitropack-notification-'.concat(type)).html()
-						.replace(/{message}/g, msg)
-				);
+            var startTime;
+            notification.on('mouseleave', function() {
+                startTime = new Date();
+                remainingTime = 1500 - (new Date() - startTime);
+                timeout = setTimeout(_ => {
+                    $('#nitropack-notification').remove();
+                }, remainingTime);
+            });
+        }
 
-				timeout = setTimeout(_ => {
-					$('#nitropack-notification').remove();
-				}, 3000);
-			}
-		}
+        return {
+            setStatus: newStatus => {
+                status = newStatus;
+            },
+            success: msg => {
+                display(msg, 'success');
+            },
+            danger: msg => {
+                display(msg, 'danger');
+            },
+            info: msg => {
+                display(msg, 'info');
+            },
+            warning: msg => {
+                display(msg, 'warning');
+            }
+        }
+    })();
 
-		return {
-			setStatus: newStatus => {
-				status = newStatus;
-			},
-			success: msg => {
-				display(msg, 'success');
-			},
-			danger: msg => {
-				display(msg, 'danger');
-			},
-			info: msg => {
-				display(msg, 'info');
-			},
-			warning: msg => {
-				display(msg, 'warning');
-			}
-		}
-	})();
+
+
 });
