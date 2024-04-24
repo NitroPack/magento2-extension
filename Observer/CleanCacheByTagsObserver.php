@@ -205,7 +205,6 @@ class CleanCacheByTagsObserver implements ObserverInterface
                                         return false;
                                     }
                                 }
-
                                 foreach ($tags as $tag) {
                                     list($tagType, $id) = $this->getTagTypeAndId($tag);
                                     $reasonEntity = $this->getReasonFromType($tagType, $id);

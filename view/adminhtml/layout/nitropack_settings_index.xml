@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
 	<head>
-        <css src="NitroPack_NitroPack::css/tailwind-rewrite.css" rel="stylesheet" />
+        <css src="NitroPack_NitroPack::css/tailwind-rewrite.min.css" rel="stylesheet" />
         <script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js" defer="true" src_type="url"/>
         <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"  defer="true" src_type="url"/>
         <css src="NitroPack_NitroPack::css/settings.min.css"/>

@@ -5,7 +5,7 @@
             NitroPack Settings
         </title>
         <css src="NitroPack_NitroPack::css/settings.min.css"/>
-        <css src="NitroPack_NitroPack::css/tailwind-rewrite.css" rel="stylesheet" />
+        <css src="NitroPack_NitroPack::css/tailwind-rewrite.min.css" rel="stylesheet" />
     </head>
     <body>
         <referenceContainer name="header" remove="true" />

@@ -8,6 +8,12 @@ Installation Instructions: https://support.nitropack.io/hc/en-us/articles/127062
 
 # Release Notes
 
+### 3.0.1:
+#### Compatible with Magento Open Source : 2.4
+#### Stability: Stable Build
+#### Description: Bug Fix: Addressed a potential issue with Tailwind CSS during compilation for users who use CSS minification.
+
+
 ### 3.0.0:
 #### Compatible with Magento Open Source : 2.4
 #### Stability: Stable Build

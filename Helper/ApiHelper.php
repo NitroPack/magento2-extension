@@ -261,7 +261,7 @@ class ApiHelper extends AbstractHelper
     public function checkDefaultStockAvailable()
     {
 
-        if (class_exists('\Magento\InventoryApi\Api\SourceRepositoryInterface')) {
+        if (interface_exists('\Magento\InventoryApi\Api\SourceRepositoryInterface')) {
             $sourceRepository = $this->objectManager->get(\Magento\InventoryApi\Api\SourceRepositoryInterface::class);
             $sources = $sourceRepository->getList();
 
