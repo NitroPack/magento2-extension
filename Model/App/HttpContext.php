@@ -67,18 +67,22 @@ class HttpContext
         // ||  !is_null($request->get('PHPSESSID'))
         $setValueFor = ['customer_logged_in','customer_group','store'];
          if (!is_null($userAgent) &&  in_array($name,$setValueFor) && (strpos($userAgent, 'Nitro-Optimizer-Agent') !== false || strpos($userAgent, 'Nitro-Webhook-Agent') !== false) && $request->get('X-Magento-Vary')) {
+
             $this->storeManager->getGroup()->getCode();
             $this->nitro->reload($this->storeManager->getGroup()->getCode());
             if (!is_null($this->nitro->getSdk()) && $this->nitro->getSdk()->getHealthStatus() == HealthStatus::HEALTHY) {
                 $settingsFilename = $this->apiHelper->getSettingsFilename($this->storeManager->getGroup()->getCode());
                 $haveData = $this->apiHelper->readFile($settingsFilename);
-                $serialData = $this->serializer->unserialize($haveData);
-                if (isset($serialData['x_magento_vary'][$request->get('X-Magento-Vary')])) {
-                    if (in_array($name,$setValueFor))
-                        $value = isset($serialData['x_magento_vary'][$request->get('X-Magento-Vary')][$name])? $serialData['x_magento_vary'][$request->get('X-Magento-Vary')][$name] : $value;
+
+                    $serialData = $this->serializer->unserialize($haveData);
+                if (isset($serialData['cache_to_login_customer']) && $serialData['cache_to_login_customer']) {
+                    if (isset($serialData['x_magento_vary'][$request->get('X-Magento-Vary')])) {
+                        if (in_array($name, $setValueFor))
+                            $value = isset($serialData['x_magento_vary'][$request->get('X-Magento-Vary')][$name]) ? $serialData['x_magento_vary'][$request->get('X-Magento-Vary')][$name] : $value;
+
+                    }
 
                 }
-
             }
         }
         return [$name, $value, $default];

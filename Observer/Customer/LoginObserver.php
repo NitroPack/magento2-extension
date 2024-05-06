@@ -73,6 +73,7 @@ class LoginObserver implements ObserverInterface
             $settingsFilename = $this->apiHelper->getSettingsFilename($this->storeManager->getGroup()->getCode());
             $haveData = $this->apiHelper->readFile($settingsFilename);
             $settings = json_decode($haveData);
+            if(isset($settings->cache_to_login_customer) && $settings->cache_to_login_customer){
             $cookieVariation = $this->nitro->getSdk()->getApi()->getVariationCookies();
             $filteredCookieVariation = array_filter($cookieVariation, function ($cookieVariationHave) {
                 return $cookieVariationHave['name'] == 'X-Magento-Vary';
@@ -95,6 +96,7 @@ class LoginObserver implements ObserverInterface
             }
 
             $this->fileDriver->filePutContents($settingsFilename, $this->serializer->serialize($settings));
+        }
         }
     }
 }

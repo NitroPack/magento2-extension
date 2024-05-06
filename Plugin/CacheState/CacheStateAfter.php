@@ -5,6 +5,7 @@ namespace NitroPack\NitroPack\Plugin\CacheState;
 use Magento\Framework\App\Cache\StateInterface;
 use Magento\Framework\Event\ManagerInterface as EventManager;
 use NitroPack\NitroPack\Api\NitroService;
+use Magento\Framework\Registry;
 
 class CacheStateAfter
 {
@@ -24,20 +25,39 @@ class CacheStateAfter
      * */
     protected $scopeConfig;
 
+    /**
+     * @var Registry
+     */
+    protected $registry;
+
+    /**
+     * @param StateInterface $cacheState
+     * @param EventManager $eventManager
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param Registry $registry
+     */
     public function __construct(
         StateInterface $cacheState,
         EventManager $eventManager,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        Registry $registry
     ) {
         $this->cacheState = $cacheState;
         $this->eventManager = $eventManager;
         $this->scopeConfig = $scopeConfig;
+        $this->registry = $registry;
     }
 
     private $checkCaches = ['full_page'];
 
     public function afterSetEnabled(\Magento\Framework\App\Cache\Manager $subject, $result)
     {
+        $setupMode = $this->registry->registry('setup-mode-enabled');
+
+        if ($setupMode) {
+            return $result;
+        }
+
         $status = false;
         $cacheIsTrigger = false;
         foreach ($result as $resultValue) {

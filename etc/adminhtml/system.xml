@@ -15,14 +15,6 @@
             <label>Settings</label>
             <tab>nitropack</tab>
             <resource>NitroPack_NitroPack::config_nitropack</resource>
-            <group id="usage_track" translate="label" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
-                <label>Usage Data Tracking</label>
-                <attribute type="expanded">1</attribute>
-                <field id="usage_data" translate="label comment" type="select" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
-                    <label>Usage Data Tracking</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-            </group>
             <group id="ignored_tags" translate="label" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
             <label>Ignored Cache Tags</label>
             <field id="ignored_tags" translate="label comment" type="textarea" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">

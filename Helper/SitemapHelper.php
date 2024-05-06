@@ -10,6 +10,9 @@ use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\StoreManagerInterface;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
 use NitroPack\NitroPack\Logger\Logger;
+use Magento\Framework\Xml\Parser;
+use Magento\Framework\App\Filesystem\DirectoryList;
+use Exception;
 
 class SitemapHelper extends AbstractHelper
 {
@@ -54,6 +57,11 @@ class SitemapHelper extends AbstractHelper
      * @var \Magento\Framework\Filesystem
      * */
     protected $filesystem;
+
+    protected $xmlParser;
+
+    protected $directoryList;
+
     /**
      * @param \Magento\Framework\App\Helper\Context $context
      * @param Emulation $appEmulation
@@ -74,7 +82,9 @@ class SitemapHelper extends AbstractHelper
         \Magento\Sitemap\Model\Sitemap $sitemap,
         \Magento\Framework\Filesystem $filesystem,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Sitemap\Model\ResourceModel\Sitemap\CollectionFactory $sitemapCollectionFactory
+        \Magento\Sitemap\Model\ResourceModel\Sitemap\CollectionFactory $sitemapCollectionFactory,
+        Parser $xmlParser,
+        DirectoryList $directoryList
     ) {
         parent::__construct($context);
         $this->file = $file;
@@ -85,6 +95,8 @@ class SitemapHelper extends AbstractHelper
         $this->_storeManager = $storeManager;
         $this->sitemapFactory = $sitemapFactory;
         $this->sitemap = $sitemap;
+        $this->xmlParser = $xmlParser;
+        $this->directoryList = $directoryList;
     }
 
 
@@ -92,7 +104,7 @@ class SitemapHelper extends AbstractHelper
     {
         $stores = $this->_storeManager->getStores();
         $storeUrl = '';
-        $dataValue = [];
+        $sitemapItems = [];
         foreach ($stores as $storesData) {
             if ($storesData->getStoreGroupId() == $storeGroup) {
                 if (empty($storeUrl)) {
@@ -104,11 +116,29 @@ class SitemapHelper extends AbstractHelper
                     $siteMap = $this->sitemapCollectionFactory->create()->addStoreFilter([$storesData->getId()])->addOrder('sitemap_time','desc')->setPageSize(1)->load();
                     if ($siteMap->getSize() > 0) {
                         foreach ($siteMap  as $sitemapValue) {
-                            $sitemapUrl = $sitemapValue->getSitemapUrl(
-                                $sitemapValue->getSitemapPath(),
-                                $sitemapValue->getSitemapFilename()
-                            );
-                            $dataValue[] = $sitemapUrl;
+                            $sitemapPath = $this->directoryList->getPath('pub') . $sitemapValue->getSitemapPath() . $sitemapValue->getSitemapFilename();
+                            try {
+                                $items = $this->xmlParser->load($sitemapPath)->xmlToArray();
+                            } catch (Exception $exception) {
+                                continue;
+                            }
+
+                            if (isset($items['sitemapindex']['sitemap'])) {
+                                if (is_array($items['sitemapindex']['sitemap'])) {
+                                    foreach ($items['sitemapindex']['sitemap'] as $item) {
+                                        if ($item['loc']) {
+                                            $sitemapItems[] = $item['loc'];
+                                        }
+                                    }
+                                }
+                            } else {
+                                $sitemapItems[] = $sitemapValue->getSitemapUrl(
+                                    $sitemapValue->getSitemapPath(),
+                                    $sitemapValue->getSitemapFilename()
+                                );
+                            }
+
+
                         }
                     } else {
                         $data = [
@@ -120,7 +150,7 @@ class SitemapHelper extends AbstractHelper
                         $model = $this->sitemapFactory->create();
                         $model->setData($data);
                         $sitemapUrl = $model->getSitemapUrl($model->getSitemapPath(), $model->getSitemapFilename());
-                        $dataValue[] = $sitemapUrl;
+                        $sitemapItems[] = $sitemapUrl;
                         try {
                             $model->save();
                             $this->appEmulation->startEnvironmentEmulation(
@@ -137,7 +167,7 @@ class SitemapHelper extends AbstractHelper
                 }
             }
         }
-        return  $this->generateStoreGroupXml($dataValue,$nitroSetting,$storeUrl,$storeGroupCode);
+        return  $this->generateStoreGroupXml($sitemapItems,$nitroSetting,$storeUrl,$storeGroupCode);
 
     }
 
@@ -160,13 +190,40 @@ class SitemapHelper extends AbstractHelper
             if (!empty($storeGroupCode)) {
                 $xmlPath = $mediaPath . '/' . $storeGroupCode . '.xml';
 
-                $this->file->write($xmlPath, $xmlData);
-                return $storeUrl . $storeGroupCode . '.xml';
+                if ($this->isWriteable($xmlPath)) {
+                    $result = $this->file->write($xmlPath, $xmlData);
+                } else {
+                    $result = false;
+                }
+
+                if ($result) {
+                    return $storeUrl . $storeGroupCode . '.xml';
+                }
+
+                return false;
             }
         } catch (\Exception $e) {
             $this->logger->critical($e->getMessage());
             return false;
         }
         return false;
+    }
+
+    /**
+     * @param $filename
+     * @return bool
+     */
+    private function isWriteable($filename): bool
+    {
+        if (file_exists($filename)) {
+            if (!is_writeable($filename)) {
+                return false;
+            }
+        } else {
+            if (!is_writable(dirname($filename))) {
+                return false;
+            }
+        }
+        return true;
     }
 }

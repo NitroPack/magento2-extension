@@ -12,11 +12,12 @@ use Magento\Catalog\Model\ProductFactory;
 use Magento\Catalog\Model\CategoryFactory;
 use Magento\Cms\Model\BlockFactory;
 use Magento\Cms\Model\PageFactory;
+use NitroPack\NitroPack\Api\NitroService;
 use NitroPack\NitroPack\Helper\ApiHelper;
 use Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory;
 use NitroPack\NitroPack\Helper\FastlyHelper;
 
-class CleanCacheByTagsObserver implements ObserverInterface
+class NitroPackInvalidateObserver implements ObserverInterface
 {
     /**
      * @var Resolver
@@ -90,6 +91,7 @@ class CleanCacheByTagsObserver implements ObserverInterface
      * @var FastlyHelper
      * */
     protected $fastlyHelper;
+
     /**
      * @param Resolver $cacheTagResolver
      * @param \Magento\Framework\MessageQueue\PublisherInterface $publisher
@@ -107,7 +109,7 @@ class CleanCacheByTagsObserver implements ObserverInterface
      * @param CollectionFactory $attributeCollectionFactory
      * @param \Magento\Store\Api\GroupRepositoryInterface $storeRepo
      * @param DeploymentConfig $config
-     * */
+     */
     public function __construct(
         Resolver                                           $cacheTagResolver,
         \Magento\Framework\MessageQueue\PublisherInterface $publisher,
@@ -121,7 +123,7 @@ class CleanCacheByTagsObserver implements ObserverInterface
         \Magento\Framework\App\Cache\Frontend\Pool         $cacheFrontendPool,
         ScopeConfigInterface                               $_scopeConfig,
         ApiHelper                                          $apiHelper,
-        FastlyHelper $fastlyHelper,
+        FastlyHelper                                       $fastlyHelper,
         CollectionFactory                                  $attributeCollectionFactory,
         \Magento\Store\Api\GroupRepositoryInterface        $storeRepo,
         DeploymentConfig                                   $config
@@ -148,101 +150,51 @@ class CleanCacheByTagsObserver implements ObserverInterface
     public function execute(Observer $observer)
     {
 
-        if (!is_null(
-                $this->_scopeConfig->getValue(\NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK)
-            ) && in_array($this->_scopeConfig->getValue(
-                \NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK
-            ), [\NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK_VALUE, \NitroPack\NitroPack\Api\NitroService::FASTLY_CACHING_APPLICATION_VALUE])) {
+        if (!$this->isEnabled()) {
+            return false;
+        }
 
+        $object = $observer->getEvent()->getObject();
 
-            $object = $observer->getEvent()->getObject();
-            if (!is_object($object)) {
-                return;
-            }
-            $tags = $this->cacheTagResolver->getTags($object);
-            if (!empty($tags) && count($tags)) {
+        if (!$object instanceof \Magento\Framework\DataObject\IdentityInterface) {
+            return false;
+        }
 
-                if ($object instanceof \Magento\Catalog\Model\Product\Interceptor) {
-                    $skipAttributeValue = [];
-                    $skipAttribute = $this->getNitroPackCacheSkipAttribute();
-                    if (count($skipAttribute) != 0) {
-                        $skipAttributeValue = array_column($skipAttribute['items'], 'attribute_code');
+        $tags = $this->cacheTagResolver->getTags($object);
 
-                    }
-                    if (!$this->checkProductChanges($object, $skipAttributeValue)) {
-                        return false;
-                    }
+        if (!empty($tags) && count($tags)) {
+
+            if ($object instanceof \Magento\Catalog\Model\Product\Interceptor) {
+                $skipAttributeValue = [];
+                $skipAttribute = $this->getNitroPackCacheSkipAttribute();
+                if (count($skipAttribute) != 0) {
+                    $skipAttributeValue = array_column($skipAttribute['items'], 'attribute_code');
 
                 }
-                //
-                $stores = $this->storeRepo->getList();
-                foreach ($stores as $storesData) {
-                    $storeId = $storesData->getDefaultStoreId();
-                    if ($storeId > 0) {
-                        $settingsFilename = $this->apiHelper->getSettingsFilename($storesData->getCode());
-                        $haveData = $this->apiHelper->readFile($settingsFilename);
-                        //Check The file is readable
-                        if ($haveData) {
-                            $settings = json_decode($haveData);
-                            if (isset($settings->enabled) && $settings->enabled) {
-                                //Check NitroPack With Fastly Disable
-                                if ($this->fastlyHelper->isFastlyAndNitroDisable()) {
-                                    return false;
-                                }
-                                $tags = array_unique($tags);
-                                $tags = array_diff($tags, $this->getIgnoreTags());
-                                $patternTagsArray = array_filter($this->getIgnoreTags(), function($value) {
-                                    return strpos($value, '_*') !== false;
-                                });
-                                if(count($patternTagsArray)>0){
-                                    $tags = $this->patternIgnoreTag($tags,$patternTagsArray);
-                                }
-                                //Non-Zero Product Quantity Check
-                                if ($object instanceof \Magento\CatalogInventory\Model\Adminhtml\Stock\Item\Interceptor) {
+                if (!$this->checkProductChanges($object, $skipAttributeValue)) {
+                    return false;
+                }
+            }
 
-                                    if (isset($settings->default_stock) && $settings->default_stock && $this->checkNonZeroQtyChanges($object)) {
+            $stores = $this->storeRepo->getList();
+            foreach ($stores as $storesData) {
+                $storeId = $storesData->getDefaultStoreId();
+                if ($storeId > 0) {
+                    $settings = $this->getSettings($storesData);
+                    if ($settings) {
+                        if (isset($settings->enabled) && $settings->enabled) {
+                            //Check NitroPack With Fastly Disable
+                            if ($this->fastlyHelper->isFastlyAndNitroDisable()) {
+                                return false;
+                            }
 
-                                        return false;
-                                    }
-                                }
-                                foreach ($tags as $tag) {
-                                    list($tagType, $id) = $this->getTagTypeAndId($tag);
-                                    $reasonEntity = $this->getReasonFromType($tagType, $id);
-                                    $reasonEntityName = "";
-                                    if (!empty($reasonEntity)) {
-                                        $reasonEntityName = $reasonEntity->getName();
-                                    }
-                                    if (strpos($tagType, 'category_product_page') !== false || strpos($tagType, 'page') !== false) {
-                                        $rawData = [
-                                            'action' => 'purge_tag',
-                                            'type' => $tagType,
-                                            'tag' => $tag,
-                                            'reasonType' => $tagType,
-                                            'storeId' => $storeId,
-                                            'reasonEntity' => $reasonEntityName
-                                        ];
-                                        $this->publisher->publish($this->getTopicName(), $this->json->serialize($rawData));
+                            $tags = $this->processIgnoredTags($tags);
 
-                                    } else {
-                                        $rawData = [
-                                            'action' => 'invalidation',
-                                            'type' => $tagType,
-                                            'tag' => $tag,
-                                            'reasonType' => $tagType,
-                                            'storeId' => $storeId,
-                                            'reasonEntity' => $reasonEntityName
-                                        ];
+                            //Non-Zero Product Quantity Check
+                            $this->nonZeroProductQuantityCheck($object, $settings);
 
-                                        $this->publisher->publish($this->getTopicName(), $this->json->serialize($rawData));
-                                        if ($tagType == 'product' && !empty($reasonEntity) && $reasonEntity->getId()) {
-                                            $this->categoryProductInvalidate($reasonEntity, $storeId, $reasonEntityName, $rawData);
-                                            $this->cacheTypeList->cleanType('collections');
-                                            foreach ($this->cacheFrontendPool as $cacheFrontend) {
-                                                $cacheFrontend->getBackend()->clean();
-                                            }
-                                        }
-                                    }
-                                }
+                            foreach ($tags as $tag) {
+                                $this->invalidateTag($tag, $storeId);
                             }
                         }
                     }
@@ -255,10 +207,11 @@ class CleanCacheByTagsObserver implements ObserverInterface
     {
         return $this->defaultQueueValueConnection == 'amqp' && $this->config->get('queue/amqp') && count($this->config->get('queue/amqp')) > 0 ? self::TOPIC_NAME_AMQP : self::TOPIC_NAME_DB;
     }
-    public function patternIgnoreTag($tags,$patternsIgnoreTag)
+
+    public function patternIgnoreTag($tags, $patternsIgnoreTag)
     {
-       $readyTags = [];
-      // Iterate through each tag
+        $readyTags = [];
+        // Iterate through each tag
         foreach ($tags as $tag) {
             $ignore = false; // Flag to determine if tag should be ignored
 
@@ -280,7 +233,7 @@ class CleanCacheByTagsObserver implements ObserverInterface
 
             // Process or ignore the tag based on the flag
             if (!$ignore) {
-                $readyTags[] =  $tag;
+                $readyTags[] = $tag;
             }
 
 
@@ -288,6 +241,7 @@ class CleanCacheByTagsObserver implements ObserverInterface
         return $readyTags;
 
     }
+
     public function getTagTypeAndId($cacheTag)
     {
         $id = false;
@@ -357,11 +311,11 @@ class CleanCacheByTagsObserver implements ObserverInterface
                 continue;
             }
             //Check Category Pattern is Defined
-            $patternTagsArray = array_filter($this->getIgnoreTags(), function($value) {
+            $patternTagsArray = array_filter($this->getIgnoreTags(), function ($value) {
                 return strpos($value, 'cat_c_*') !== false;
             });
-            if(count($patternTagsArray)>0){
-                    continue;
+            if (count($patternTagsArray) > 0) {
+                continue;
             }
             $rawData = [
                 'action' => 'invalidation',
@@ -478,7 +432,7 @@ class CleanCacheByTagsObserver implements ObserverInterface
     public function getIgnoreTags()
     {
 
-        $ignoreTags = $this->_scopeConfig->getValue(\NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK_IGNORE_TAGS);
+        $ignoreTags = $this->_scopeConfig->getValue(NitroService::FULL_PAGE_CACHE_NITROPACK_IGNORE_TAGS);
         if (!is_null($ignoreTags) && $ignoreTags) {
             $ignoreTags = explode(',', $ignoreTags);
             $ignoreTags = array_map('trim', $ignoreTags);
@@ -490,6 +444,113 @@ class CleanCacheByTagsObserver implements ObserverInterface
         return [];
     }
 
+    /**
+     * @param $object
+     * @param $settings
+     * @return false|void
+     */
+    private function nonZeroProductQuantityCheck($object, $settings)
+    {
+        if ($object instanceof \Magento\CatalogInventory\Model\Adminhtml\Stock\Item\Interceptor) {
+            if (isset($settings->default_stock) && $settings->default_stock && $this->checkNonZeroQtyChanges($object)) {
+                return false;
+            }
+        }
+    }
 
+    /**
+     * @param $tag
+     * @param $storeId
+     * @return void
+     */
+    private function invalidateTag($tag, $storeId)
+    {
+        list($tagType, $id) = $this->getTagTypeAndId($tag);
+        $reasonEntity = $this->getReasonFromType($tagType, $id);
+        $reasonEntityName = "";
+        if (!empty($reasonEntity)) {
+            $reasonEntityName = $reasonEntity->getName();
+        }
+        if (strpos($tagType, 'category_product_page') !== false || strpos($tagType, 'page') !== false) {
+            $rawData = [
+                'action' => 'purge_tag',
+                'type' => $tagType,
+                'tag' => $tag,
+                'reasonType' => $tagType,
+                'storeId' => $storeId,
+                'reasonEntity' => $reasonEntityName
+            ];
+            $this->publisher->publish($this->getTopicName(), $this->json->serialize($rawData));
+
+        } else {
+            $rawData = [
+                'action' => 'invalidation',
+                'type' => $tagType,
+                'tag' => $tag,
+                'reasonType' => $tagType,
+                'storeId' => $storeId,
+                'reasonEntity' => $reasonEntityName
+            ];
+
+            $this->publisher->publish($this->getTopicName(), $this->json->serialize($rawData));
+            if ($tagType == 'product' && !empty($reasonEntity) && $reasonEntity->getId()) {
+                $this->categoryProductInvalidate($reasonEntity, $storeId, $reasonEntityName, $rawData);
+                $this->cacheTypeList->cleanType('collections');
+                foreach ($this->cacheFrontendPool as $cacheFrontend) {
+                    $cacheFrontend->getBackend()->clean();
+                }
+            }
+        }
+    }
+
+    /**
+     * @param $storesData
+     * @return mixed|null
+     */
+    private function getSettings($storesData)
+    {
+        $settingsFilename = $this->apiHelper->getSettingsFilename($storesData->getCode());
+        $data = $this->apiHelper->readFile($settingsFilename);
+        //Check The file is readable
+        if ($data) {
+            try {
+                return json_decode($data);
+            } catch (\Exception $exception) {
+
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param $tags
+     * @return array
+     */
+    private function processIgnoredTags($tags): array
+    {
+        $tags = array_unique($tags);
+        $tags = array_diff($tags, $this->getIgnoreTags());
+        $patternTagsArray = array_filter($this->getIgnoreTags(), function ($value) {
+            return strpos($value, '_*') !== false;
+        });
+
+        if (count($patternTagsArray) > 0) {
+            $tags = $this->patternIgnoreTag($tags, $patternTagsArray);
+        }
+
+        return $tags;
+    }
+
+    /**
+     * @return bool
+     */
+    private function isEnabled(): bool
+    {
+        return !is_null($this->_scopeConfig->getValue(NitroService::FULL_PAGE_CACHE_NITROPACK)) && in_array(
+                $this->_scopeConfig->getValue(NitroService::FULL_PAGE_CACHE_NITROPACK),
+                [NitroService::FULL_PAGE_CACHE_NITROPACK_VALUE, NitroService::FASTLY_CACHING_APPLICATION_VALUE]
+            );
+    }
 
 }

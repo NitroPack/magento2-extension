@@ -8,6 +8,16 @@ Installation Instructions: https://support.nitropack.io/hc/en-us/articles/127062
 
 # Release Notes
 
+### 3.1.0:
+#### Compatible with Magento Open Source : 2.4
+#### Stability: Stable Build
+#### Description:
+Improvement: Enhanced observers for faster and better cache purging.
+Improvement: Consolidated sitemap into a single level for improved cache warmup.
+Improvement: Validate Redis configuration before enabling.
+Bug fix: No more temporary disconnects during Magento upgrades.
+
+
 ### 3.0.1:
 #### Compatible with Magento Open Source : 2.4
 #### Stability: Stable Build

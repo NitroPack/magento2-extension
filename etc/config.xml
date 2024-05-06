@@ -12,10 +12,5 @@
                 <enable_nitropack>0</enable_nitropack>
             </full_page_cache>
         </system>
-        <nitropack>
-            <usage_track>
-                <usage_data>1</usage_data>
-            </usage_track>
-        </nitropack>
     </default>
 </config>

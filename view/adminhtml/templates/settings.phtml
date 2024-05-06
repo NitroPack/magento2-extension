@@ -272,7 +272,11 @@ $settings = $block->getSettings();
                     case 'safeMode':
                         saveRequest = false;
                         break;
-
+                    case 'cache_to_login_customer':
+                        $("#optimizations-widget").cardOverlay("loading", {message: "Purging cache"});
+                        window.performCachePurge();
+                        saveRequest = true;
+                        break;
                 }
 
                 if (saveRequest) {
@@ -333,12 +337,11 @@ $settings = $block->getSettings();
                         success: function (response) {
                             // @TODO proper response handling
                             if (response.success) {
-
                                 Notification.success('Successfully started warmup');
                             } else if (response.permissionsIssue) {
-                                Notification.danger('[Un]Successfully did not start warmup. Permissions issue');
+                                Notification.warning('[Un]Successfully did not start warmup. Permissions issue');
                             } else {
-                                Notification.danger('[Un]Successfully did not start warmup');
+                                Notification.warning('[Un]Successfully did not start warmup');
                             }
 
                             $('#showEstimateLoadHeading').html('Estimating Optimization Usage');

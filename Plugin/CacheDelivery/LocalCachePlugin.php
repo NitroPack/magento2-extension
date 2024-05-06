@@ -87,6 +87,7 @@ class LocalCachePlugin
         if (headers_sent() || NitroService::isANitroRequest()) {
             return $proceed($request);
         }
+
         if (!$this->nitro->isConnected() || !$this->nitro->isEnabled() ||
             is_null(
                 $this->_scopeConfig->getValue(NitroService::FULL_PAGE_CACHE_NITROPACK)

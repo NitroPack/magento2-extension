@@ -10,6 +10,7 @@ use NitroPack\NitroPack\Api\NitroService;
 use NitroPack\NitroPack\Helper\ApiHelper;
 use NitroPack\NitroPack\Helper\FastlyHelper;
 use NitroPack\NitroPack\Helper\SitemapHelper;
+use \Magento\Framework\Message\ManagerInterface;
 
 class Update implements ObserverInterface
 {
@@ -37,7 +38,18 @@ class Update implements ObserverInterface
      * @var FastlyHelper
      * */
     protected $fastlyHelper;
-    public function __construct(ApiHelper $apiHelper,FastlyHelper $fastlyHelper,SitemapHelper $sitemapHelper, \Magento\Store\Api\GroupRepositoryInterface $groupRepository, ScopeConfigInterface $scopeConfig, StateInterface $_cacheState)
+
+    protected $messageManager;
+
+    public function __construct(
+        ApiHelper $apiHelper,
+        FastlyHelper $fastlyHelper,
+        SitemapHelper $sitemapHelper,
+        \Magento\Store\Api\GroupRepositoryInterface $groupRepository,
+        ScopeConfigInterface $scopeConfig,
+        StateInterface $_cacheState,
+        ManagerInterface $messageManager
+    )
     {
 
         $this->apiHelper = $apiHelper;
@@ -46,6 +58,7 @@ class Update implements ObserverInterface
         $this->_scopeConfig = $scopeConfig;
         $this->_cacheState = $_cacheState;
         $this->fastlyHelper = $fastlyHelper;
+        $this->messageManager = $messageManager;
     }
 
     public function execute(Observer $observer)
@@ -70,7 +83,10 @@ class Update implements ObserverInterface
 
 
                     if (isset($settings->enabled) && $settings->enabled &&  isset($settings->cacheWarmup) && $settings->cacheWarmup) {
-                        $this->sitemapHelper->getSiteMapPath($storesData->getId(), $storesData->getCode(), $settings);
+                       $result = $this->sitemapHelper->getSiteMapPath($storesData->getId(), $storesData->getCode(), $settings);
+                       if (!$result) {
+                           $this->messageManager->addErrorMessage('NitroPack sitemap generation failed due to pub/media folder permissions.');
+                       }
                     }
 
                 }

@@ -1,44 +1,6 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
-    <!-- Product management events removed -->
-    <event name="catalog_product_delete_commit_after">
-        <observer name="nitropack_cache_product_delete"
-                  instance="NitroPack\NitroPack\Observer\CacheClear\ProductDeletedObserver" shared="true"/>
-    </event>
-    <event name="catalog_category_delete_commit_after">
-        <observer name="nitropack_cache_category_delete"
-                  instance="NitroPack\NitroPack\Observer\CacheClear\CategoryDeletedObserver" shared="true"/>
-    </event>
-    <event name="catalog_entity_attribute_delete_commit_after">
-        <observer name="nitropack_cache_attribute_delete"
-                  instance="NitroPack\NitroPack\Observer\CacheClear\AttributeDeletedObserver" shared="true"/>
-    </event>
-    <event name="eav_entity_attribute_set_delete_commit_after">
-        <observer name="nitropack_cache_attribute_set_delete"
-                  instance="NitroPack\NitroPack\Observer\CacheClear\AttributeSetDeletedObserver" shared="true"/>
-    </event>
-    <event name="cms_page_delete_commit_after">
-        <observer name="nitropack_cache_page_delete" instance="NitroPack\NitroPack\Observer\CacheClear\PageDeletedObserver"
-                  shared="true"/>
-    </event>
-    <event name="cms_block_delete_commit_after">
-        <observer name="nitropack_cache_block_delete" instance="NitroPack\NitroPack\Observer\CacheClear\BlockDeletedObserver"
-                  shared="true"/>
-    </event>
-    <event name="widget_widget_instance_delete_commit_after">
-        <observer name="nitropack_cache_widget_delete" instance="NitroPack\NitroPack\Observer\CacheClear\WidgetDeletedObserver"
-                  shared="true"/>
-    </event>
-
-    <event name="widget_widget_instance_save_before">
-        <observer name="widget_save_observer_before_nitro" instance="NitroPack\NitroPack\Observer\CacheClear\WidgetSaveObserver" />
-    </event>
-
-   <event name="review_delete_commit_after">
-        <observer name="nitropack_cache_review_delete" instance="NitroPack\NitroPack\Observer\CacheClear\ReviewDeletedObserver"
-                  shared="true"/>
-    </event>
     <event name="nitropack_cache_event_after">
         <observer name="nitropack_cache_event_after" instance="NitroPack\NitroPack\Observer\NitroPackCacheChecker"/>
     </event>

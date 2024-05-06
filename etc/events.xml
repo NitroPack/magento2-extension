@@ -16,7 +16,10 @@
         <observer name="nitropack_nitropack_maintenance_mode_observer" instance="NitroPack\NitroPack\Observer\MaintenanceModeObserver" />
     </event>
     <event name="clean_cache_by_tags">
-        <observer name="nitropack_clean_cache_by_tags_observer" instance="NitroPack\NitroPack\Observer\CleanCacheByTagsObserver" />
+        <observer name="nitropack_invalidate_observer" instance="NitroPack\NitroPack\Observer\NitroPackInvalidateObserver" />
+    </event>
+    <event name="clean_cache_after_reindex">
+        <observer name="nitropack_invalidate_observer" instance="NitroPack\NitroPack\Observer\NitroPackInvalidateObserver"/>
     </event>
     <event name="controller_action_postdispatch_customer_group_save">
         <observer name="custom_customer_group_save_after_observer" instance="NitroPack\NitroPack\Observer\Customer\CustomerGroupSaveAfter" />
@@ -26,5 +29,17 @@
     </event>
     <event name="install_trigger_email">
         <observer name="install_trigger_email" instance="NitroPack\NitroPack\Observer\Email\WelcomeEmail" />
+    </event>
+    <!--At a time of installation Assign Theme to stores after clear Nitropack Cache -->
+    <event name="assign_theme_to_stores_after">
+        <observer name="flush_nitropack_pagecache_assign_theme" instance="NitroPack\NitroPack\Observer\FullPageCache\Clear"/>
+    </event>
+    <!--After the media cache is cleared, typically following operations like clearing the image cache or other media-related caches in Magento. -->
+    <event name="clean_media_cache_after">
+        <observer name="flush_nitropack_pagecache_media_cache_after" instance="NitroPack\NitroPack\Observer\FullPageCache\Clear"/>
+    </event>
+    <!-- Catalog images cache has been successfully cleared. It allows you to implement post-cache cleaning operations. -->
+    <event name="clean_catalog_images_cache_after">
+        <observer name="flush_nitropack_pagecache_catalog_cache_after" instance="NitroPack\NitroPack\Observer\FullPageCache\Clear"/>
     </event>
 </config>

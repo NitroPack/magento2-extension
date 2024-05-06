@@ -13,6 +13,7 @@ use NitroPack\NitroPack\Api\NitroServiceInterface;
 use NitroPack\NitroPack\Helper\AdminFrontendUrl;
 use NitroPack\NitroPack\Helper\NitroPackConfigHelper;
 use NitroPack\NitroPack\Helper\SitemapHelper;
+use NitroPack\NitroPack\Model\FullPageCache\PurgeInterface;
 
 class Save extends StoreAwareAction
 {
@@ -44,29 +45,37 @@ class Save extends StoreAwareAction
     protected $resultJsonFactory;
 
     protected $store = null;
+    /**
+     * @var PurgeInterface
+     * */
+    protected $purgeInterface;
 
     /**
-     * @param Context $context ,
-     * @param RequestInterface $request ,
-     * @param NitroServiceInterface $nitro ,
-     * @param AdminFrontendUrl $urlHelper ,
-     * @param SitemapHelper $sitemapHelper ,
+     * @param Context $context
+     * @param RequestInterface $request
+     * @param NitroServiceInterface $nitro
+     * @param AdminFrontendUrl $urlHelper
+     * @param SitemapHelper $sitemapHelper
+     * @param PurgeInterface $purgeInterface
      * @param NitroPackConfigHelper $nitroPackConfigHelper
      * */
     public function __construct(
-        Context $context,
-        RequestInterface $request,
+        Context               $context,
+        RequestInterface      $request,
         NitroServiceInterface $nitro,
-        AdminFrontendUrl $urlHelper,
-        SitemapHelper $sitemapHelper,
+        AdminFrontendUrl      $urlHelper,
+        SitemapHelper         $sitemapHelper,
+        PurgeInterface        $purgeInterface,
         NitroPackConfigHelper $nitroPackConfigHelper
-    ) {
+    )
+    {
         parent::__construct($context, $nitro);
         $this->request = $request;
         $this->nitro = $nitro;
         $this->nitroPackConfigHelper = $nitroPackConfigHelper;
         $this->sitemapHelper = $sitemapHelper;
         $this->urlHelper = $urlHelper;
+        $this->purgeInterface = $purgeInterface;
         $this->resultJsonFactory = $this->_objectManager->create(JsonFactory::class);
         $this->store = $this->getStoreGroup();
     }
@@ -93,7 +102,8 @@ class Save extends StoreAwareAction
             'enabled',
             'cacheWarmup',
             'safeMode',
-            'gzip'
+            'gzip',
+            'cache_to_login_customer',
         );
 
         $arrays = array();
@@ -101,8 +111,9 @@ class Save extends StoreAwareAction
         $oldSettings = (array)$this->nitro->getSettings();
         $additional_meta_data = [];
         foreach ($booleans as $option) {
+
             if (($value = $this->request->getPostValue($option, null)) !== null) {
-              //
+                //
 
                 if ($option === 'enabled') {
                     $event = $value ? 'enable_extension' : 'disable_extension';
@@ -115,10 +126,10 @@ class Save extends StoreAwareAction
                         ['setting' => $option, 'before' => isset($oldSettings[$option]) ?: null, 'after' => $value]
                     );
                 }
-                if($option === 'enabled' && $value){
+                if ($option === 'enabled' && $value) {
                     $this->nitroPackConfigHelper->varnishConfiguredSetup();
                 }
-                if($option=='gzip') {
+                if ($option == 'gzip') {
                     if ($value) {
                         $this->nitro->getSdk()->enableCompression();
                     } else {
@@ -128,8 +139,28 @@ class Save extends StoreAwareAction
                 //EVENT TRIGGER
                 if ($option === 'enabled') {
                     $this->nitroPackConfigHelper->setBoolean('previous_extension_status', $value);
+
                 }
 
+                if ($option === 'cache_to_login_customer') {
+                     $this->nitro->purgeCache(
+                        null,
+                        null,
+                        \NitroPack\SDK\PurgeType::COMPLETE,
+                        'Cache purge Because Cache setting changed'
+                    );
+                    $this->purgeInterface->purge();
+
+                    if (!$value) {
+                        $this->nitro->getSdk()->getApi()->unsetVariationCookie('X-Magento-Vary');
+                    }
+                    if ($value) {
+                        $xMagentoVary = (array)$oldSettings['x_magento_vary'];
+                        if (count($xMagentoVary) > 0) {
+                            $this->nitro->getSdk()->getApi()->setVariationCookie('X-Magento-Vary', array_keys($xMagentoVary), 1);
+                        }
+                    }
+                }
                 $this->nitroPackConfigHelper->setBoolean($option, $value);
 
                 $shouldSave = true;

@@ -142,13 +142,29 @@ class ConfigOptionsList implements ConfigOptionsListInterface
         $errors = [];
         if (isset($options[self::NITROPACK_CACHE_REDIS_DB]) && !is_null($options[self::NITROPACK_CACHE_REDIS_DB])  && isset($options[self::NITROPACK_CACHE_STORAGE_TYPE])) {
             if ($options[self::NITROPACK_CACHE_STORAGE_TYPE] == self::NITROPACK_CACHE_STORAGE_TYPE_VALUE) {
+
+
                 if (!$this->validateRedisConfig($options, $deploymentConfig)) {
                     $errors[] = 'Invalid Redis configuration. Could not connect to Redis server.';
+                }
+                if (!$this->validatePHPRedisDriver()) {
+                    $errors[] = 'Redis PHP extension is not installed.';
                 }
             }
         }
 
         return $errors;
+    }
+    /**
+     * Validate PHP Redis Driver
+     * @return bool
+     */
+    private function validatePHPRedisDriver()
+    {
+        if(!extension_loaded('redis')){
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -160,6 +176,8 @@ class ConfigOptionsList implements ConfigOptionsListInterface
      */
     private function validateRedisConfig(array $options, DeploymentConfig $deploymentConfig)
     {
+
+
         $config = [];
 
         $config['host'] = isset($options[self::NITROPACK_CACHE_REDIS_HOST])

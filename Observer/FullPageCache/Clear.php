@@ -84,6 +84,8 @@ class Clear implements ObserverInterface
     public function execute(Observer $observer)
     {
 
+        $eventName = $observer->getEvent()->getName();
+        $eventReason = $this->getReasonForPurge($eventName);
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $storeRepo = $objectManager->create(\Magento\Store\Api\GroupRepositoryInterface::class);
         $storeGroup = $storeRepo->getList();
@@ -137,7 +139,7 @@ class Clear implements ObserverInterface
                                 null,
                                 null,
                                 \NitroPack\SDK\PurgeType::COMPLETE,
-                                "Magento cache flush remove all page cache"
+                                $eventReason
                             );
 
                             $this->purgeInterface->purge();
@@ -154,5 +156,19 @@ class Clear implements ObserverInterface
                 }
             }
         }
+    }
+
+    public function getReasonForPurge($eventName)
+    {
+        if($eventName== 'assign_theme_to_stores_after'){
+         return "Magento theme assigned to stores,so cache flush remove all page cache";
+        }
+        if($eventName== 'clean_media_cache_after'){
+            return "Magento images clean,so cache flush remove all page cache";
+        }
+        if($eventName== 'clean_catalog_images_cache_after'){
+            return "Magento catalog images clean,so cache flush remove all page cache";
+        }
+        return "Magento cache flush remove all page cache";
     }
 }
