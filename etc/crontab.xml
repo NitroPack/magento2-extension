@@ -4,6 +4,9 @@
         <job instance="NitroPack\NitroPack\Cron\ProcessCron" method="execute" name="nitropack_cron_for_health_and_stale_cleanup">
             <schedule>*/5 * * * *</schedule>
         </job>
+        <job instance="NitroPack\NitroPack\Cron\Backlog" method="execute" name="nitropack_cron_backlog_replay">
+            <config_path>nitropack/backlog_cron/schedule</config_path>
+        </job>
         <job instance="NitroPack\NitroPack\Cron\RecentLogRecords" method="execute" name="nitropack_recent_log_records">
             <schedule>0 1 * * *</schedule>
         </job>
