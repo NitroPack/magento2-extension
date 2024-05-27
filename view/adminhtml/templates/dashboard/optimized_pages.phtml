@@ -26,10 +26,10 @@
         <span class="pl-10 pt-6 dashboard-primary-text text-gray-900 text-lite-gray"
               @click="isDisplayedTotal  = ! isDisplayedTotal , isDisplayedReason=false " x-show="isDisplayedReason"
               style="height: 60px; cursor: pointer;">
-              <div id="last-cache-purge" class="text-md"><?= __('Last cache purge:'); ?> <span
-                      data-last-cache-purge><?= __('Never'); ?></span></div>
-              <div id="last-cache-purge-reason" class="text-md"><?= __('Reason:'); ?> <span
-                      data-purge-reason><?= __('Unknown'); ?></span></div>
+              <div id="last-cache-purge" class="text-md"><?= /* @noEscape */ __('Last cache purge:'); ?> <span
+                      data-last-cache-purge><?= /* @noEscape */ __('Never'); ?></span></div>
+              <div id="last-cache-purge-reason" class="text-md"><?= /* @noEscape */ __('Reason:'); ?> <span
+                      data-purge-reason><?= /* @noEscape */ __('Unknown'); ?></span></div>
         </span>
 
 
@@ -37,15 +37,15 @@
     <div class="pl-10 pt-6 dashboard-primary-text text-gray-900 text-lite-gray" x-show="isDisplayedTotal"
          x-collapse.duration.1000ms @click=" isDisplayedReason  = ! isDisplayedReason , isDisplayedTotal = false "
          style="height: 60px; display:none;">
-        <div class="optimizations-subcount"><span data-optimized-pages-mobile>0</span> <?= __('mobile pages'); ?></div>
-        <div class="optimizations-subcount"><span data-optimized-pages-tablet>0</span> <?= __('tablet pages'); ?></div>
-        <div class="optimizations-subcount"><span data-optimized-pages-desktop>0</span> <?= __('desktop pages'); ?>
+        <div class="optimizations-subcount"><span data-optimized-pages-mobile>0</span> <?= /* @noEscape */ __('mobile pages'); ?></div>
+        <div class="optimizations-subcount"><span data-optimized-pages-tablet>0</span> <?= /* @noEscape */ __('tablet pages'); ?></div>
+        <div class="optimizations-subcount"><span data-optimized-pages-desktop>0</span> <?= /* @noEscape */ __('desktop pages'); ?>
         </div>
     </div>
         <button id="optimizations-purge-cache"  @click="showPurgeCacheModal = true, toggleOverflow(false)" type="button" class="ml-auto bg-transparent text-purple-700 font-medium  py-2 px-4 border border-purple-500 rounded purge-btn" >
             Purge cache </button>
     </div>
-    <?= $this->getChildHtml('PurgeCachePopup'); ?>
+    <?=  /* @noEscape */ $this->getChildHtml('PurgeCachePopup'); ?>
 
 </div>
 
@@ -54,7 +54,7 @@
         var getOptimizationsTimeout = null;
         $("#optimizations-widget").cardOverlay("loading", {message: "Loading optimizations data"});
         var getOptimizations = _ => {
-            var url = '<?= $viewModel->getOptimizePageUrl() ?>';
+            var url = '<?= /* @noEscape */ $viewModel->getOptimizePageUrl() ?>';
             ((s, e, f) => {
                 if (window.fetch) {
                     fetch(url)

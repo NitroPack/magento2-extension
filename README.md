@@ -8,6 +8,16 @@ Installation Instructions: https://support.nitropack.io/hc/en-us/articles/127062
 
 # Release Notes
 
+### 3.2.0:
+#### Compatible with Magento Open Source : 2.4
+#### Stability: Stable Build
+#### Description:
+- Improvement: Create CLI commands to purge cache by tags, products, categories, and URLs.
+- Improvement: Code refactoring.
+- Improvement: Enhance compatibility with Magento 2.4.7 and 2.3.
+- Bug Fix: Fix issue where the NitroPack extension disconnects when the backlog.queue file exists and the NitroPack extension settings are accessed.
+- Bug Fix: Resolve issue where the log file cannot be downloaded.
+
 ### 3.1.1:
 #### Compatible with Magento Open Source : 2.4
 #### Stability: Stable Build

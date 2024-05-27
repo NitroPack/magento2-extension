@@ -147,6 +147,12 @@
 
 .page-main-actions {
     margin-bottom: 0;
+    display: block!important;
+}
+
+
+.store-switcher {
+    margin-top: 0!important;
 }
 
 button {

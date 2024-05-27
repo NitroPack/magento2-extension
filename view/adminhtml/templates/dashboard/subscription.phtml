@@ -17,12 +17,12 @@
         <table class="w-full border-collapse" id="plan-quotas">
             <tbody>
             <tr>
-                <td class="text-left pt-10 font-inter"><?= __('Next reset'); ?></td>
-                <td class="text-right font-bold pt-10 font-inter" data-next-reset><?= __('No ETA'); ?></td>
+                <td class="text-left pt-10 font-inter"><?= /* @noEscape */ __('Next reset'); ?></td>
+                <td class="text-right font-bold pt-10 font-inter" data-next-reset><?= /* @noEscape */ __('No ETA'); ?></td>
             </tr>
             <tr>
-                <td class="text-left pt-5 font-inter"><?= __('Next billing'); ?></td>
-                <td class="text-right font-bold pt-5 font-inter" data-next-billing><?= __('No ETA'); ?></td>
+                <td class="text-left pt-5 font-inter"><?= /* @noEscape */ __('Next billing'); ?></td>
+                <td class="text-right font-bold pt-5 font-inter" data-next-billing><?= /* @noEscape */ __('No ETA'); ?></td>
             </tr>
 
             </tbody>
@@ -38,7 +38,7 @@
     require(['jquery', 'NitroPack_NitroPack/js/overlay'], function ($, cardOverlay) {
         $("#plan-details-widget").cardOverlay("loading", {message: "Loading plan data"});
         var getPlan = _ => {
-            var url = '<?= $viewModel->getPlanDetailUrl(); ?>';
+            var url = '<?= /* @noEscape */ $viewModel->getPlanDetailUrl(); ?>';
             ((s, e, f) => {
                 if (window.fetch) {
                     fetch(url)
@@ -78,7 +78,7 @@
 
                 $("#plan-details-widget").cardOverlay("clear");
             }, __ => {
-                $("#plan-details-widget").cardOverlay("error", {message: "<?= __('Error while fetching plan data'); ?>"});
+                $("#plan-details-widget").cardOverlay("error", {message: "<?= /* @noEscape */ __('Error while fetching plan data'); ?>"});
             }, __ => {
             });
         }

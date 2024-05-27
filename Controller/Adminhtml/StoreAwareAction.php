@@ -52,12 +52,8 @@ abstract class StoreAwareAction extends Action
             }
         } catch (\Exception $e) {
             if (strpos(strtolower($e->getMessage()), 'not reliable') !== false) {
-                $this->nitro->disconnect($this->storeGroup->getCode());
-                $this->nitro->purgeLocalCache(true);
                 $resultRedirect = $this->resultRedirectFactory->create();
-                return $resultRedirect->setPath(
-                    $this->_backendUrl->getUrl('NitroPack/connect/index', ['group' => $this->storeGroup->getId()])
-                );
+                return $resultRedirect->setPath($this->_backendUrl->getUrl('NitroPack/connect/support', []));
             }
             if ($fileDriver->isExists($settingsFilename)) {
                 $this->messageManager->addErrorMessage("Nitropack:" . $e->getMessage());
@@ -71,7 +67,6 @@ abstract class StoreAwareAction extends Action
                     return $resultRedirect->setPath($this->_backendUrl->getUrl('NitroPack/connect/support', []));
                 }
             } else {
-
                 $resultRedirect = $this->resultRedirectFactory->create();
                 return $resultRedirect->setPath(
                     $this->_backendUrl->getUrl('NitroPack/connect/index', ['group' => $this->storeGroup->getId()])

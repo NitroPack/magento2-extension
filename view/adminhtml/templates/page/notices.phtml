@@ -34,9 +34,7 @@ if (($nitroPackConfigHelper->getFullPageCacheValue() || $fastlyHelper->isFastlyA
             <div class="message message-warning message-demo-mode">
                 Thank you for updating NitroPack! This Store needs to be reconnected to a website in your <a
                     href="https://nitropack.io/user/login">NitroPack account</a>.
-                <a href="<?= $InvalidationHelper->backUrlRedirectToConnect(
-                    $InvalidationHelper->checkNotificationLegacyDisconnect()
-                ) ?>">Connect</a> and follow the instructions.
+                <a href="<?=  /* @noEscape */ $InvalidationHelper->backUrlRedirectToConnect($InvalidationHelper->checkNotificationLegacyDisconnect()) ?>">Connect</a> and follow the instructions.
             </div>
         </div>
     <?php

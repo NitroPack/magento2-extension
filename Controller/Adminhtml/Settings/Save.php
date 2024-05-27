@@ -176,10 +176,11 @@ class Save extends StoreAwareAction
                     $this->getStoreGroup()->getCode(),
                     $this->nitro->getSettings()
                 );
+                $this->nitro->getApi()->resetWarmup();
                 $this->nitro->getApi()->setWarmupHomepage($this->getStoreUrl());
                 $this->nitro->getApi()->setWarmupSitemap($sitemapUrl);
                 $this->nitro->getApi()->enableWarmup();
-                $this->nitro->getApi()->resetWarmup();
+
             } elseif ($oldSettings['cacheWarmup'] && !$newSettings['cacheWarmup']) {
                 $this->nitro->getApi()->unsetWarmupSitemap();
                 $this->nitro->getApi()->disableWarmup();

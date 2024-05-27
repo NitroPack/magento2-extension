@@ -15,7 +15,7 @@
         </div>
         <div class="flex flex-row items-center justify-center">
             <div class="flex items-center justify-center">
-                <img src="<?= $block->getImage("info.svg"); ?>" alt="After Processing Image" width="46"
+                <img src="<?= /* @noEscape */ $block->getImage("info.svg"); ?>" alt="After Processing Image" width="46"
                      class="rotate-180 img-pop-align"
                      height="46">
             </div>
@@ -40,8 +40,8 @@
                 <div class="flex items-center justify-center">
                     <button @click=" toggleOverflow(false)" type="button"
                             class="disconnect bg-transparent text-purple-700 font-medium font-inter border border-purple-500 rounded cancel-btn">
-                        <img src="<?= $block->getImage('loading.svg'); ?>" alt="loading"  class="icon-left npDisconnectLoading" style="display: none; margin-bottom: 3px;">
-                        <img src="<?=  $block->getImage('check.svg');?>" alt="loading"  class="icon-left npDisconnectSuccess" style="display: none;">
+                        <img src="<?= /* @noEscape */ $block->getImage('loading.svg'); ?>" alt="loading"  class="icon-left npDisconnectLoading" style="display: none; margin-bottom: 3px;" />
+                        <img src="<?=  /* @noEscape */ $block->getImage('check.svg');?>" alt="loading"  class="icon-left npDisconnectSuccess" style="display: none;" />
                         Disconnect Anyway
                     </button>
                 </div>
@@ -74,8 +74,8 @@
                 <div class="flex items-center justify-center">
                     <button type="button" @click="toggleOverflow(false)"
                             class="disconnect text-white font-medium font-inter border border-purple-500 rounded disconnectBtn">
-                        <img src="<?= $block->getImage('loading.svg'); ?>" alt="loading"  class="icon-left npDisconnectLoading" style="display: none; margin-bottom: 3px;">
-                        <img src="<?=  $block->getImage('check.svg');?>" alt="loading"  class="icon-left npDisconnectSuccess" style="display: none;">Disconnect
+                        <img src="<?= /* @noEscape */ $block->getImage('loading.svg'); ?>" alt="loading"  class="icon-left npDisconnectLoading" style="display: none; margin-bottom: 3px;" />
+                        <img src="<?=  /* @noEscape */ $block->getImage('check.svg');?>" alt="loading"  class="icon-left npDisconnectSuccess" style="display: none;" />Disconnect
                     </button>
                 </div>
             </div>

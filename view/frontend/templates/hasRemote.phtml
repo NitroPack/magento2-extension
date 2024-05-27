@@ -1,9 +1,9 @@
 <?php
 
 if ($block->checkNitroHeaderCacheIsMiss() && $block->getEnabled()): ?>
-    <input type="hidden" name="nitropack_route" id="nitropack_route" value="<?= $block->getRoute() ?>"/>
-    <input type="hidden" name="nitropack_currentUrl" id="nitropack_currentUrl" value="<?= $block->getCurrentUrl() ?>"/>
-    <input type="hidden" name="nitropack_storeCode" id="nitropack_storeCode" value="<?= $block->getStoreCode() ?>"/>
+    <input type="hidden" name="nitropack_route" id="nitropack_route" value="<?= /* @noEscape */ $block->getRoute() ?>"/>
+    <input type="hidden" name="nitropack_currentUrl" id="nitropack_currentUrl" value="<?= /* @noEscape */ $block->getCurrentUrl() ?>"/>
+    <input type="hidden" name="nitropack_storeCode" id="nitropack_storeCode" value="<?= /* @noEscape */ $block->getStoreCode() ?>"/>
     <script type="text/x-magento-init">
     {
         "*": {

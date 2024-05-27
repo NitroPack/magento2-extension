@@ -8,17 +8,13 @@
     <preference for="NitroPack\NitroPack\Api\TaggingServiceInterface" type="NitroPack\NitroPack\Api\TaggingService"/>
     <type name="NitroPack\NitroPack\Api\TaggingService" shared="true">
         <arguments>
-            <argument name="nitro" xsi:type="object" shared="true">NitroPack\NitroPack\Api\NitroServiceInterface
-            </argument>
+            <argument name="nitro" xsi:type="object" shared="true">NitroPack\NitroPack\Api\NitroServiceInterface</argument>
         </arguments>
     </type>
     <type name="Magento\Framework\App\Cache\Manager">
         <plugin name="after_cache_checker" type="NitroPack\NitroPack\Plugin\CacheState\CacheStateAfter"/>
     </type>
 
-    <type name="Magento\Framework\App\Cache\Manager">
-        <plugin name="after_cache_checker" type="NitroPack\NitroPack\Plugin\CacheState\CacheStateAfter"/>
-    </type>
     <type name="Magento\CatalogInventory\Model\Stock\StockItemRepository">
         <plugin name="your_module_stock_item_save_before" type="NitroPack\NitroPack\Plugin\StockItemSaveBefore" sortOrder="10" disabled="false" />
     </type>
@@ -42,4 +38,16 @@
             </argument>
         </arguments>
     </type>
+    <type name="Magento\Framework\Console\CommandList">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="nitropack_purge_cache" xsi:type="object">NitroPack\NitroPack\Console\Command\Purge</item>
+                <item name="nitropack_purge_cache_tags" xsi:type="object">NitroPack\NitroPack\Console\Command\PurgeByTags</item>
+                <item name="nitropack_purge_cache_product_id" xsi:type="object">NitroPack\NitroPack\Console\Command\PurgeByProductId</item>
+                <item name="nitropack_purge_cache_category_is" xsi:type="object">NitroPack\NitroPack\Console\Command\PurgeByCategoryId</item>
+                <item name="nitropack_purge_cache_url" xsi:type="object">NitroPack\NitroPack\Console\Command\PurgeByUrl</item>
+            </argument>
+        </arguments>
+    </type>
+    <preference for="NitroPack\NitroPack\Api\PurgeManagementInterface" type="NitroPack\NitroPack\Model\Purge\PurgeManagement"/>
 </config>

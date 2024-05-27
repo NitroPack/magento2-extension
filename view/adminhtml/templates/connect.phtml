@@ -11,9 +11,9 @@
                 </div>
             </div>
             <div class="flex justify-center w-1/2">
-                <img src="<?= $block->getImage('logo.svg') ?>" class="mx-1">
-                <img src="<?= $block->getImage('plus.svg') ?>" class="mx-1">
-                <img src="<?= $block->getImage('magento-logo.svg') ?>" class="mx-1">
+                <img src="<?= /* @noEscape */ $block->getImage('logo.svg'); ?>" class="mx-1" />
+                <img src="<?=  /* @noEscape */$block->getImage('plus.svg'); ?>" class="mx-1" />
+                <img src="<?= /* @noEscape */ $block->getImage('magento-logo.svg'); ?>" class="mx-1" />
             </div>
             <div class="w-1/4"></div>
         </div>
@@ -27,7 +27,7 @@
                 <div id="nitropack-site-connect" class="text-center pt-3">
                     <button type="button"
                         class="connect-button font-inter text-sm bg-purple hover:bg-purple-200 text-white hover:text-white focus:text-white focus:bg-purple-200"
-                        id="api-details-form-submit"> <img src="<?= $block->getImage('loading.svg'); ?>" alt="loading" id="npConnectLoading" class="icon-left mr-2" style="display: none; margin-bottom: 3px;">Connect
+                        id="api-details-form-submit"> <img src="<?= /* @noEscape */ $block->getImage('loading.svg'); ?>" alt="loading" id="npConnectLoading" class="icon-left mr-2" style="display: none; margin-bottom: 3px;" />Connect
                     </button>
                 </div>
 
@@ -46,7 +46,7 @@
                     <div class="form-group">
                         <div>
                             <input type="hidden" class="form-control" disabled id="select-store" name="store_id"
-                                   value="<?= $block->getStoreName() ?>: <?= $block->getStoreUrl() ?>"/>
+                                   value="<?= /* @noEscape */ $block->getStoreName() ?>: <?=  /* @noEscape */$block->getStoreUrl() ?>"/>
                         </div>
                     </div>
                     <div class="form-group">
@@ -55,7 +55,7 @@
                             <input type="text" id="nitro_site_id" name="nitro_site_id"
                                    data-validate="{required:true, 'validate-email':true}"
                                    class="bg-white w-[400px] font-inter border border-gray-300 text-gray-900 text-m rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                                   placeholder="<?= $escaper->escapeHtml(__("Enter your API Key")) ?>"/>
+                                   placeholder="<?= $block->escapeHtml(__("Enter your API Key")) ?>"/>
                         </div>
                     </div>
                     <div class="form-group mt-4 mb-8">
@@ -63,7 +63,7 @@
                         <div class="input-group mt-2">
                             <input type="password" id="nitro_site_secret" name="nitro_site_secret"
                                    class="form-control bg-white w-[400px] font-inter border border-gray-300 text-gray-900 text-m rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                                   placeholder="<?= $escaper->escapeHtml(__("Enter your API Secret Key")) ?>"
+                                   placeholder="<?= $block->escapeHtml(__("Enter your API Secret Key")) ?>"
                                    data-toggle-password=""/>
                             <div class="input-group-append">
 									<span class="eyeicon" id="toggle-password">
@@ -86,7 +86,7 @@
                            value="manual">
                     <div id="nitropack-site-connect" class="text-center pt-3 mt-8">
                         <button type="button" class="connect-button font-inter text-sm bg-purple hover:bg-purple-200 text-white hover:text-white focus:text-white focus:bg-purple-200"
-                            id="nitro_connect"> <img src="<?= $block->getImage('loading.svg'); ?>" alt="loading" id="npConnectLoading" class="icon-left mr-2" style="display: none; margin-bottom: 3px;">Connect
+                            id="nitro_connect"> <img src="<?= /* @noEscape */ $block->getImage('loading.svg'); ?>" alt="loading" id="npConnectLoading" class="icon-left mr-2" style="display: none; margin-bottom: 3px;" />Connect
                         </button>
                     </div>
                 </form>
@@ -110,9 +110,9 @@
         <div id="connection-success" class="row justify-content-center" style="display: none">
             <div class="min-h-[600px] container-sm">
                 <div class="flex justify-center gap-5">
-                    <img src="<?= $block->getImage('logo.svg') ?>">
-                    <img src="<?= $block->getImage('plus.svg') ?>">
-                    <img src="<?= $block->getImage('magento-logo.svg') ?>">
+                    <img src="<?= /* @noEscape */ $block->getImage('logo.svg'); ?>" />
+                    <img src="<?= /* @noEscape */ $block->getImage('plus.svg'); ?>" />
+                    <img src="<?= /* @noEscape */ $block->getImage('magento-logo.svg'); ?>"/>
                 </div>
 
                 <h4 class="text-center font-inter font-bold text-h4 text-grey-700">Website sucessfully connected!</h4>
@@ -142,7 +142,7 @@
 
     require(['jquery'], function ($) {
 
-        let saveUrl = '<?= $block->getSaveUrl() ?>';
+        let saveUrl = '<?= /* @noEscape */ $block->getSaveUrl() ?>';
 
         $(document).ready(function () {
             $('#nitro_connect').click(submitForm);
@@ -262,15 +262,15 @@
             $(this).text($(this).attr('data-loading-text'));
         });
         let connectPopup = null;
-        let homePageUrl = encodeURIComponent("<?= $block->getStoreUrl() ?>");
-        let storeName = "<?= $block->getStoreName() ?>";
+        let homePageUrl = encodeURIComponent("<?= /* @noEscape */ $block->getStoreUrl() ?>");
+        let storeName = "<?= /* @noEscape */ $block->getStoreName() ?>";
         $("#api-details-form-submit").on("click", function (e) {
             let siteId = $("#nitro_site_id").val();
             let siteSecret = $("#nitro_site_secret").val();
             if (!connectPopup || !connectPopup.window) {
                 let screenWidth = window.screen.availWidth;
                 let screenHeight = window.screen.availHeight;
-                let windowWidth = 500;
+                let windowWidth = 800;
                 let windowHeight = 700;
                 let leftPos = window.top.outerWidth / 2 + window.top.screenX - (windowWidth / 2);
                 let topPos = window.top.outerHeight / 2 + window.top.screenY - (windowHeight / 2);

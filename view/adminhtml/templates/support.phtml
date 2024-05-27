@@ -6,7 +6,7 @@ $settingPage = $this->getUrl('NitroPack/Settings/Index');
     <div class="container-sm h-[600px]"">
         <div class="flex justify-between items-center">
             <img class="mx-auto mt-[80px] mb-[80px]"
-                 src="<?php echo $this->getViewFileUrl('NitroPack_NitroPack::img/warning.png'); ?>" id="support-logo"
+                 src="<?= /* @noEscape */ $this->getViewFileUrl('NitroPack_NitroPack::img/warning.png'); ?>" id="support-logo"
                  alt="NitroPack.io">
         </div>
         <div class="text-grey-700 text-center font-inter text-24-32 font-bold">
@@ -18,7 +18,7 @@ $settingPage = $this->getUrl('NitroPack/Settings/Index');
             inconvenience and appreciate your patience. <br>If the problem persists, please contact our <a class="text-blue" target="_blank" href="https://support.nitropack.io/en/ ">support team.</a>
         </div>
         <div class="flexitems-center">
-        <button onClick="window.location.href='<?= $settingPage ?>'" class="mx-auto flex gap-2 justify-center items-center border-solid border border-purple font-inter rounded-lg hover:bg-purple-100 text-purple font-medium font-inter hover:text-purple py-[8px] px-[20px] stroke-purple">
+        <button onClick="window.location.href='<?= /* @noEscape */ $settingPage ?>'" class="mx-auto flex gap-2 justify-center items-center border-solid border border-purple font-inter rounded-lg hover:bg-purple-100 text-purple font-medium font-inter hover:text-purple py-[8px] px-[20px] stroke-purple">
             Refresh now</button>
         </div>
     </div>

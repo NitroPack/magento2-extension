@@ -11,8 +11,8 @@ $diagnosticsReportStoreGroupId = $block->getStoreGroup()->getId()
 
 <div class="bg-white grid grid-cols-3 xl:grid-cols-3 gap-4 pad-24 border border-gray-200 card-radius shadow">
     <div class="w-full card-radius col-span-2">
-        <h3 class="text-base font-inter text-grey-700 font-bold mb-4"><?= $escaper->escapeHtml(__("System Info Report")) ?></h3>
-        <p class="text-grey-600"><?= $escaper->escapeHtml(__("This system info report serves as a valuable told for troubleshooting any issues with
+        <h3 class="text-base font-inter text-grey-700 font-bold mb-4"><?= $block->escapeHtml(__("System Info Report")) ?></h3>
+        <p class="text-grey-600"><?= $block->escapeHtml(__("This system info report serves as a valuable told for troubleshooting any issues with
             NitroPack. By sharing this detailed report with our support team, you enable them to
             efficiently diagnose and address any concerns, ensuring a swift resolution to enchance your
             overall experience with NitroPack.")); ?></p>
@@ -22,14 +22,14 @@ $diagnosticsReportStoreGroupId = $block->getStoreGroup()->getId()
                 <form id="email-report-form" action="" data-mage-init='{"validation":{}}'>
                     <input type="text" id="email_report" data-validate="{required:true, 'validate-email':true}"
                            class="bg-white font-inter border border-gray-300 text-gray-900 text-m rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                           placeholder="<?= $escaper->escapeHtml(__("support@nitropack.com")) ?>" />
+                           placeholder="<?= $block->escapeHtml(__("support@nitropack.com")) ?>" />
             </div>
 
             <div>
                 <button
                     class="border-solid border bg-purple border-purple rounded-lg float-left font-medium text-white font-inter py-2 px-6 hover:bg-purple-200 hover:text-white h-[36px] py-[4px] px-[16px]"
                     id="send-report-button">
-                    <?= $escaper->escapeHtml(__("Send Email")) ?>
+                    <?= $block->escapeHtml(__("Send Email")) ?>
                 </button>
             </div>
             </form>
@@ -46,7 +46,7 @@ $diagnosticsReportStoreGroupId = $block->getStoreGroup()->getId()
                       stroke-linejoin="round"/>
                 <path d="M8 10V2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            <?= $escaper->escapeHtml(__("Download")) ?>
+            <?= $block->escapeHtml(__("Download")) ?>
         </button>
     </div>
 
@@ -56,7 +56,7 @@ $diagnosticsReportStoreGroupId = $block->getStoreGroup()->getId()
                 <div @click="expanded = ! expanded">
                     <div class="flex flex-col gap-2 cursor-pointer items-center justify-between">
                     <span
-                        class="flex items-center text-purple font-inter"><?= $escaper->escapeHtml(__("Customize report")) ?> <svg
+                        class="flex items-center text-purple font-inter"><?= $block->escapeHtml(__("Customize report")) ?> <svg
                             width="17" height="16"
                             viewBox="0 0 17 16"
                             fill="none"
@@ -72,7 +72,7 @@ $diagnosticsReportStoreGroupId = $block->getStoreGroup()->getId()
                                 class="w-full text-left rtl:text-right text-gray-700 text-sm font-medium font-inter">
                                 <tbody>
                                 <tr class="bg-white border-b">
-                                    <td class="py-8"><?= $escaper->escapeHtml(__("Include NitroPack info (version, methods, environment)")) ?></td>
+                                    <td class="py-8"><?= $block->escapeHtml(__("Include NitroPack info (version, methods, environment)")) ?></td>
                                     <td class="pt-2">
                                         <label class="inline-flex items-center me-5  pt-1 align-middle float-right cursor-pointer">
                                             <input id="general-info-status" type="checkbox" name="general-info-status"
@@ -83,7 +83,7 @@ $diagnosticsReportStoreGroupId = $block->getStoreGroup()->getId()
                                     </td>
                                 </tr>
                                 <tr class="bg-white border-b">
-                                    <td class="py-8"><?= $escaper->escapeHtml(__("Include active plugins list")) ?></td>
+                                    <td class="py-8"><?= $block->escapeHtml(__("Include active plugins list")) ?></td>
                                     <td class="pt-2">
                                         <label class="inline-flex items-center me-5 float-right cursor-pointer">
                                             <input id="active-plugins-status" type="checkbox" name="enabled" value="0"
@@ -94,7 +94,7 @@ $diagnosticsReportStoreGroupId = $block->getStoreGroup()->getId()
                                     </td>
                                 </tr>
                                 <tr class="bg-white border-b">
-                                    <td class="py-8"><?= $escaper->escapeHtml(__("Include conflict plugins list")) ?></td>
+                                    <td class="py-8"><?= $block->escapeHtml(__("Include conflict plugins list")) ?></td>
                                     <td class="pt-2">
                                         <label class="inline-flex items-center me-5 float-right cursor-pointer">
                                             <input id="conflicting-plugins-status" type="checkbox" name="enabled"
@@ -105,7 +105,7 @@ $diagnosticsReportStoreGroupId = $block->getStoreGroup()->getId()
                                     </td>
                                 </tr>
                                 <tr class="bg-white">
-                                    <td class="py-8"><?= $escaper->escapeHtml(__("Include user config")) ?></td>
+                                    <td class="py-8"><?= $block->escapeHtml(__("Include user config")) ?></td>
                                     <td class="pt-2">
                                         <label class="inline-flex items-center me-5 float-right cursor-pointer">
                                             <input id="user-config-status" type="checkbox" name="enabled" value="0"
@@ -126,8 +126,8 @@ $diagnosticsReportStoreGroupId = $block->getStoreGroup()->getId()
 
 <div class="bg-white mt-8 grid grid-cols-3 xl:grid-cols-3 gap-4 pad-24 border border-gray-200 card-radius shadow">
     <div class="w-full col-span-2">
-        <h3 class="text-base text-grey-700 font-bold mb-4 font-inter"><?= $escaper->escapeHtml(__("NitroPack log")) ?></h3>
-        <p class="text-grey-600"><?= $escaper->escapeHtml(__("These logs offer insights into the communication between your Magento application and
+        <h3 class="text-base text-grey-700 font-bold mb-4 font-inter"><?= $block->escapeHtml(__("NitroPack log")) ?></h3>
+        <p class="text-grey-600"><?= $block->escapeHtml(__("These logs offer insights into the communication between your Magento application and
             the NitroPack core
             service, highlighting connection attempts and any errors. For your convenience, the latest 100 lines are
             displayed in reverse order, allowing easy review. Please note that editing the file is not supported in
@@ -145,7 +145,7 @@ $diagnosticsReportStoreGroupId = $block->getStoreGroup()->getId()
                     <button
                         class="border-solid border bg-purple border-purple rounded-lg float-left font-medium font-inter text-white hover:bg-purple-200 hover:text-white h-[36px] py-[4px] px-[16px]"
                         id="send-email-button">
-                        <?= $escaper->escapeHtml(__("Send Email")) ?>
+                        <?= $block->escapeHtml(__("Send Email")) ?>
                     </button>
                 </div>
             </div>
@@ -164,7 +164,7 @@ $diagnosticsReportStoreGroupId = $block->getStoreGroup()->getId()
                   stroke-linejoin="round"/>
             <path d="M8 10V2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        <?= $escaper->escapeHtml(__("Download")) ?>
+        <?= $block->escapeHtml(__("Download")) ?>
     </button>
 </div>
 
@@ -173,7 +173,7 @@ $diagnosticsReportStoreGroupId = $block->getStoreGroup()->getId()
         <div
             class="overflow-y-scroll h-72 relative mx-auto bg-white shadow-lg ring-1 ring-black/5 rounded-xl flex flex-col divide-y">
             <div class="flex items-center gap-4 p-4">
-                <p class="text-grey-600 font-inter"><?= $block->getLogContent() ?>
+                <p class="text-grey-600 font-inter"><?= /* @noEscape */ $block->getLogContent() ?>
                 </p>
             </div>
         </div>
@@ -186,12 +186,12 @@ $diagnosticsReportStoreGroupId = $block->getStoreGroup()->getId()
         $("#gen-report-btn").on("click", function (e) {
             if (isReportGenerating) return;
             $.ajax({
-                url: "<?= $diagnosticsReport; ?>",
+                url: "<?= /* @noEscape */ $diagnosticsReport; ?>",
                 type: "POST",
                 dataType: "text",
                 data: {
                     action: 'nitropack_generate_report',
-                    group: <?= $diagnosticsReportStoreGroupId; ?>,
+                    group: <?= /* @noEscape */ $diagnosticsReportStoreGroupId; ?>,
                     toggled: {
                         "general-info-status": $("#general-info-status:checked").length,
                         "active-plugins-status": $("#active-plugins-status:checked").length,
@@ -206,7 +206,7 @@ $diagnosticsReportStoreGroupId = $block->getStoreGroup()->getId()
                         isReportGenerating = true;
                         return true;
                     } else {
-                        alert("<?= __('Please select at least one of the report options'); ?>");
+                        alert("<?= /* @noEscape */ __('Please select at least one of the report options'); ?>");
                         return false;
                     }
                 },
@@ -250,13 +250,13 @@ $diagnosticsReportStoreGroupId = $block->getStoreGroup()->getId()
                                 URL.revokeObjectURL(downloadUrl);
                             }, 100);
                         }
-                        Notification.success("<?= __('Report generated successfully.'); ?>");
+                        Notification.success("<?= /* @noEscape */ __('Report generated successfully.'); ?>");
                     } else {
-                        Notification.warning("<?= __('Response is empty. Report generation failed.'); ?>");
+                        Notification.warning("<?= /* @noEscape */ __('Response is empty. Report generation failed.'); ?>");
                     }
                 },
                 error: function () {
-                    Notification.warning("<?= __('There was an error while generating the report.'); ?>");
+                    Notification.warning("<?= /* @noEscape */ __('There was an error while generating the report.'); ?>");
                 },
                 complete: function () {
                     $("#diagnostics-loader").hide();
@@ -274,7 +274,7 @@ $diagnosticsReportStoreGroupId = $block->getStoreGroup()->getId()
             }
             $(this).addClass('disabled');
             $.ajax({
-                url: '<?= $sendLogReportUrl ?>',
+                url: '<?= /* @noEscape */$sendLogReportUrl ?>',
                 method: 'POST',
                 dataType: 'json',
                 data: {
@@ -298,7 +298,7 @@ $diagnosticsReportStoreGroupId = $block->getStoreGroup()->getId()
         $("#download-log").on("click", function (event) {
             event.preventDefault();
             $.ajax({
-                url: '<?= $downloadLogUrl ?>',
+                url: '<?= /* @noEscape */ $downloadLogUrl ?>',
                 method: 'POST',
                 dataType: 'text',
                 data: {
@@ -344,9 +344,9 @@ $diagnosticsReportStoreGroupId = $block->getStoreGroup()->getId()
                                 URL.revokeObjectURL(downloadUrl);
                             }, 100);
                         }
-                        Notification.success("<?= __('Log generated successfully.'); ?>");
+                        Notification.success("<?= /* @noEscape */ __('Log generated successfully.'); ?>");
                     } else {
-                        Notification.warning("<?= __('Log is empty. Log generation failed.'); ?>");
+                        Notification.warning("<?= /* @noEscape */ __('Log is empty. Log generation failed.'); ?>");
                     }
                 },
 
@@ -364,12 +364,12 @@ $diagnosticsReportStoreGroupId = $block->getStoreGroup()->getId()
             // if (isReportGenerating) return;
 
             $.ajax({
-                url: "<?= $diagnosticsReportUrl; ?>",
+                url: "<?= /* @noEscape */ $diagnosticsReportUrl; ?>",
                 type: "POST",
                 dataType: "json",
                 data: {
                     action: 'nitropack_generate_report',
-                    group: <?= $diagnosticsReportStoreGroupId; ?>,
+                    group: <?= /* @noEscape */ $diagnosticsReportStoreGroupId; ?>,
                     email: $("#email_report").prop('value'),
                     toggled: {
                         "general-info-status": $("#general-info-status:checked").length,
@@ -385,7 +385,7 @@ $diagnosticsReportStoreGroupId = $block->getStoreGroup()->getId()
                         isReportGenerating = true;
                         return true;
                     } else {
-                        alert("<?= __('Please select at least one of the report options'); ?>");
+                        alert("<?= /* @noEscape */ __('Please select at least one of the report options'); ?>");
                         return false;
                     }
                 },

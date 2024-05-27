@@ -43,17 +43,17 @@ $settings = $block->getSettings();
                 <div class="gap-8">
                     <div class="row mb-8">
                         <!-- Optimized Pages Card -->
-                        <?= $this->getChildHtml('OptimizedPages'); ?>
+                        <?= /* @noEscape */ $this->getChildHtml('OptimizedPages'); ?>
                     </div>
                     <div class="row mb-8">
                         <!-- Optimized Pages Card End -->
                         <!-- Optimization Mode Card Start -->
-                        <?= $this->getChildHtml('OptimizationMode'); ?>
+                        <?= /* @noEscape */ $this->getChildHtml('OptimizationMode'); ?>
                     </div>
                     <!-- Optimization Mode Card End -->
                     <!-- General Block Card Start -->
                     <div class="row mb-8">
-                        <?= $this->getChildHtml('GeneralBlock'); ?>
+                        <?= /* @noEscape */ $this->getChildHtml('GeneralBlock'); ?>
                     </div>
                     <!-- General Block Card End -->
 
@@ -61,12 +61,12 @@ $settings = $block->getSettings();
                 <div class="gap-8">
                     <!-- Subscription Block Card Start -->
                     <div class="row mb-8">
-                        <?= $this->getChildHtml('SubscriptionBlock'); ?>
+                        <?=  /* @noEscape */ $this->getChildHtml('SubscriptionBlock'); ?>
                         <!-- Subscription Block Card End -->
                     </div>
                     <div class="row mb-8">
                         <!-- Product Attribute Block Card Start -->
-                        <?= $this->getChildHtml('ProductAttributeBlock'); ?>
+                        <?= /* @noEscape */ $this->getChildHtml('ProductAttributeBlock'); ?>
                         <!-- Product Attribute Block Card End  -->
                     </div>
                 </div>
@@ -281,7 +281,7 @@ $settings = $block->getSettings();
 
                 if (saveRequest) {
                     $.ajax({
-                        url: '<?= $saveUrl ?>',
+                        url: '<?= /* @noEscape */ $saveUrl ?>',
                         method: 'POST',
                         dataType: 'json',
                         data: data,
@@ -304,7 +304,7 @@ $settings = $block->getSettings();
                     enabledValue = 1;
                 }
                 $.ajax({
-                    url: '<?= $saveUrl ?>',
+                    url: '<?=  /* @noEscape */ $saveUrl ?>',
                     method: 'POST',
                     dataType: 'json',
                     data: {"enabled": enabledValue},
@@ -312,8 +312,8 @@ $settings = $block->getSettings();
                         $('#status').removeAttr('disabled');
                         if (response.saved) {
                             Notification.success('Saved successfully');
-                            if (<?= $block->checkVarnishEnable()?>) {
-                                $.get('<?=  $block->getVarnishPurgeUrl() ?>', function (data) {
+                            if (<?=  /* @noEscape */ $block->checkVarnishEnable()?>) {
+                                $.get('<?=  /* @noEscape */ $block->getVarnishPurgeUrl() ?>', function (data) {
                                 });
                             }
                         } else {
@@ -330,7 +330,7 @@ $settings = $block->getSettings();
                 $('.warmup-status-message').html('Estimating Optimization Usage');
                 if (warmupEnabled) {
                     $.ajax({
-                        url: '<?= $warmupStartUrl ?>',
+                        url: '<?= /* @noEscape */ $warmupStartUrl ?>',
                         method: 'POST',
                         dataType: 'json',
                         data: {run: 1},
@@ -350,7 +350,7 @@ $settings = $block->getSettings();
                     });
                 } else {
                     $.ajax({
-                        url: '<?= $warmupPauseUrl ?>',
+                        url: '<?= /* @noEscape */ $warmupPauseUrl ?>',
                         method: 'POST',
                         dataType: 'json',
                         data: {run: 1},
@@ -370,20 +370,20 @@ $settings = $block->getSettings();
                 event.preventDefault();
                 $('.npDisconnectLoading').show();
                 $.ajax({
-                    url: '<?= $block->getDisconnectUrl() ?>',
+                    url: '<?= /* @noEscape */ $block->getDisconnectUrl() ?>',
                     method: 'GET',
                     success: function (response) {
                         $('.npDisconnectLoading').hide();
                         if (response.disconnected == true) {
                             $('.npDisconnectSuccess').show();
                             $('disconnect').removeClass('disabled');
-                            if (<?= $block->checkVarnishEnable()?>) {
-                                $.get('<?=  $block->getVarnishPurgeUrl() ?>', function (data) {
-                                    window.location = '<?= $block->getConnectUrl() ?>';
+                            if (<?= /* @noEscape */ $block->checkVarnishEnable()?>) {
+                                $.get('<?= /* @noEscape */  $block->getVarnishPurgeUrl() ?>', function (data) {
+                                    window.location = '<?= /* @noEscape */ $block->getConnectUrl() ?>';
 
                                 });
                             } else {
-                                window.location = '<?= $block->getConnectUrl() ?>';
+                                window.location = '<?= /* @noEscape */ $block->getConnectUrl() ?>';
                             }
                         }
                     }
@@ -409,7 +409,7 @@ $settings = $block->getSettings();
             }
 
         });
-        var safeModeUrl = "<?= $safeModeEnableUrl; ?>";
+        var safeModeUrl = "<?= /* @noEscape */ $safeModeEnableUrl; ?>";
 
         var enableSafemode = () => {
 
@@ -456,7 +456,7 @@ $settings = $block->getSettings();
         window.loadNumberOfPage = function () {
             //app.showCacheWarmupModal =true;
             if (window.loadNumberOfPageCount == 0) {
-                $.get('<?= $numberOfPageStoreWiseUrl ?>', function (data) {
+                $.get('<?= /* @noEscape */ $numberOfPageStoreWiseUrl ?>', function (data) {
                     if (data.number_of_pages) {
                         $('#cacheWarmupPage').html(data.number_of_pages);
                         window.loadNumberOfPageCount = data.number_of_pages;
@@ -477,7 +477,7 @@ $settings = $block->getSettings();
 
         }
 
-        window.isTestModeEnabled = <?= (isset($settings->safeMode) && $settings->safeMode ? "true" : "false");?>
+        window.isTestModeEnabled = <?=  /* @noEscape */ (isset($settings->safeMode) && $settings->safeMode ? "true" : "false");?>
 
 
         window.setTestMode = function (mode) {
@@ -502,7 +502,7 @@ $settings = $block->getSettings();
         function purgeCache() {
             let data = {'cache.purge': 1};
             return $.ajax({
-                url: '<?= $purgeUrl ?>',
+                url: '<?= /* @noEscape */ $purgeUrl ?>',
                 method: 'POST',
                 dataType: 'json',
                 data: data,

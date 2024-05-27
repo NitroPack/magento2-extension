@@ -22,7 +22,7 @@
         </policy>
         <policy id="script-src">
             <values>
-                <value id="maxcdn-bootstrapcdn" type="host">https://cdn.tailwindcss.com/</value>
+                <value id="cdn-tailwindcss-script" type="host">cdn.tailwindcss.com</value>
                 <value id="nitropack_io" type="host">nitropack.io</value>
                 <value id="nitropack_intercom" type="host">*.intercom.io</value>
                 <value id="nitropack_cdn" type="host">*.nitrocdn.com</value>
@@ -55,6 +55,7 @@
         </policy>
         <policy id="style-src">
             <values>
+                <value id="cdn-tailwindcss-style" type="host">cdn.tailwindcss.com</value>
                 <value id="nitropack_io" type="host">nitropack.io</value>
                 <value id="cdnjs_cloudflare" type="host">cdnjs.cloudflare.com</value>
                 <value id="nitropack_cdn" type="host">*.nitrocdn.com</value>

@@ -17,15 +17,15 @@
             </tr>
             <?php foreach ($viewModel->getNitroPackAttribute()['items'] as $value): ?>
             <tr class="border-b border-gray-200">
-                <td class="text-left pt-5 pb-5 font-inter general-color" style="font-weight: 500;"><?= $value['frontend_label']; ?></td>
-                <td class="text-left pb-5 pt-5 font-inter general-color" style="font-weight: 500;"><?= $value['nitro_purge'] == 1 ? 'Yes' : 'No'; ?></td>
+                <td class="text-left pt-5 pb-5 font-inter general-color" style="font-weight: 500;"><?= /* @noEscape */$value['frontend_label']; ?></td>
+                <td class="text-left pb-5 pt-5 font-inter general-color" style="font-weight: 500;"><?= /* @noEscape */ $value['nitro_purge'] == 1 ? 'Yes' : 'No'; ?></td>
             </tr>
             <?php endforeach; ?>
             </tbody>
         </table>
     </div>
     <div class="flex flex-row items-center pt-3 ml-10 mt-5">
-        <button onclick="location.href='<?= $block->getProductAttributeUrl(); ?>'" type="button"
+        <button onclick="location.href='<?= /* @noEscape */ $block->getProductAttributeUrl(); ?>'" type="button"
                 class="ml-auto bg-transparent text-purple-700 font-medium  py-2 px-4 border border-purple-500 rounded manage-sub font-inter">Manage all attributes
         </button>
     </div>

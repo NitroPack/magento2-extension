@@ -1,6 +1,6 @@
 <?php
 
-namespace NitroPack\NitroPack\Model\App\FrontController;
+namespace NitroPack\NitroPack\Plugin\App\FrontController;
 
 
 use Magento\Framework\App\Response\Http as ResponseHttp;
@@ -40,7 +40,7 @@ class NitroPackTagPlugin
     /**
      * @param FastlyHelper
      * */
-     protected $fastlyHelper;
+    protected $fastlyHelper;
     /**
      * @param Config $config
      * @param Registry $registry

@@ -308,7 +308,7 @@ class TransportBuilder extends \Magento\Framework\Mail\Template\TransportBuilder
      * @param $fileType
      * @return $this
      */
-    public function addAttachment($content, $fileName, $fileType): static
+    public function addAttachment($content, $fileName, $fileType): self
     {
         $attachmentPart = $this->partFactory->create();
         $attachmentPart->setContent($content)

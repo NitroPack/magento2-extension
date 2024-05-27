@@ -36,6 +36,7 @@ class Pause extends StoreAwareAction
     {
         try {
             $this->nitro->getApi()->disableWarmup();
+            $this->nitro->getApi()->resetWarmup();
             return $this->resultJsonFactory->create()->setData(array(
                 'paused' => true
             ));

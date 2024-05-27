@@ -5,17 +5,13 @@
     <preference for="NitroPack\NitroPack\Api\TaggingServiceInterface" type="NitroPack\NitroPack\Api\TaggingService"/>
     <type name="NitroPack\NitroPack\Api\TaggingService" shared="true">
         <arguments>
-            <argument name="nitro" xsi:type="object" shared="true">NitroPack\NitroPack\Api\NitroServiceInterface
-            </argument>
+            <argument name="nitro" xsi:type="object" shared="true">NitroPack\NitroPack\Api\NitroServiceInterface</argument>
             <argument name="doNotPush" xsi:type="boolean">true</argument>
         </arguments>
     </type>
-
-    <preference for="NitroPack\NitroPack\Api\CacheWarmupInterface" type="NitroPack\NitroPack\Api\CacheWarmup"/>
     <type name="NitroPack\NitroPack\Api\TaggingService" shared="true">
         <arguments>
-            <argument name="nitro" xsi:type="object" shared="true">NitroPack\NitroPack\Api\NitroServiceInterface
-            </argument>
+            <argument name="nitro" xsi:type="object" shared="true">NitroPack\NitroPack\Api\NitroServiceInterface</argument>
         </arguments>
     </type>
     <type name="Magento\Backend\Block\Widget\Grid\Massaction">

@@ -13,7 +13,7 @@ $enabledMagentoCaches = $nitroPackConfigHelper->getDisabledCaches();
         <h6 class="text-base font-bold text-gray-900 optimize-page-head mb-8">General settings</h6>
     </div>
     <!---- Extension Status ---->
-    <div x-data="{isCheckedEnabled:<?= (isset($settings->enabled) && $settings->enabled ? "true" : "false" );?> , showEnabledModal :false}" @keydown.escape="showEnabledModal = false" id="extension-status-widget">
+    <div x-data="{isCheckedEnabled:<?= /* @noEscape */ (isset($settings->enabled) && $settings->enabled ? "true" : "false" );?> , showEnabledModal :false}" @keydown.escape="showEnabledModal = false" id="extension-status-widget">
     <div class="flex flex-row items-center justify-between mt-6 mb-6" >
         <div class="flex-row">
         <h6 class="text-base font-bold text-gray-900 optimize-page-head">Extension status</h6>
@@ -31,20 +31,20 @@ $enabledMagentoCaches = $nitroPackConfigHelper->getDisabledCaches();
                 } ?> peer-focus:outline-none dark:peer-focus:ring-purple rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[4px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:transition-all dark:border-gray-600 peer-checked:bg-purple"></div>
         </label>
     </div>
-        <?= $this->getChildHtml('EnabledConfirmPopup'); ?>
+        <?= /* @noEscape */ $this->getChildHtml('EnabledConfirmPopup'); ?>
 
     </div>
     <div class="flex flex-row items-center border-b border-gray-200"></div>
 
     <!---- Cache Warmup ---->
-    <div x-data="{isCheckedCacheWarmup:<?= (isset($settings->cacheWarmup) && $settings->cacheWarmup ? "true" : "false" );?> , isShowCacheWarmup:false }" @keydown.escape="showCacheWarmupModal = false" id="cache-warmup-widget">
+    <div x-data="{isCheckedCacheWarmup:<?= /* @noEscape */ (isset($settings->cacheWarmup) && $settings->cacheWarmup ? "true" : "false" );?> , isShowCacheWarmup:false }" @keydown.escape="showCacheWarmupModal = false" id="cache-warmup-widget">
     <div class="flex flex-row items-center justify-between mt-6 mb-6" >
         <div class="flex-row">
         <h6 class="text-base font-bold text-gray-900 optimize-page-head ">Cache warmup <span class="badge-warning p-2 text-xl font-normal">Recommended</span></h6>
         <p class="text-xl text-gray-900 text-lite-gray pt-2 general-font-size font-inter">Automatically pre-caches your website's page content. <a href="https://support.nitropack.io/en/articles/8390320-cache-warmup" target="_blank" rel="noreferrer noopener" class="text-blue">Learn more</a></p>
         </div>
         <label class="items-center me-5 cursor-pointer">
-            <input id="cache_warmup" type="checkbox" x-model="isCheckedCacheWarmup" x-on:change=" if(isCheckedCacheWarmup){ isShowCacheWarmup=true; window.loadNumberOfPage();window.setCacheWarmup(true); }else{  isShowCacheWarmup=false;window.setCacheWarmup(false);}"  name="cacheWarmup" <?= ($settings->cacheWarmup ? 'checked' : '') ?>
+            <input id="cache_warmup" type="checkbox" x-model="isCheckedCacheWarmup" x-on:change=" if(isCheckedCacheWarmup){ isShowCacheWarmup=true; window.loadNumberOfPage();window.setCacheWarmup(true); }else{  isShowCacheWarmup=false;window.setCacheWarmup(false);}"  name="cacheWarmup" <?= /* @noEscape */ ($settings->cacheWarmup ? 'checked' : '') ?>
                    class="sr-only peer">
             <div
                 class="toggle-height toggle-width relative bg-lite-purple-200 peer-focus:outline-none dark:peer-focus:ring-purple rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[4px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:transition-all dark:border-gray-600 peer-checked:bg-purple"></div>
@@ -56,7 +56,7 @@ $enabledMagentoCaches = $nitroPackConfigHelper->getDisabledCaches();
 <!--        <p class="text-xl text-gray-900 text-lite-gray pt-2 general-font-size font-inter">Automatically pre-caches your website's page content. <a href="https://support.nitropack.io/en/articles/8390320-cache-warmup" target="_blank" rel="noreferrer noopener" class="text-blue">Learn more</a></p>-->
 <!--    </div>-->
     <div class="flex flex-row items-center msg-container mt-2" x-show="isShowCacheWarmup" id="loading-warmup-status"  style="display: none;">
-        <img src="<?= $block->getImage('loading.svg'); ?>" alt="loading" id="npCacheWarmupLoading" class="icon-left" >
+        <img src="<?= /* @noEscape */ $block->getImage('loading.svg'); ?>" alt="loading" id="npCacheWarmupLoading" class="icon-left" >
         <span class="warmup-status-message ml-2" >Estimating Optimization Usage</span>
     </div>
     <div class="flex flex-row items-center border-b border-gray-200"></div>
@@ -70,7 +70,7 @@ $enabledMagentoCaches = $nitroPackConfigHelper->getDisabledCaches();
     </div>
         <label class="inline-flex items-center me-5 cursor-pointer" >
             <input id="cache_to_customer_login" type="checkbox"
-                   name="cache_to_login_customer" <?= (isset($settings->cache_to_login_customer) && $settings->cache_to_login_customer ? 'checked' : '') ?>
+                   name="cache_to_login_customer" <?= /* @noEscape */ (isset($settings->cache_to_login_customer) && $settings->cache_to_login_customer ? 'checked' : '') ?>
                    class="sr-only peer">
             <div
                 class="toggle-height toggle-width relative bg-lite-purple-200 peer-focus:outline-none dark:peer-focus:ring-purple rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[4px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:transition-all dark:border-gray-600 peer-checked:bg-purple"></div>
@@ -79,7 +79,7 @@ $enabledMagentoCaches = $nitroPackConfigHelper->getDisabledCaches();
     <div class="flex flex-row items-center border-b border-gray-200">
     </div>
     <!---- Test Mode ---->
-    <div x-data="{ showTestModeModal: false,isCheckedTestMode:<?= (isset($settings->safeMode) && $settings->safeMode ? "true" : "false" );?> ,showTestModeDisableModal:false }" @keydown.escape="showTestModeModal = false,showTestModeDisableModal=false" id="test-mode-widget">
+    <div x-data="{ showTestModeModal: false,isCheckedTestMode:<?= /* @noEscape */ (isset($settings->safeMode) && $settings->safeMode ? "true" : "false" );?> ,showTestModeDisableModal:false }" @keydown.escape="showTestModeModal = false,showTestModeDisableModal=false" id="test-mode-widget">
     <div class="flex flex-row items-center justify-between mt-6 mb-6" >
         <div class="flex-row">
         <h6 class="text-base font-bold text-gray-900 optimize-page-head">Test Mode</h6>
@@ -89,14 +89,14 @@ $enabledMagentoCaches = $nitroPackConfigHelper->getDisabledCaches();
         </div>
         <label class="inline-flex items-center me-5 cursor-pointer">
             <input id="safe_mode"  x-model="isCheckedTestMode" x-on:change="window.removeDisabledSafeModeBtn, isCheckedTestMode ? showTestModeModal=true  : showTestModeDisableModal=true, window.setTestMode(isCheckedTestMode)" type="checkbox"
-                   name="safeMode" <?= (isset($settings->safeMode) && $settings->safeMode ? 'checked' : '') ?>
+                   name="safeMode" <?= /* @noEscape */ (isset($settings->safeMode) && $settings->safeMode ? 'checked' : '') ?>
                    class="sr-only peer">
             <div
                 class="toggle-height toggle-width relative bg-lite-purple-200 peer-focus:outline-none dark:peer-focus:ring-purple rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[4px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:transition-all dark:border-gray-600 peer-checked:bg-purple"></div>
         </label>
 
-        <?= $this->getChildHtml('TestModePopup'); ?>
-        <?= $this->getChildHtml('TestModeDisablePurgePopup'); ?>
+        <?= /* @noEscape */ $this->getChildHtml('TestModePopup'); ?>
+        <?= /* @noEscape */ $this->getChildHtml('TestModeDisablePurgePopup'); ?>
 
     </div>
     <div class="flex flex-row items-center">
@@ -113,7 +113,7 @@ $enabledMagentoCaches = $nitroPackConfigHelper->getDisabledCaches();
                 <h6 class="text-base font-bold text-gray-900 optimize-page-head">GZIP Compression</h6>
                 <label class="inline-flex items-center me-5 cursor-pointer">
                     <input id="gzip_mode" type="checkbox"
-                           name="gzip" <?= (isset($settings->gzip) && $settings->gzip ? 'checked' : '') ?>
+                           name="gzip" <?= /* @noEscape */ (isset($settings->gzip) && $settings->gzip ? 'checked' : '') ?>
                            class="sr-only peer">
                     <div
                         class="toggle-height toggle-width relative bg-lite-purple-200 peer-focus:outline-none dark:peer-focus:ring-purple rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[4px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:transition-all dark:border-gray-600 peer-checked:bg-purple"></div>
@@ -138,7 +138,7 @@ $enabledMagentoCaches = $nitroPackConfigHelper->getDisabledCaches();
          @keydown.escape="showDisconnectModal = false">
         <a href="javascript:void(0);" @click="showDisconnectModal = true, toggleOverflow(true), window.isTestMode()" id="showDisconnectModal"
            class="mr-auto text-purple-500 text-sm hover:no-underline font-inter">Disconnect NitroPack plugin</a>
-        <?= $this->getChildHtml('DisconnectPopup'); ?>
+        <?= /* @noEscape */ $this->getChildHtml('DisconnectPopup'); ?>
 
     </div>
 </div>

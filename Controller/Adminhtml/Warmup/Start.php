@@ -6,6 +6,7 @@ use Exception;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 
+use Magento\Store\Model\Store;
 use NitroPack\NitroPack\Controller\Adminhtml\StoreAwareAction;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
 use NitroPack\NitroPack\Helper\SitemapHelper;
@@ -53,6 +54,7 @@ class Start extends StoreAwareAction
 
     protected function nitroExecute()
     {
+
         try {
             $result = false;
             $permissionsIssue = false;
@@ -68,6 +70,8 @@ class Start extends StoreAwareAction
                     $permissionsIssue = true;
                 }
             }
+            $this->nitro->getApi()->setWarmupHomepage($this->getStoreUrl());
+            $this->nitro->getApi()->setWarmupSitemap($sitemapUrl);
 
         } catch (Exception $e) {
             $this->logger->error($e->getMessage());
@@ -77,5 +81,18 @@ class Start extends StoreAwareAction
             'success' => $result,
             'permissionsIssue' => $permissionsIssue ?? false
         ));
+    }
+
+    public function getStoreUrl()
+    {
+        $url = '';
+        $store = $this->_objectManager->get(Store::class);
+        $defaultStoreView = $this->storeManager->getStore($this->storeGroup->getDefaultStoreId());
+        $url = $store->isUseStoreInUrl() ? str_replace(
+            $defaultStoreView->getCode() . '/',
+            '',
+            $defaultStoreView->getBaseUrl()
+        ) : $defaultStoreView->getBaseUrl(); // get store view name
+        return $url;
     }
 }

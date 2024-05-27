@@ -5,16 +5,16 @@ if ($block->checkNitroHeaderCacheIsMiss()):
     ?>
     <script>
         NPTelemetryMetadata = {
-            "pageType": "<?= $block->getPageType(); ?>",
-            "missReason": "<?= $block->getPageHeaderMissReason(); ?>",
-            "isEligibleForOptimization": <?= $block->isEligibleForOptimization(); ?>
+            "pageType": "<?= /* @noEscape */ $block->getPageType(); ?>",
+            "missReason": "<?= /* @noEscape */ $block->getPageHeaderMissReason(); ?>",
+            "isEligibleForOptimization": <?= /* @noEscape */ $block->isEligibleForOptimization(); ?>
         };
 
     </script>
     <?php
     if ($block->fetchTelemetryJs()): ?>
         <script  type="text/javascript" defer>
-                <?= $block->fetchTelemetryJs();?>
+                <?= /* @noEscape */ $block->fetchTelemetryJs();?>
         </script>
     <?php
     endif; ?>

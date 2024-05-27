@@ -6,13 +6,13 @@ $viewModel = $block->getOptimizationMode();
      class="h-auto max-w-full card-radius pad-24 bg-white border border-gray-200 rounded-md shadow items-center">
     <div class="flex flex-row items-center" x-data="{ showTooltip: false }">
         <div  x-show="showTooltip" id="tooltip-optimization" role="tooltip" class="tooltip-container visible" style="display: none;">
-            <?= __("Select from our range of predefined optimization modes to boost your site's performance."); ?>
+            <?= /* @noEscape */ __("Select from our range of predefined optimization modes to boost your site's performance."); ?>
             <div class="tooltip-arrow" data-popper-arrow></div>
         </div>
         <h6 class="text-base font-bold text-gray-900 optimize-page-head"> Optimization mode </h6>
         <span class="pl-2 pt-1">
             <span class="tooltip-icon" data-tooltip-target="tooltip-optimization">
-            <img src="<?= $block->getImage('info.svg'); ?>" @mouseenter="showTooltip = true" @mouseleave="showTooltip = false">
+            <img src="<?= /* @noEscape */ $block->getImage('info.svg'); ?>" @mouseenter="showTooltip = true" @mouseleave="showTooltip = false">
           </span>
 
     </div>
@@ -46,7 +46,7 @@ $viewModel = $block->getOptimizationMode();
                 class="optimizeMode flex-1 px-4 py-3 focus:outline-none rounded-md transition duration-300 ease-in-out hover:bg-purple-500 hover:text-white text-gray-700  text-lite-gray font-inter">Custom
             </button>
             <input type="hidden" id="optimize_mode_value" value=""/>
-            <?= $this->getChildHtml('OptimizeModePopup'); ?>
+            <?= /* @noEscape */ $this->getChildHtml('OptimizeModePopup'); ?>
         </div>
     </div>
 
@@ -55,7 +55,7 @@ $viewModel = $block->getOptimizationMode();
             document.getElementById('body-html').classList.toggle('overflow-hidden');
         }
     </script>
-    <?= $this->getChildHtml('CompareModePopup'); ?>
+    <?= /* @noEscape */ $this->getChildHtml('CompareModePopup'); ?>
 </div>
 
 <script>
@@ -87,7 +87,7 @@ $viewModel = $block->getOptimizationMode();
             5: 'Activated when manual setups are made. Ideal for advanced NitroPack optimizations.',
         };
         var getQuickSetup = _ => {
-            var url = '<?= $viewModel->getOptimizeModeUrl(); ?>';
+            var url = '<?= /* @noEscape */ $viewModel->getOptimizeModeUrl(); ?>';
 
             ((s, e, f) => {
                 if (window.fetch) {
@@ -115,7 +115,7 @@ $viewModel = $block->getOptimizationMode();
                 $('#optimize_mode_value').val(data.optimization_level);
                 $("#quicksetup-widget").cardOverlay("clear");
             }, __ => {
-                $("#quicksetup-widget").cardOverlay("error", {message: "<?=  __('Error while fetching the optimization level settings'); ?>"});
+                $("#quicksetup-widget").cardOverlay("error", {message: "<?=  /* @noEscape */ __('Error while fetching the optimization level settings'); ?>"});
             }, __ => {
             });
         }
@@ -130,7 +130,7 @@ $viewModel = $block->getOptimizationMode();
                 $('#optimize_mode_value').val(selectOptimize);
                 return new Promise((resolve, reject) => {
                     var xhr = new XMLHttpRequest();
-                    xhr.open("POST", '<?= $viewModel->getSaveOptimizeMode() ?>', true);
+                    xhr.open("POST", '<?= /* @noEscape */ $viewModel->getSaveOptimizeMode() ?>', true);
                     //Send the proper header information along with the request
                     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
                     xhr.onreadystatechange = function () { // Call a function when the state changes.

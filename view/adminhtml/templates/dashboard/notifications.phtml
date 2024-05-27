@@ -10,7 +10,7 @@ $enableCachesUrl = $block->getEnableCachesUrl();
     <div class="warning-bg p-5 rounded shadow grid grid-cols-3 mb-5 hidden" id="test-mode-warning" role="warning">
         <div class="col-span-2">
             <div class="flex gap-2">
-        <img src="<?= $block->getImage("info.svg"); ?>" alt="Test mode is enabled" width="14" height="14"  />
+        <img src="<?= /* @noEscape */ $block->getImage("info.svg"); ?>" alt="Test mode is enabled" width="14" height="14"  />
                 <p class="alert-content text-grey-600">Test mode is enabled for your site and visitors are accessing your unoptimized pages. Make sure to disable it once you are done testing.</p>
             </div>
         </div>
@@ -41,8 +41,8 @@ $enableCachesUrl = $block->getEnableCachesUrl();
                             </h5>
                         </div>
                         <p class="alert-content text-grey-600">NitroPack requires to be set as <a
-                                href="<?= $block->getCacheManagementUrl() ?>">Caching Application</a> and <a
-                                href="<?= $block->getApplicationCacheUrl() ?>">Full Page Caching</a> enabled
+                                href="<?= /* @noEscape */ $block->getCacheManagementUrl() ?>">Caching Application</a> and <a
+                                href="<?= /* @noEscape */ $block->getApplicationCacheUrl() ?>">Full Page Caching</a> enabled
                         </p>
                     </div>
                     <div class="col-span-1">
@@ -50,7 +50,7 @@ $enableCachesUrl = $block->getEnableCachesUrl();
                             <button
                                 class="border-solid border bg-red-600 border-red-600 rounded-lg float-right font-semibold font-inter text-white py-2 px-6 hover:text-red-600 focus:text-red-600"
                                 id="enable-caches">
-                                <?= $escaper->escapeHtml(__("Apply Fix Automatically")) ?>
+                                <?= $block->escapeHtml(__("Apply Fix Automatically")) ?>
                             </button>
 
                             <button @click="show = !show"
@@ -90,7 +90,7 @@ $enableCachesUrl = $block->getEnableCachesUrl();
                             </div>
                                 <p class="alert-content text-grey-600">NitroPack requires Full Page Caching enabled. Go
                                     to <a
-                                        href="<?= $block->getCacheManagementUrl() ?>">Full Page Caching settings</a>
+                                        href="<?= /* @noEscape */ $block->getCacheManagementUrl() ?>">Full Page Caching settings</a>
                                 </p>
                             </div>
                                 <div class="col-span-1">
@@ -98,7 +98,7 @@ $enableCachesUrl = $block->getEnableCachesUrl();
                                         <button
                                             class="border-solid border bg-red-600 border-red-600 rounded-lg float-right font-semibold font-inter text-white py-2 px-6 hover:text-red-600 focus:text-red-600"
                                             id="enable-caches">
-                                            <?= $escaper->escapeHtml(__("Apply Fix Automatically")) ?>
+                                            <?= $block->escapeHtml(__("Apply Fix Automatically")) ?>
                                         </button>
 
                                         <button @click="show = !show"
@@ -133,18 +133,18 @@ $enableCachesUrl = $block->getEnableCachesUrl();
                                                           stroke-linejoin="round"/>
                                                 </svg>
 
-                                                <h5 class="font-bold mb-4 font-inter text-grey-600"><?= $escaper->escapeHtml(__("The NitroPack extension is disabled! Incompatible Caching application setting:")) ?></h5>
+                                                <h5 class="font-bold mb-4 font-inter text-grey-600"><?= $block->escapeHtml(__("The NitroPack extension is disabled! Incompatible Caching application setting:")) ?></h5>
                                             </div>
 
                                             <p class="alert-content text-grey-600">NitroPack must be selected as a Cache Application. Go
-                                                to <a href="<?= $block->getApplicationCacheUrl() ?>"><?= $escaper->escapeHtml(__("Full Page Caching Application settings")) ?></a></p>
+                                                to <a href="<?= /* @noEscape */ $block->getApplicationCacheUrl() ?>"><?= $block->escapeHtml(__("Full Page Caching Application settings")) ?></a></p>
                                         </div>
                                         <div class="col-span-1">
                                             <div class="flex gap-2 float-right">
                                                 <button
                                                     class="border-solid border bg-red-600 border-red-600 rounded-lg float-right font-semibold font-inter text-white py-2 px-6 hover:text-red-600 focus:text-red-600"
                                                     id="enable-caches">
-                                                    <?= $escaper->escapeHtml(__("Apply Fix Automatically")) ?>
+                                                    <?= $block->escapeHtml(__("Apply Fix Automatically")) ?>
                                                 </button>
 
                                                 <button @click="show = !show"
@@ -170,7 +170,7 @@ $enableCachesUrl = $block->getEnableCachesUrl();
 
                                 event.preventDefault();
                                 $.ajax({
-                                    url: '<?= $enableCachesUrl ?>',
+                                    url: '<?= /* @noEscape */ $enableCachesUrl ?>',
                                     method: 'POST',
                                     dataType: 'json',
                                     data: {run: 1},

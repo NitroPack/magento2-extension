@@ -1,12 +1,16 @@
 <?php
+/**
+ * @author NitroPack Inc.
+ * @copyright Copyright (c) NitroPack Inc. (https://www.nitropack.io)
+ * @package NitroPack for Magento 2
+ */
 
-namespace NitroPack\NitroPack\Model\App;
+namespace NitroPack\NitroPack\Plugin\App;
 
 use Magento\Store\Model\StoreManagerInterface;
 use NitroPack\NitroPack\Api\NitroService;
 use NitroPack\NitroPack\Helper\ApiHelper;
 use NitroPack\SDK\HealthStatus;
-use \Magento\Framework\Serialize\SerializerInterface;
 
 class HttpContext
 {

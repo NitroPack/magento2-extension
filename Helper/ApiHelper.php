@@ -4,7 +4,6 @@ namespace NitroPack\NitroPack\Helper;
 
 use Magento\Customer\Model\Context as CustomerContextConstants;
 use Magento\Framework\App\Area;
-
 use Magento\Framework\App\DeploymentConfig;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
@@ -48,7 +47,7 @@ class ApiHelper extends AbstractHelper
      * */
     private $productMetaData;
     /**
-     * @var LoggerInterface
+     * @var \NitroPack\NitroPack\Logger\Logger
      * */
     private $logger;
     /**
@@ -66,7 +65,7 @@ class ApiHelper extends AbstractHelper
     /**
      * @var DeploymentConfig|null
      */
-    private ?DeploymentConfig $deploymentConfig = null;
+    private $deploymentConfig = null;
 
     /**
      * @param Context $context
