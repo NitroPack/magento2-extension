@@ -79,7 +79,7 @@ class CacheCleanHelper extends AbstractHelper
             $this->reloadNitroPack($storeId);
             $reason = sprintf(self::REASON_MANUAL_INVALIDATE_TYPE, $reasonType, $reasonEntity);
             $this->logger->debug(sprintf('Purging tag (page cache only) %s because: %s', $tag, $reason));
-            return $this->nitro->getSdk()->purgeCache(null, $tag, PurgeType::PAGECACHE_ONLY, $reason);
+            return $this->nitro->getSdk()->purgeCache(null, $tag, PurgeType::LIGHT_PURGE, $reason);
         }
         return '';
     }
@@ -88,7 +88,7 @@ class CacheCleanHelper extends AbstractHelper
     {
         $reason = sprintf(self::REASON_MANUAL_INVALIDATE_TYPE, $reasonType, $reasonEntity);
         $this->logger->debug(sprintf('Purging tag (complete) %s because: %s', $tag, $reason));
-        return $this->nitro->getSdk()->purgeCache(null, $tag, PurgeType::COMPLETE, $reason);
+        return $this->nitro->getSdk()->purgeCache(null, $tag, PurgeType::LIGHT_PURGE, $reason);
     }
 
     public function reloadNitroPack($storeId)

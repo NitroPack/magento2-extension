@@ -37,7 +37,7 @@ class Purge extends StoreAwareAction
             $purgeResult = $this->nitro->purgeCache(
                 null,
                 null,
-                \NitroPack\SDK\PurgeType::COMPLETE,
+                \NitroPack\SDK\PurgeType::LIGHT_PURGE,
                 'Manual cache purge via Magento Dashboard.'
             );
             $resultMsg = $purgeResult ? 'Cache was purged successfully' : 'Cache was NOT purged successfully';

@@ -294,7 +294,7 @@ class NitroPackConfigHelper extends AbstractHelper
                     }, $backendServer);
 
                     $varnish = $this->nitro->initializeVarnish();
-                    $url = $this->request->isSecure() ? 'https://' . $this->request->getHttpHost() : 'http://' . $this->request->getHttpHost();
+                    $url =  'http://' .$this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_BACKEND_HOST);
                     try {
                         $varnish->configure([
                             'Servers' => $backendServer,
@@ -302,6 +302,15 @@ class NitroPackConfigHelper extends AbstractHelper
                             'PurgeAllMethod' => 'PURGE',
                             'PurgeSingleMethod' => 'PURGE',
                         ]);
+                        $varnishData = [[
+                            'PurgeAllMethod' => 'PURGE',
+                            'PurgeAllUrl' => $url,
+                            'PurgeSingleHeadersTemplates' => [['HeaderName' => 'X-Magento-Tags-Pattern', 'HeaderTemplate' => '.*']],
+                            'PurgeSingleTemplate' => $url,
+                            'PurgeSingleMethod' => 'PURGE',
+                        ]];
+                        $this->nitro->getSdk()->getApi()->setVarnishIntegrationConfig($varnishData);
+
                         $varnish->enable();
                         $this->nitro->getSdk()->setVarnishProxyCacheHeaders([
                             'X-Magento-Tags-Pattern' => ' .*'

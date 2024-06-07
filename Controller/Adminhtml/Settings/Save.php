@@ -146,7 +146,7 @@ class Save extends StoreAwareAction
                      $this->nitro->purgeCache(
                         null,
                         null,
-                        \NitroPack\SDK\PurgeType::COMPLETE,
+                        \NitroPack\SDK\PurgeType::LIGHT_PURGE,
                         'Cache purge Because Cache setting changed'
                     );
                     $this->purgeInterface->purge();
@@ -154,7 +154,8 @@ class Save extends StoreAwareAction
                     if (!$value) {
                         $this->nitro->getSdk()->getApi()->unsetVariationCookie('X-Magento-Vary');
                     }
-                    if ($value) {
+                    if ($value && isset($oldSettings['x_magento_vary'])) {
+
                         $xMagentoVary = (array)$oldSettings['x_magento_vary'];
                         if (count($xMagentoVary) > 0) {
                             $this->nitro->getSdk()->getApi()->setVariationCookie('X-Magento-Vary', array_keys($xMagentoVary), 1);

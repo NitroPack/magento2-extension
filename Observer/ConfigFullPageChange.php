@@ -201,11 +201,14 @@ class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
             ) {
 
                 if (!is_null($this->nitro->getSdk()) && $this->nitro->getSdk()->getHealthStatus() == HealthStatus::HEALTHY) {
+                    $provideUrl  = $this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_BACKEND_HOST);
+                    $url =  'http://'.$provideUrl;
                     // Config url check because the value is reset via configuration
                     $backendServer = explode(
                         ',',
                         $this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_BACKEND_HOST)
                     );
+
                     $backendServer = array_map(function ($backendValue) {
                         $backendHostAndPort = explode(":", $backendValue);
                         if ($backendHostAndPort[0] == "localhost" || $backendHostAndPort[0] == '127.0.0.1') {
@@ -220,7 +223,7 @@ class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
                     }, $backendServer);
 
                     $varnish = $this->nitro->initializeVarnish();
-                    $url = $this->request->isSecure() ? 'https://' . $this->request->getHttpHost() : 'http://' . $this->request->getHttpHost();
+
                     try {
                         $varnish->configure([
                             'Servers' => $backendServer,
@@ -228,6 +231,14 @@ class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
                             'PurgeAllMethod' => 'PURGE',
                             'PurgeSingleMethod' => 'PURGE',
                         ]);
+                        $varnishData = [[
+                                'PurgeAllMethod' => 'PURGE',
+                                'PurgeAllUrl' => $url,
+                                'PurgeSingleHeadersTemplates' => [['HeaderName' => 'X-Magento-Tags-Pattern', 'HeaderTemplate' => '.*']],
+                                'PurgeSingleTemplate' => $url,
+                                'PurgeSingleMethod' => 'PURGE',
+                                ]];
+                        $this->nitro->getSdk()->getApi()->setVarnishIntegrationConfig($varnishData);
                         $varnish->enable();
                         $this->nitro->getSdk()->setVarnishProxyCacheHeaders([
                             'X-Magento-Tags-Pattern' => ' .*'

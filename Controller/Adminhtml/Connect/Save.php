@@ -54,7 +54,7 @@ class Save extends StoreAwareAction
      * @param NitroServiceInterface $nitro
      * @param AdminFrontendUrl $urlHelper
      * @param ApiHelper $apiHelper
-     * @param NitroPackConfigHelper  $nitroPackConfigHelper
+     * @param NitroPackConfigHelper $nitroPackConfigHelper
      * @param DirectoryList $directoryList
      * @param \Magento\Framework\Filesystem\Driver\File $fileDriver
      * */
@@ -62,7 +62,7 @@ class Save extends StoreAwareAction
         Context                                   $context,
         NitroServiceInterface                     $nitro,
         AdminFrontendUrl                          $urlHelper,
-        ApiHelper $apiHelper,
+        ApiHelper                                 $apiHelper,
         NitroPackConfigHelper                     $nitroPackConfigHelper,
         DirectoryList                             $directoryList,
         \Magento\Framework\Filesystem\Driver\File $fileDriver
@@ -93,17 +93,15 @@ class Save extends StoreAwareAction
                 $siteId = $this->nitro->getSettings()->siteId;
                 $token = $this->nitro->nitroGenerateWebhookToken($siteId);
                 $urls = $this->getWebhookUrls($token);
-
                 foreach ($urls as $type => $url) {
                     $this->nitro->getSdk()->getApi()->setWebhook($type, $url);
                 }
                 $eventUrl = $this->nitro->integrationUrl('extensionEvent');
                 $this->nitro->nitroEvent('connect', $eventUrl, $this->storeGroup);
-
                 $eventSent = $this->nitro->nitroEvent('enable_extension', $eventUrl, $this->storeGroup);
                 $this->nitroPackConfigHelper->xMagentoVaryAdd($this->getStoreGroup());
-                $this->nitro->setVariableValue('handshake_connection_method',$this->request->getPostValue('handshake_connection_method'));
-                $this->nitroPackConfigHelper->setBoolean('default_stock',$this->apiHelper->checkDefaultStockAvailable());
+                $this->nitro->setVariableValue('handshake_connection_method', $this->request->getPostValue('handshake_connection_method'));
+                $this->nitroPackConfigHelper->setBoolean('default_stock', $this->apiHelper->checkDefaultStockAvailable());
                 $this->nitroPackConfigHelper->setBoolean('cache_to_login_customer', true);
                 $this->nitroPackConfigHelper->persistSettings($this->getStoreGroup()->getCode());
                 $this->nitroPackConfigHelper->varnishConfiguredSetup();
@@ -206,7 +204,6 @@ class Save extends StoreAwareAction
 
         return $urls;
     }
-
 
 
 }

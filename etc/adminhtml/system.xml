@@ -49,9 +49,11 @@
                 </field>
                 <field id="varnish_servers" translate="label" type="text" sortOrder="2" showInDefault="1"
                        showInWebsite="0" showInStore="0">
-                    <label>Reverse Proxy Server(s) IPs</label>
+                    <label>Reverse Proxy Server(s)</label>
                     <backend_model>NitroPack\NitroPack\Model\System\Backend\VarnishNitroPackConfig</backend_model>
-                    <comment>List the IPs of reverse proxy servers to be connected to NitroPack.Format:  &#8826;ip&#8827;:&#8826;port&#8827;.The port can be ommited, in which case port 80 will be used </comment>
+                    <comment>
+                        List the IPs or domains of reverse proxy servers to be connected to NitroPack.Format: &#8826;ip&#8827;:&#8826;port&#8827; or &#8826;domain&#8827;:&#8826;port&#8827;. If the port is omitted, we will use port 80
+                         </comment>
                     <depends>
                         <field id="caching_application">3</field>
                         <field id="varnish_enable">1</field>

@@ -136,7 +136,7 @@ class NitroPackCacheFlush implements ObserverInterface
                         $this->sdk->purgeCache(
                             null,
                             null,
-                            \NitroPack\SDK\PurgeType::COMPLETE,
+                            \NitroPack\SDK\PurgeType::LIGHT_PURGE,
                             "Magento cache flush remove all page cache."
                         );
                         $this->purgeInterface->purge();

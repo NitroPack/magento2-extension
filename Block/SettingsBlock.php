@@ -31,7 +31,7 @@ class SettingsBlock extends Template
     /**
      * @var StoreManagerInterface
      * */
-    protected $_storeManager;
+    public $_storeManager;
     /**
      * @var ScopeConfigInterface
      * */
@@ -176,6 +176,7 @@ class SettingsBlock extends Template
     {
         return $this->getBackendUrl('NitroPack/settings/NumberOfPageCountStoreWise', true, false);
     }
+
     public function getCacheManagementUrl()
     {
         // route the magento System > Tools > Cache management page

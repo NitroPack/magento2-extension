@@ -189,7 +189,7 @@ class PurgeManagement implements PurgeManagementInterface
                                 $this->sdk->purgeCache(
                                     $url,
                                     null,
-                                    \NitroPack\SDK\PurgeType::COMPLETE,
+                                    \NitroPack\SDK\PurgeType::LIGHT_PURGE,
                                     "Purge Url from command line"
                                 );
                             }
@@ -228,7 +228,7 @@ class PurgeManagement implements PurgeManagementInterface
                         $this->sdk->purgeCache(
                             null,
                             null,
-                            \NitroPack\SDK\PurgeType::COMPLETE,
+                            \NitroPack\SDK\PurgeType::LIGHT_PURGE,
                             "Purge All from command line"
                         );
 
@@ -286,7 +286,7 @@ class PurgeManagement implements PurgeManagementInterface
                                 $this->sdk->purgeCache(
                                     null,
                                     $tag,
-                                    \NitroPack\SDK\PurgeType::COMPLETE,
+                                    \NitroPack\SDK\PurgeType::LIGHT_PURGE,
                                     "Purge from command line"
                                 );
                             }

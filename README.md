@@ -8,6 +8,15 @@ Installation Instructions: https://support.nitropack.io/hc/en-us/articles/127062
 
 # Release Notes
 
+### 3.2.1:
+#### Compatible with Magento Open Source : 2.4
+#### Stability: Stable Build
+#### Description:
+- Improvement: Added notification for Varnish mismatch on the user's server and in Magento configuration.
+- Improvement: Reverse Proxy now supports domain names.
+- Bug Fix: Resolved duplicate tag API triggers for one URL.
+
+
 ### 3.2.0:
 #### Compatible with Magento Open Source : 2.4
 #### Stability: Stable Build

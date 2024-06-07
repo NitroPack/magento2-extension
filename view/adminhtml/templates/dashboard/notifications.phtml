@@ -4,18 +4,36 @@ $nitroPackInvalidationHelper = $this->helper('NitroPack\NitroPack\Helper\Invalid
 $fastlyHelper = $this->helper('NitroPack\NitroPack\Helper\FastlyHelper');
 $enabledMagentoCaches = $nitroPackConfigHelper->getDisabledCaches();
 $enableCachesUrl = $block->getEnableCachesUrl();
+$dismissUrl = $block->getDismissUrl();
+$storeGroupId = (int)$this->getRequest()->getParam('group');
+
+if ($storeGroupId == 0) {
+$storeGroupId = $block->_storeManager->getGroup()->getId();
+}
 ?>
 
 <div class="ml-10 mr-10">
-    <div class="warning-bg p-5 rounded shadow grid grid-cols-3 mb-5 hidden" id="test-mode-warning" role="warning">
+<?php if($block->varnishMismatchNotification->isDisplayed()): ?>
+    <div x-data="{showVarnishNotice: true}" class="row ">
+    <div x-show="showVarnishNotice" class="mb-5 bg-red-500 p-5 rounded shadow grid grid-cols-3" id="varnish-mismatch-warning" role="warning">
         <div class="col-span-2">
             <div class="flex gap-2">
-        <img src="<?= /* @noEscape */ $block->getImage("info.svg"); ?>" alt="Test mode is enabled" width="14" height="14"  />
-                <p class="alert-content text-grey-600">Test mode is enabled for your site and visitors are accessing your unoptimized pages. Make sure to disable it once you are done testing.</p>
+        <img src="<?= /* @noEscape */ $block->getImage("info.svg"); ?>" alt="Varnish Mismatch Warning" width="14" height="14"  />
+                <p class="alert-content text-grey-600"><?= /* @noEscape */ $block->varnishMismatchNotification->getText(); ?></p>
+            </div>
+        </div>
+        <div class="col-span-1">
+            <div class="flex gap-2 float-right">
+                <button @click="showVarnishNotice = !showVarnishNotice,window.dismissVarnishNotice();"
+                        class="flex gap-2 justify-center items-center border-solid border text-red-600 border-red-600 font-inter rounded-lg float-right hover:bg-red-600 font-semibold font-inter hover:text-white py-2 px-6 hover:border-transparent stroke-purple hover:stroke-white"
+                        id="dismiss"> Dismiss
+                </button>
             </div>
         </div>
     </div>
-    <?php if (!$nitroPackInvalidationHelper->checkInvalidationAndPurgeProcess() && !$nitroPackInvalidationHelper->checkCronJobIsSetup()) {
+    </div>
+
+    <?php endif; if (!$nitroPackInvalidationHelper->checkInvalidationAndPurgeProcess() && !$nitroPackInvalidationHelper->checkCronJobIsSetup()) {
 
     } else {
     $cacheLabels = $block->getCacheLabels();
@@ -164,10 +182,21 @@ $enableCachesUrl = $block->getEnableCachesUrl();
                 </div>
                 <script type="text/javascript">
                     require(['jquery', 'Magento_Ui/js/modal/alert', 'NitroPack_NitroPack/js/overlay'], function ($, magentoAlert, cardOverlay) {
+
                         $(document).ready(function () {
+                            window.dismissVarnishNotice = function(){
+                                $.ajax({
+                                    url: '<?= /* @noEscape */  $dismissUrl; ?>',
+                                    method: 'POST',
+                                    dataType: 'json',
+                                    data: {'message_code': '<?= /* @noEscape */ $block->varnishMismatchNotification->getIdentity()?>' },
+                                    success: function (response) {
+
+                                    }
+                                });
+                            }
                             $('#enable-caches').click(function (event) {
                                 $('#enable-caches').addClass('disabled');
-
                                 event.preventDefault();
                                 $.ajax({
                                     url: '<?= /* @noEscape */ $enableCachesUrl ?>',

@@ -14,6 +14,7 @@ use NitroPack\NitroPack\Helper\RedisHelper;
 use NitroPack\NitroPack\Model\FullPageCache\PurgeInterface;
 use NitroPack\SDK\NitroPack;
 use NitroPack\NitroPack\Logger\Logger;
+use NitroPack\SDK\PurgeType;
 
 class Clear implements ObserverInterface
 {
@@ -135,10 +136,13 @@ class Clear implements ObserverInterface
                             if ($this->fastlyHelper->isFastlyAndNitroDisable()) {
                                 return;
                             }
+
+                            $purgeType = ($eventName == 'clean_catalog_images_cache_after') ? PurgeType::COMPLETE : PurgeType::LIGHT_PURGE;
+
                             $this->sdk->purgeCache(
                                 null,
                                 null,
-                                \NitroPack\SDK\PurgeType::COMPLETE,
+                                $purgeType,
                                 $eventReason
                             );
 

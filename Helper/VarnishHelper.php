@@ -46,6 +46,7 @@ class VarnishHelper extends AbstractHelper
                 ',',
                 $this->_scopeConfig->getValue(NitroService::XML_VARNISH_PAGECACHE_BACKEND_HOST)
             );
+
             $backendServer = array_map(function ($backendValue) {
                 $backendHostAndPort = explode(":", $backendValue);
                 if ($backendHostAndPort[0] == "localhost" || $backendHostAndPort[0] == '127.0.0.1') {
@@ -59,19 +60,20 @@ class VarnishHelper extends AbstractHelper
                 return $backendValue;
             }, $backendServer);
 
-            $url = 'http://' . isset($backendServer[0]) ? $backendServer[0] : '';
-            $url = !empty($url) ? isset($urlValue['path']) ? 'http://' . $url . $urlValue['path'] : '' : '';
-
-            $reverseProxy = new \NitroPack\SDK\Integrations\ReverseProxy(
-                $backendServer,
-                'PURGE',
-                ['X-Magento-Tags-Pattern' => '.*']
-            );
-
-            try {
-                $reverseProxy->purge($url);
-            } catch (\Exception $e) {
-                throw new \RuntimeException($e->getMessage());
+            $scheme= 'http://';
+            if(isset($backendServer[0]) && !empty($backendServer[0])) {
+                $url = $scheme . $backendServer[0];
+                $url = isset($urlValue['path']) ? $url . $urlValue['path'] : '';
+                $reverseProxy = new \NitroPack\SDK\Integrations\ReverseProxy(
+                    $backendServer,
+                    'PURGE',
+                    ['X-Magento-Tags-Pattern' => '.*']
+                );
+                try {
+                    $reverseProxy->purge($url);
+                } catch (\Exception $e) {
+                    throw new \RuntimeException($e->getMessage());
+                }
             }
             return '';
         }

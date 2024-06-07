@@ -45,4 +45,9 @@
     <type name="Magento\Config\Model\Config">
         <plugin name="admin_system_config_save_plugin" type="NitroPack\NitroPack\Plugin\Config\AdminConfigAfterCheck"/>
     </type>
+    <type name="NitroPack\NitroPack\Block\Dashboard\GeneralBlock">
+        <arguments>
+            <argument name="viewModel" xsi:type="object">NitroPack\NitroPack\Model\System\Message\VarnishMismatchNotification</argument>
+        </arguments>
+    </type>
 </config>

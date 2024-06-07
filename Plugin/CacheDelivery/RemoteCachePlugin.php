@@ -12,6 +12,8 @@ use NitroPack\NitroPack\Observer\CacheTagObserver;
 
 class RemoteCachePlugin
 {
+    private const NOROUTE_ACTION_NAME = 'cms_noroute_index';
+
     // Checks if there is remote cache once the request has been routed, so we know the page type. Called after any RouterInterface instances' match() method.
     /**
      * @var NitroServiceInterface
@@ -95,6 +97,13 @@ class RemoteCachePlugin
         if (defined('NITROPACK_DEBUG') && NITROPACK_DEBUG) {
             header('X-Nitro-Layout: ' . $layout);
         }
+
+        if ($route == self::NOROUTE_ACTION_NAME) {
+            header('X-Nitro-Disabled: 1', true);
+            header('X-Nitro-Disabled-Reason: 404', true);
+            return $returnValue;
+        }
+
         if (!$this->nitro->isConnected() || !$this->nitro->isEnabled() ||
             is_null(
                 $this->_scopeConfig->getValue(\NitroPack\NitroPack\Api\NitroService::FULL_PAGE_CACHE_NITROPACK)

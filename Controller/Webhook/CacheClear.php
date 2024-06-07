@@ -64,7 +64,7 @@ class CacheClear extends WebhookController
             $this->nitro->purgeCache(
                 $urlValue,
                 null,
-                PurgeType::PAGECACHE_ONLY,
+                PurgeType::LIGHT_PURGE,
                 sprintf(self::REASON_MANUAL_PURGE_URL, $urlValue)
             );
                 $this->purgeInterface->purge($urlValue);

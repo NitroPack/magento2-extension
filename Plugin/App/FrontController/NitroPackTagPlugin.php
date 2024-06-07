@@ -82,6 +82,10 @@ class NitroPackTagPlugin
      */
     public function afterRenderResult(ResultInterface $subject, ResultInterface $result, ResponseHttp $response)
     {
+        if (!NitroService::isANitroRequest()) {
+            return $result;
+        }
+
         $usePlugin = $this->registry->registry('use_page_cache_plugin');
 
         if (!in_array($this->_scopeConfig->getValue(NitroService::FULL_PAGE_CACHE_NITROPACK), [NitroService::FULL_PAGE_CACHE_NITROPACK_VALUE, NitroService::FASTLY_CACHING_APPLICATION_VALUE])) {

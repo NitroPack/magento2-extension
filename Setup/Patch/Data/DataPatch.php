@@ -405,7 +405,7 @@ class DataPatch implements DataPatchInterface, PatchRevertableInterface
             $nitroPackSdk->purgeCache(
                 null,
                 null,
-                \NitroPack\SDK\PurgeType::COMPLETE,
+                \NitroPack\SDK\PurgeType::LIGHT_PURGE,
                 "Magento cache flush by migration script remove all page cache"
             );
         } catch (\Exception $exception) {
