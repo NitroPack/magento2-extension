@@ -1,11 +1,29 @@
 <?php
 /**
- * Copyright © Magento, Inc. All rights reserved.
- * See COPYING.txt for license details.
+ * NitroPack
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the nitropack.io license that is
+ * available through the world-wide-web at this URL:
+ * https://github.com/NitroPack/magento2-extension/blob/716247d40d2de7b84f222c6a93761d87b6fe5b7b/LICENSE
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Site Optimization
+ * @subcategory Performance
+ * @package     NitroPack_NitroPack
+ * @author      NitroPack Inc.
+ * @copyright   Copyright (c) NitroPack (https://www.nitropack.io/)
+ * @license     https://github.com/NitroPack/magento2-extension/blob/716247d40d2de7b84f222c6a93761d87b6fe5b7b/LICENSE
  */
 
 namespace NitroPack\NitroPack\Model\System\Backend;
 
+use GraphQL\Utils\Value;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\FlagManager;
 use NitroPack\HttpClient\Exceptions\SocketReadTimedOutException;
@@ -13,10 +31,11 @@ use NitroPack\HttpClient\HttpClient;
 use NitroPack\HttpClient\HttpClientMulti;
 
 /**
- * Backend model for processing Varnish settings
- *
- * Class Varnish
- */
+ * Class VarnishNitroPackConfig - Backend model for processing Varnish settings configuration
+ * @package NitroPack\NitroPack\Model\ResourceModel
+ * @since 3.2.1
+ * @extends \Magento\Framework\App\Config\Value
+ **/
 class VarnishNitroPackConfig extends \Magento\Framework\App\Config\Value
 {
     /**
@@ -31,6 +50,7 @@ class VarnishNitroPackConfig extends \Magento\Framework\App\Config\Value
      * @var FlagManager
      */
     private $flagManager;
+
     public function __construct(
         \Magento\Framework\Model\Context                        $context,
         \Magento\Framework\Registry                             $registry,
@@ -39,7 +59,7 @@ class VarnishNitroPackConfig extends \Magento\Framework\App\Config\Value
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb           $resourceCollection = null,
         \Magento\Framework\Message\ManagerInterface             $messageManager,
-        FlagManager             $flagManager,
+        FlagManager                                             $flagManager,
         array                                                   $data = []
     )
     {
@@ -50,65 +70,90 @@ class VarnishNitroPackConfig extends \Magento\Framework\App\Config\Value
     }
 
     /**
-     * Set default data if empty fields have been left
-     *
-     * @return $this|\Magento\Framework\Model\AbstractModel
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @return $this|VarnishNitroPackConfig
      */
     public function beforeSave()
     {
-        $currentValue = $this->getValue();
+        $currentValues = explode(',', $this->getValue());
+        $successfulValues = [];
 
-        if (!$currentValue) {
-            $replaceValue = isset($data[$this->getField()]) ? $data[$this->getField()] : false;
-            $this->setValue($replaceValue);
-        }
+        foreach ($currentValues as $currentValue) {
+            $currentValue = trim($currentValue);
+            if($currentValue == '')
+                continue;
 
-        $data = explode(':', $currentValue);
-        if (isset($data[0])) {
+            if(strpos($currentValue,'localhost') !== false )
+                $currentValue = str_replace('localhost','127.0.0.1',$currentValue) ;
 
-            $scheme = 'http://';
-            if (isset($data[1]))
-                $url =  $data[0] . ':' . $data[1];
-            else
-                $url = $data[0];
+            $data = explode(':', $currentValue);
+            if (isset($data[0])) {
+                $url = $this->constructUrl($data);
+                $client = $this->createHttpClient($url, $data[0]);
 
-            if (isset($data[1]) && $data[1] == 80) {
-                $currentValue = $data[0];
-            }
+                $httpMulti = new HttpClientMulti();
+                $httpMulti->push($client);
+                $res = $httpMulti->fetchAll(true, 'purge');
 
-            $httpMulti = new HttpClientMulti();
-            $client = new HttpClient($url);
-
-            $client->hostOverride($client->host, $data[0]);
-            $client->doNotDownload = true;
-            $client->setHeader('X-Magento-Tags-Pattern:', '.*');
-            $httpMulti->push($client);
-            $res = $httpMulti->fetchAll(true, 'purge');
-            if (isset($res[1])) {
-                foreach ($res[1] as $failedRequest) {
-                    $exception = $failedRequest[1];
-                    if ($exception instanceof SocketReadTimedOutException) {
-                        continue; // Ignore read timeouts
-                    } else {
-                        if ($exception instanceof \NitroPack\HttpClient\Exceptions\SocketWriteException) {
-                            $this->messageManager->addError(__("The provided Reverse Proxy settings are not correct. They are saved but NitroPack may not work correctly. Please check them again."));
-                            $this->setValue($currentValue);
-                            $this->flagManager->saveFlag('nitro_varnish_mismatch_message',[]);
-                            return false;
-                        } else {
-                            $this->messageManager->addError(__("The provided Reverse Proxy settings are not correct. They are saved but NitroPack may not work correctly. Please check them again."));
-                            $this->setValue($currentValue);
-                            $this->flagManager->saveFlag('nitro_varnish_mismatch_message',[]);
-                            return false;
-                        }
+                if (isset($res[1])) {
+                    if ($this->handleExceptions($res)) {
+                        continue;
                     }
                 }
+                $successfulValues[] = $currentValue;
             }
-            $this->flagManager->deleteFlag('nitro_varnish_mismatch_message');
-            $this->setValue($currentValue);
         }
+      if(count($successfulValues)>0)
+        $this->setValue($successfulValues);
+
         return $this;
+    }
+
+    /**
+     * @param $data
+     * @return string
+     */
+    private function constructUrl($data)
+    {
+        $scheme = 'http://';
+        if (isset($data[1]))
+            return $data[0] . ':' . $data[1];
+        else
+            return $data[0];
+    }
+
+    /**
+     * @param $url
+     * @param $host
+     * @return HttpClient
+     */
+    private function createHttpClient($url, $host)
+    {
+        $client = new HttpClient($url);
+        $client->hostOverride($client->host, $host);
+        $client->doNotDownload = true;
+        $client->setHeader('X-Magento-Tags-Pattern:', '.*');
+
+        return $client;
+    }
+
+    /**
+     * @param $res
+     * @return bool
+     */
+    private function handleExceptions($res)
+    {
+        foreach ($res[1] as $failedRequest) {
+            $exception = $failedRequest[1];
+            if ($exception instanceof SocketReadTimedOutException) {
+                continue; // Ignore read timeouts
+            } else {
+                $this->messageManager->addError(__("The provided Reverse Proxy settings are not correct. They are saved but NitroPack may not work correctly. Please check them again."));
+                $this->flagManager->saveFlag('nitro_varnish_mismatch_message', []);
+                return true;
+            }
+        }
+        $this->flagManager->deleteFlag('nitro_varnish_mismatch_message');
+        return false;
     }
 
 }

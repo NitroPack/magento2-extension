@@ -47,7 +47,7 @@
     </type>
     <type name="NitroPack\NitroPack\Block\Dashboard\GeneralBlock">
         <arguments>
-            <argument name="viewModel" xsi:type="object">NitroPack\NitroPack\Model\System\Message\VarnishMismatchNotification</argument>
+            <argument name="viewModel" xsi:type="object">NitroPack\NitroPack\Model\System\Message\RedisFullPageNotification</argument>
         </arguments>
     </type>
 </config>

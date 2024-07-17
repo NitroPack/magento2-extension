@@ -1,5 +1,25 @@
 <?php
-
+/**
+ * NitroPack
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the nitropack.io license that is
+ * available through the world-wide-web at this URL:
+ * https://github.com/NitroPack/magento2-extension/blob/716247d40d2de7b84f222c6a93761d87b6fe5b7b/LICENSE
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Site Optimization
+ * @subcategory Performance
+ * @package     NitroPack_NitroPack
+ * @author      NitroPack Inc.
+ * @copyright   Copyright (c) NitroPack (https://www.nitropack.io/)
+ * @license     https://github.com/NitroPack/magento2-extension/blob/716247d40d2de7b84f222c6a93761d87b6fe5b7b/LICENSE
+ */
 namespace NitroPack\NitroPack\Helper;
 
 use Magento\Backend\Model\UrlInterface;
@@ -14,8 +34,14 @@ use NitroPack\NitroPack\Api\NitroService;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\Filesystem\DirectoryList;
 use NitroPack\NitroPack\Helper\FastlyHelper;
+use Magento\Framework\App\RequestInterface;
 
-
+/**
+ * Class InvalidationHelper - Cover Different Functionality for Invalidation, Cron Checker and Disable Extension When Cron isn't running
+ * @extends AbstractHelper
+ * @package NitroPack\NitroPack\Helper
+ * @since 2.0.0
+ */
 class InvalidationHelper extends AbstractHelper
 {
     /**
@@ -86,6 +112,11 @@ class InvalidationHelper extends AbstractHelper
     protected $cacheFrontendPool;
 
     /**
+     * @var RequestInterface
+     */
+    protected $request;
+
+    /**
      *
      * @param Context $context
      * @param Shell $shell
@@ -121,7 +152,8 @@ class InvalidationHelper extends AbstractHelper
         WriterInterface                                              $configWriter,
         StoreManagerInterface                                        $storeManager,
         TypeListInterface                                            $cacheTypeList,
-        \Magento\Framework\App\Cache\Frontend\Pool                   $cacheFrontendPool
+        \Magento\Framework\App\Cache\Frontend\Pool                   $cacheFrontendPool,
+        RequestInterface                                             $request
     )
     {
         $this->cacheFrontendPool = $cacheFrontendPool;
@@ -139,6 +171,7 @@ class InvalidationHelper extends AbstractHelper
         $this->_scopeConfig = $_scopeConfig;
         $this->_cacheState = $_cacheState;
         $this->storeGroupRepo = $storeGroupRepository;
+        $this->request = $request;
         /**
          * @var \Magento\Store\Api\GroupRepositoryInterface $storeGroupRepository
          */
@@ -199,6 +232,7 @@ class InvalidationHelper extends AbstractHelper
                 $settings = json_decode($haveData);
                 if (isset($settings->previous_extension_status) && !$settings->previous_extension_status) {
                     $triggerEnabled = false;
+                    $serviceEnable = false;
                 } else {
                     $triggerEnabled = true;
                 }
@@ -209,7 +243,6 @@ class InvalidationHelper extends AbstractHelper
         if ($triggerEnabled) {
             $this->cacheApplicationChange($serviceEnable);
         }
-
          $this->setEnableAndDisable($serviceEnable);
 
     }

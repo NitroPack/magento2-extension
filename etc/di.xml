@@ -50,4 +50,5 @@
         </arguments>
     </type>
     <preference for="NitroPack\NitroPack\Api\PurgeManagementInterface" type="NitroPack\NitroPack\Model\Purge\PurgeManagement"/>
+    <preference for="NitroPack\NitroPack\Api\ConfigInterface" type="NitroPack\NitroPack\Model\Config"/>
 </config>

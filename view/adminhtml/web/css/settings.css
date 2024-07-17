@@ -315,6 +315,7 @@ button:hover, button:active, button:focus {
 .active-btn {
     background: #4600CC !important;
     color: #fff !important;
+    pointer-events: none;
 }
 
 .text-purple-700 {
@@ -6304,4 +6305,22 @@ a:hover {
     left: 20px;
 
 }
+.nitro-info-bg{
+    background-color: #E1EFFE;
+}
+.bg-info-btn{
+    background-color: #1A56DB;
 
+}
+.bg-info-btn:hover{
+    color: #1A56DB;
+    border-color: #1A56DB;
+}
+.border-info-btn {
+    border-color: #1A56DB;
+    color: #1A56DB;
+}
+.border-info-btn:hover {
+    border-color: #1A56DB;
+    color: #1A56DB;
+}

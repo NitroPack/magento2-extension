@@ -125,10 +125,9 @@ $enabledMagentoCaches = $nitroPackConfigHelper->getDisabledCaches();
             Compressing the structure of your HTML, ensures faster page rendering and an optimized browsing <br>experience for your users.</p>
             </div>
         <?php  }} ?>
-
     <div class="flex flex-row items-center border-gray-200 mt-6 mb-6">
         <p class="text-l font-inter text-gray-500 text-lite-gray general-font-size font-inter">Adjust optimization settings at your NitroPack app</p>
-        <button onclick="window.open('https://app.nitropack.io/dashboard', '_blank');" type="button"
+        <button onclick="window.open('https://app.nitropack.io/dashboard<?= (isset($settings->siteId)) && $settings->siteId ? '?update_session_website_id='. $settings->siteId : '' ?>', '_blank');" type="button"
                 class="ml-auto text-white font-inter font-medium py-2 px-4 border border-purple-500 rounded bg-purple hover:bg-purple-200 hover:text-white goBtn"
                 style="height:36px; padding: 4px 12px 4px 12px;border-radius: 4px; width: 126px;">
             Go to app

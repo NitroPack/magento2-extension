@@ -1,9 +1,34 @@
 <?php
-
+/**
+ * NitroPack
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the nitropack.io license that is
+ * available through the world-wide-web at this URL:
+ * https://github.com/NitroPack/magento2-extension/blob/716247d40d2de7b84f222c6a93761d87b6fe5b7b/LICENSE
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Site Optimization
+ * @subcategory Performance
+ * @package     NitroPack_NitroPack
+ * @author      NitroPack Inc.
+ * @copyright   Copyright (c) NitroPack (https://www.nitropack.io/)
+ * @license     https://github.com/NitroPack/magento2-extension/blob/716247d40d2de7b84f222c6a93761d87b6fe5b7b/LICENSE
+ */
 namespace NitroPack\NitroPack\Observer;
 
+use Magento\Catalog\Model\Category;
+use Magento\Catalog\Model\Product;
+use Magento\Cms\Model\Page;
+use Magento\Cms\Model\Block;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\DeploymentConfig;
+use Magento\Framework\DataObject\IdentityInterface;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\App\Cache\Tag\Resolver;
@@ -16,7 +41,14 @@ use NitroPack\NitroPack\Api\NitroService;
 use NitroPack\NitroPack\Helper\ApiHelper;
 use Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory;
 use NitroPack\NitroPack\Helper\FastlyHelper;
+use NitroPack\NitroPack\Api\ConfigInterface;
 
+/**
+ * Class NitroPackInvalidateObserver  - Main Observer NitroPack Cache Invalidation Observer
+ * @implements ObserverInterface
+ * @package NitroPack\NitroPack\Observer
+ * @since 2.0.0
+ * */
 class NitroPackInvalidateObserver implements ObserverInterface
 {
     /**
@@ -92,6 +124,8 @@ class NitroPackInvalidateObserver implements ObserverInterface
      * */
     protected $fastlyHelper;
 
+    protected $configInterface;
+
     /**
      * @param Resolver $cacheTagResolver
      * @param \Magento\Framework\MessageQueue\PublisherInterface $publisher
@@ -126,7 +160,8 @@ class NitroPackInvalidateObserver implements ObserverInterface
         FastlyHelper                                       $fastlyHelper,
         CollectionFactory                                  $attributeCollectionFactory,
         \Magento\Store\Api\GroupRepositoryInterface        $storeRepo,
-        DeploymentConfig                                   $config
+        DeploymentConfig                                   $config,
+        ConfigInterface                                    $configInterface
     )
     {
         $this->fastlyHelper = $fastlyHelper;
@@ -145,18 +180,17 @@ class NitroPackInvalidateObserver implements ObserverInterface
         $this->cacheFrontendPool = $cacheFrontendPool;
         $this->attributeCollectionFactory = $attributeCollectionFactory;
         $this->productFactory = $productFactory;
+        $this->configInterface = $configInterface;
     }
 
     public function execute(Observer $observer)
     {
 
-        if (!$this->isEnabled()) {
-            return false;
-        }
-
         $object = $observer->getEvent()->getObject();
 
-        if (!$object instanceof \Magento\Framework\DataObject\IdentityInterface) {
+        if (!$this->isEnabled() ||
+            !($object instanceof IdentityInterface) ||
+            !$this->canPurge($object)) {
             return false;
         }
 
@@ -551,6 +585,26 @@ class NitroPackInvalidateObserver implements ObserverInterface
                 $this->_scopeConfig->getValue(NitroService::FULL_PAGE_CACHE_NITROPACK),
                 [NitroService::FULL_PAGE_CACHE_NITROPACK_VALUE, NitroService::FASTLY_CACHING_APPLICATION_VALUE]
             );
+    }
+
+    /**
+     * @param IdentityInterface $object
+     * @return bool
+     */
+    private function canPurge(IdentityInterface $object): bool
+    {
+        switch (true) {
+            case $object instanceof Category:
+                return $this->configInterface->isPurgeCategoryEnabled();
+            case $object instanceof Product:
+                return $this->configInterface->isPurgeProductEnabled();
+            case $object instanceof Page:
+                return $this->configInterface->isPurgeCmsPageEnabled();
+            case $object instanceof Block:
+                return $this->configInterface->isPurgeCmsBlockEnabled();
+            default:
+                return true;
+        }
     }
 
 }

@@ -1,9 +1,24 @@
 <?php
 /**
- * Product attribute edit form observer
+ * NitroPack
  *
- * Copyright © Magento, Inc. All rights reserved.
- * See COPYING.txt for license details.
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the nitropack.io license that is
+ * available through the world-wide-web at this URL:
+ * https://github.com/NitroPack/magento2-extension/blob/716247d40d2de7b84f222c6a93761d87b6fe5b7b/LICENSE
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Site Optimization
+ * @subcategory Performance
+ * @package     NitroPack_NitroPack
+ * @author      NitroPack Inc.
+ * @copyright   Copyright (c) NitroPack (https://www.nitropack.io/)
+ * @license     https://github.com/NitroPack/magento2-extension/blob/716247d40d2de7b84f222c6a93761d87b6fe5b7b/LICENSE
  */
 namespace NitroPack\NitroPack\Observer\Edit\Tab\Front;
 
@@ -12,8 +27,11 @@ use Magento\Framework\Module\Manager;
 use Magento\Framework\Event\ObserverInterface;
 
 /**
- * Observer for Product Attribute Form
- */
+ * Class ProductAttributeFormBuildFrontTabObserver - Observer for adding a new tab in the product edit page in the admin panel
+ * @implements ObserverInterface
+ * @package NitroPack\NitroPack\Observer\Edit\Tab\Front
+ * @since 2.0.0
+ * */
 class ProductAttributeFormBuildFrontTabObserver implements ObserverInterface
 {
     /**

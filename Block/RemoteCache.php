@@ -1,4 +1,25 @@
 <?php
+/**
+ * NitroPack
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the nitropack.io license that is
+ * available through the world-wide-web at this URL:
+ * https://github.com/NitroPack/magento2-extension/blob/716247d40d2de7b84f222c6a93761d87b6fe5b7b/LICENSE
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Site Optimization
+ * @subcategory Performance
+ * @package     NitroPack_NitroPack
+ * @author      NitroPack Inc.
+ * @copyright   Copyright (c) NitroPack (https://www.nitropack.io/)
+ * @license     https://github.com/NitroPack/magento2-extension/blob/716247d40d2de7b84f222c6a93761d87b6fe5b7b/LICENSE
+ */
 
 namespace NitroPack\NitroPack\Block;
 
@@ -7,6 +28,12 @@ use Magento\Backend\Block\Template\Context;
 use Magento\Framework\App\RequestInterface;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
 
+/**
+ * Class RemoteCache - Remote Cache block to check if the NitroPack cache is missed
+ * @extends Template
+ * @package NitroPack\NitroPack\Block
+ * @since 3.0.0
+ */
 class RemoteCache extends Template
 {
     /**
@@ -40,14 +67,15 @@ class RemoteCache extends Template
      * @param \Magento\Framework\UrlInterface $urlInterface ,
      * */
     public function __construct(
-        Context $context,
-        \Magento\Framework\App\ResponseInterface $response,
+        Context                                    $context,
+        \Magento\Framework\App\ResponseInterface   $response,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        RequestInterface $request,
-        NitroServiceInterface $nitro,
-        \Magento\Framework\UrlInterface $urlInterface,
-        array $data = []
-    ) {
+        RequestInterface                           $request,
+        NitroServiceInterface                      $nitro,
+        \Magento\Framework\UrlInterface            $urlInterface,
+        array                                      $data = []
+    )
+    {
         parent::__construct($context, $data);
         $this->response = $response;
         $this->nitro = $nitro;

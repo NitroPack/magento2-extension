@@ -27,9 +27,6 @@
     <event name="controller_action_postdispatch_customer_group_delete">
         <observer name="controller_action_postdispatch_customer_group_delete_observer" instance="NitroPack\NitroPack\Observer\Customer\CustomerGroupSaveAfter" />
     </event>
-    <event name="install_trigger_email">
-        <observer name="install_trigger_email" instance="NitroPack\NitroPack\Observer\Email\WelcomeEmail" />
-    </event>
     <!--At a time of installation Assign Theme to stores after clear Nitropack Cache -->
     <event name="assign_theme_to_stores_after">
         <observer name="flush_nitropack_pagecache_assign_theme" instance="NitroPack\NitroPack\Observer\FullPageCache\Clear"/>

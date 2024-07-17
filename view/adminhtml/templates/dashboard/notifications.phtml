@@ -5,112 +5,107 @@ $fastlyHelper = $this->helper('NitroPack\NitroPack\Helper\FastlyHelper');
 $enabledMagentoCaches = $nitroPackConfigHelper->getDisabledCaches();
 $enableCachesUrl = $block->getEnableCachesUrl();
 $dismissUrl = $block->getDismissUrl();
+$enableRedisPageCacheUrl = $block->getEnableRedisPageCacheUrl();
 $storeGroupId = (int)$this->getRequest()->getParam('group');
 
 if ($storeGroupId == 0) {
-$storeGroupId = $block->_storeManager->getGroup()->getId();
+    $storeGroupId = $block->_storeManager->getGroup()->getId();
 }
 ?>
 
 <div class="ml-10 mr-10">
-<?php if($block->varnishMismatchNotification->isDisplayed()): ?>
-    <div x-data="{showVarnishNotice: true}" class="row ">
-    <div x-show="showVarnishNotice" class="mb-5 bg-red-500 p-5 rounded shadow grid grid-cols-3" id="varnish-mismatch-warning" role="warning">
-        <div class="col-span-2">
-            <div class="flex gap-2">
-        <img src="<?= /* @noEscape */ $block->getImage("info.svg"); ?>" alt="Varnish Mismatch Warning" width="14" height="14"  />
-                <p class="alert-content text-grey-600"><?= /* @noEscape */ $block->varnishMismatchNotification->getText(); ?></p>
+    <?php if ($block->redisFullPageNotification->isDisplayed()): ?>
+    <div x-data="{showRedisPageCacheNotice: true}" class="row ">
+        <div x-show="showRedisPageCacheNotice" class="mb-5 nitro-info-bg p-5 rounded shadow grid grid-cols-3"
+             id="redis-page-cache-warning" role="warning">
+            <div class="col-span-2">
+                <div class="flex gap-2">
+                    <img src="<?= $block->getImage("info.svg"); ?>" alt="Redis as full page cache" width="14"
+                         height="14"/>
+                    <p class="alert-content text-grey-600"><?= $block->redisFullPageNotification->getText(); ?></p>
+                </div>
             </div>
-        </div>
-        <div class="col-span-1">
-            <div class="flex gap-2 float-right">
-                <button @click="showVarnishNotice = !showVarnishNotice,window.dismissVarnishNotice();"
-                        class="flex gap-2 justify-center items-center border-solid border text-red-600 border-red-600 font-inter rounded-lg float-right hover:bg-red-600 font-semibold font-inter hover:text-white py-2 px-6 hover:border-transparent stroke-purple hover:stroke-white"
+            <div class="col-span-1">
+                <div class="flex gap-2 float-right">
+                    <button
+                        @click="showRedisPageCacheNotice = !showRedisPageCacheNotice,window.enableRedisPageCache(),window.dismissNotice('<?= $block->redisFullPageNotification->getIdentity() ?>','<?= $block->redisFullPageNotification->getFlag() ?>');"
+                        class="border-solid border bg-info-btn rounded-lg float-right font-semibold font-inter text-white py-2 px-6 hover:text-blue-600 focus:text-blue-600"
+                        id="enable-redis">
+                        <?= $block->escapeHtml(__("Enable Redis")) ?>
+                    </button>
+                    <button
+                        @click="showRedisPageCacheNotice = !showRedisPageCacheNotice,window.dismissNotice('<?= $block->redisFullPageNotification->getIdentity() ?>','<?= $block->redisFullPageNotification->getFlag() ?>');"
+                        class="flex gap-2 justify-center items-center border-solid border text-blue-600 border-info-btn font-inter rounded-lg float-right font-semibold font-inter py-2 px-6 "
                         id="dismiss"> Dismiss
-                </button>
-            </div>
-        </div>
-    </div>
-    </div>
-
-    <?php endif; if (!$nitroPackInvalidationHelper->checkInvalidationAndPurgeProcess() && !$nitroPackInvalidationHelper->checkCronJobIsSetup()) {
-
-    } else {
-    $cacheLabels = $block->getCacheLabels();
-    if (!empty($enabledMagentoCaches) && !$nitroPackConfigHelper->getFullPageCacheValue()) {
-    ?>
-        <div x-data="{show: true}" class="row ">
-            <div x-show="show" class="mb-5" style=" display: none;">
-                <div class="bg-red-500 p-10 rounded shadow grid grid-cols-3" id="config-caches-warning" role="warning">
-                    <div class="col-span-2">
-                        <div class="flex gap-2">
-                            <svg width="18" height="22" viewBox="0 0 18 22" fill="none"
-                                 xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M7.69065 4.73717L1.20521 15.5641C1.07149 15.7957 1.00074 16.0582 0.999993 16.3256C0.999244 16.593 1.06852 16.8559 1.20094 17.0882C1.33336 17.3205 1.52429 17.5141 1.75475 17.6497C1.98521 17.7853 2.24717 17.8582 2.51455 17.8612H15.4854C15.7528 17.8582 16.0148 17.7853 16.2452 17.6497C16.4757 17.5141 16.6666 17.3205 16.799 17.0882C16.9314 16.8559 17.0007 16.593 17 16.3256C16.9992 16.0582 16.9285 15.7957 16.7948 15.5641L10.3093 4.73717C10.1728 4.51214 9.98063 4.32608 9.75128 4.19696C9.52194 4.06783 9.26318 4 8.99999 4C8.73679 4 8.47804 4.06783 8.24869 4.19696C8.01934 4.32608 7.82715 4.51214 7.69065 4.73717Z"
-                                    stroke="#CF0C35" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M9 8.75V11.75" stroke="#CF0C35" stroke-linecap="round"
-                                      stroke-linejoin="round"/>
-                                <path d="M9 14.75H9.0075" stroke="#CF0C35" stroke-linecap="round"
-                                      stroke-linejoin="round"/>
-                            </svg>
-
-                            <h5 class="font-bold mb-4 font-inter text-grey-600">The NitroPack extension is disabled! Incompatible Full Page Cache and Caching Application Setting:
-                            </h5>
-                        </div>
-                        <p class="alert-content text-grey-600">NitroPack requires to be set as <a
-                                href="<?= /* @noEscape */ $block->getCacheManagementUrl() ?>">Caching Application</a> and <a
-                                href="<?= /* @noEscape */ $block->getApplicationCacheUrl() ?>">Full Page Caching</a> enabled
-                        </p>
-                    </div>
-                    <div class="col-span-1">
-                        <div class="flex gap-2 float-right">
-                            <button
-                                class="border-solid border bg-red-600 border-red-600 rounded-lg float-right font-semibold font-inter text-white py-2 px-6 hover:text-red-600 focus:text-red-600"
-                                id="enable-caches">
-                                <?= $block->escapeHtml(__("Apply Fix Automatically")) ?>
-                            </button>
-
-                            <button @click="show = !show"
-                                    class="flex gap-2 justify-center items-center border-solid border text-red-600 border-red-600 font-inter rounded-lg float-right hover:bg-red-600 font-semibold font-inter hover:text-white py-2 px-6 hover:border-transparent stroke-purple hover:stroke-white"
-                                    id="dismiss"> Dismiss
-                            </button>
-                        </div>
-                    </div>
+                    </button>
                 </div>
             </div>
         </div>
+    </div>
+            <?php endif;
+            if ($block->varnishMismatchNotification->isDisplayed()): ?>
 
-            <?php
-            } else {
-            if (!empty($enabledMagentoCaches)) {
-            ?>
-            <div x-data="{show: true}" class="row ">
-                <div x-show="show" class="mb-5" style=" display: none;">
-                    <div class="bg-red-500 p-10 rounded shadow grid grid-cols-3" id="config-caches-warning"
-                         role="warning">
+                <div x-data="{showVarnishNotice: true}" class="row ">
+                    <div x-show="showVarnishNotice" class="mb-5 bg-red-500 p-5 rounded shadow grid grid-cols-3"
+                         id="varnish-mismatch-warning" role="warning">
                         <div class="col-span-2">
                             <div class="flex gap-2">
-                                <svg width="18" height="22" viewBox="0 0 18 22" fill="none"
-                                     xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M7.69065 4.73717L1.20521 15.5641C1.07149 15.7957 1.00074 16.0582 0.999993 16.3256C0.999244 16.593 1.06852 16.8559 1.20094 17.0882C1.33336 17.3205 1.52429 17.5141 1.75475 17.6497C1.98521 17.7853 2.24717 17.8582 2.51455 17.8612H15.4854C15.7528 17.8582 16.0148 17.7853 16.2452 17.6497C16.4757 17.5141 16.6666 17.3205 16.799 17.0882C16.9314 16.8559 17.0007 16.593 17 16.3256C16.9992 16.0582 16.9285 15.7957 16.7948 15.5641L10.3093 4.73717C10.1728 4.51214 9.98063 4.32608 9.75128 4.19696C9.52194 4.06783 9.26318 4 8.99999 4C8.73679 4 8.47804 4.06783 8.24869 4.19696C8.01934 4.32608 7.82715 4.51214 7.69065 4.73717Z"
-                                        stroke="#CF0C35" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M9 8.75V11.75" stroke="#CF0C35" stroke-linecap="round"
-                                          stroke-linejoin="round"/>
-                                    <path d="M9 14.75H9.0075" stroke="#CF0C35" stroke-linecap="round"
-                                          stroke-linejoin="round"/>
-                                </svg>
-                                <h5 class="font-bold mb-4 font-inter text-grey-600">The NitroPack extension is disabled! Incompatible Full
-                                    Page
-                                    Cache:
-                                </h5>
+                                <img src="<?= /* @noEscape */
+                                $block->getImage("info.svg"); ?>" alt="Varnish Mismatch Warning" width="14"
+                                     height="14"/>
+                                <p class="alert-content text-grey-600"><?= /* @noEscape */
+                                    $block->varnishMismatchNotification->getText(); ?></p>
                             </div>
-                                <p class="alert-content text-grey-600">NitroPack requires Full Page Caching enabled. Go
-                                    to <a
-                                        href="<?= /* @noEscape */ $block->getCacheManagementUrl() ?>">Full Page Caching settings</a>
-                                </p>
+                        </div>
+                        <div class="col-span-1">
+                            <div class="flex gap-2 float-right">
+                                <button @click="showVarnishNotice = !showVarnishNotice,window.dismissNotice('<?= $block->varnishMismatchNotification->getIdentity() ?>','<?= $block->varnishMismatchNotification->getIdentity() ?>');"
+                                        class="flex gap-2 justify-center items-center border-solid border text-red-600 border-red-600 font-inter rounded-lg float-right hover:bg-red-600 font-semibold font-inter hover:text-white py-2 px-6 hover:border-transparent stroke-purple hover:stroke-white"
+                                        id="dismiss"> Dismiss
+                                </button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+            <?php endif; ?>
+
+
+
+            <?php if (!$nitroPackInvalidationHelper->checkInvalidationAndPurgeProcess() && !$nitroPackInvalidationHelper->checkCronJobIsSetup()) {
+
+            } else {
+                $cacheLabels = $block->getCacheLabels();
+                if (!empty($enabledMagentoCaches) && !$nitroPackConfigHelper->getFullPageCacheValue()) {
+                    ?>
+                    <div x-data="{show: true}" class="row ">
+                        <div x-show="show" class="mb-5" style=" display: none;">
+                            <div class="bg-red-500 p-10 rounded shadow grid grid-cols-3" id="config-caches-warning"
+                                 role="warning">
+                                <div class="col-span-2">
+                                    <div class="flex gap-2">
+                                        <svg width="18" height="22" viewBox="0 0 18 22" fill="none"
+                                             xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M7.69065 4.73717L1.20521 15.5641C1.07149 15.7957 1.00074 16.0582 0.999993 16.3256C0.999244 16.593 1.06852 16.8559 1.20094 17.0882C1.33336 17.3205 1.52429 17.5141 1.75475 17.6497C1.98521 17.7853 2.24717 17.8582 2.51455 17.8612H15.4854C15.7528 17.8582 16.0148 17.7853 16.2452 17.6497C16.4757 17.5141 16.6666 17.3205 16.799 17.0882C16.9314 16.8559 17.0007 16.593 17 16.3256C16.9992 16.0582 16.9285 15.7957 16.7948 15.5641L10.3093 4.73717C10.1728 4.51214 9.98063 4.32608 9.75128 4.19696C9.52194 4.06783 9.26318 4 8.99999 4C8.73679 4 8.47804 4.06783 8.24869 4.19696C8.01934 4.32608 7.82715 4.51214 7.69065 4.73717Z"
+                                                stroke="#CF0C35" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M9 8.75V11.75" stroke="#CF0C35" stroke-linecap="round"
+                                                  stroke-linejoin="round"/>
+                                            <path d="M9 14.75H9.0075" stroke="#CF0C35" stroke-linecap="round"
+                                                  stroke-linejoin="round"/>
+                                        </svg>
+
+                                        <h5 class="font-bold mb-4 font-inter text-grey-600">The NitroPack extension is
+                                            disabled! Incompatible Full Page Cache and Caching Application Setting:
+                                        </h5>
+                                    </div>
+                                    <p class="alert-content text-grey-600">NitroPack requires to be set as <a
+                                            href="<?= /* @noEscape */
+                                            $block->getCacheManagementUrl() ?>">Caching Application</a> and <a
+                                            href="<?= /* @noEscape */
+                                            $block->getApplicationCacheUrl() ?>">Full Page Caching</a> enabled
+                                    </p>
+                                </div>
                                 <div class="col-span-1">
                                     <div class="flex gap-2 float-right">
                                         <button
@@ -128,7 +123,58 @@ $storeGroupId = $block->_storeManager->getGroup()->getId();
                             </div>
                         </div>
                     </div>
+
                     <?php
+                } else {
+                    if (!empty($enabledMagentoCaches)) {
+                        ?>
+                        <div x-data="{show: true}" class="row ">
+                            <div x-show="show" class="mb-5" style=" display: none;">
+                                <div class="bg-red-500 p-10 rounded shadow grid grid-cols-3" id="config-caches-warning"
+                                     role="warning">
+                                    <div class="col-span-2">
+                                        <div class="flex gap-2">
+                                            <svg width="18" height="22" viewBox="0 0 18 22" fill="none"
+                                                 xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M7.69065 4.73717L1.20521 15.5641C1.07149 15.7957 1.00074 16.0582 0.999993 16.3256C0.999244 16.593 1.06852 16.8559 1.20094 17.0882C1.33336 17.3205 1.52429 17.5141 1.75475 17.6497C1.98521 17.7853 2.24717 17.8582 2.51455 17.8612H15.4854C15.7528 17.8582 16.0148 17.7853 16.2452 17.6497C16.4757 17.5141 16.6666 17.3205 16.799 17.0882C16.9314 16.8559 17.0007 16.593 17 16.3256C16.9992 16.0582 16.9285 15.7957 16.7948 15.5641L10.3093 4.73717C10.1728 4.51214 9.98063 4.32608 9.75128 4.19696C9.52194 4.06783 9.26318 4 8.99999 4C8.73679 4 8.47804 4.06783 8.24869 4.19696C8.01934 4.32608 7.82715 4.51214 7.69065 4.73717Z"
+                                                    stroke="#CF0C35" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M9 8.75V11.75" stroke="#CF0C35" stroke-linecap="round"
+                                                      stroke-linejoin="round"/>
+                                                <path d="M9 14.75H9.0075" stroke="#CF0C35" stroke-linecap="round"
+                                                      stroke-linejoin="round"/>
+                                            </svg>
+                                            <h5 class="font-bold mb-4 font-inter text-grey-600">The NitroPack extension
+                                                is disabled! Incompatible Full
+                                                Page
+                                                Cache:
+                                            </h5>
+                                        </div>
+                                        <p class="alert-content text-grey-600">NitroPack requires Full Page Caching
+                                            enabled. Go
+                                            to <a
+                                                href="<?= /* @noEscape */
+                                                $block->getCacheManagementUrl() ?>">Full Page Caching settings</a>
+                                        </p>
+                                    </div>
+                                    <div class="col-span-1">
+                                        <div class="flex gap-2 float-right">
+                                            <button
+                                                class="border-solid border bg-red-600 border-red-600 rounded-lg float-right font-semibold font-inter text-white py-2 px-6 hover:text-red-600 focus:text-red-600"
+                                                id="enable-caches">
+                                                <?= $block->escapeHtml(__("Apply Fix Automatically")) ?>
+                                            </button>
+
+                                            <button @click="show = !show"
+                                                    class="flex gap-2 justify-center items-center border-solid border text-red-600 border-red-600 font-inter rounded-lg float-right hover:bg-red-600 font-semibold font-inter hover:text-white py-2 px-6 hover:border-transparent stroke-purple hover:stroke-white"
+                                                    id="dismiss"> Dismiss
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <?php
                     } else {
                         if (!$nitroPackConfigHelper->getFullPageCacheValue() && !$fastlyHelper->isFastlyAndNitroPackEnabled()) {
                             ?>
@@ -154,8 +200,11 @@ $storeGroupId = $block->_storeManager->getGroup()->getId();
                                                 <h5 class="font-bold mb-4 font-inter text-grey-600"><?= $block->escapeHtml(__("The NitroPack extension is disabled! Incompatible Caching application setting:")) ?></h5>
                                             </div>
 
-                                            <p class="alert-content text-grey-600">NitroPack must be selected as a Cache Application. Go
-                                                to <a href="<?= /* @noEscape */ $block->getApplicationCacheUrl() ?>"><?= $block->escapeHtml(__("Full Page Caching Application settings")) ?></a></p>
+                                            <p class="alert-content text-grey-600">NitroPack must be selected as a Cache
+                                                Application. Go
+                                                to <a href="<?= /* @noEscape */
+                                                $block->getApplicationCacheUrl() ?>"><?= $block->escapeHtml(__("Full Page Caching Application settings")) ?></a>
+                                            </p>
                                         </div>
                                         <div class="col-span-1">
                                             <div class="flex gap-2 float-right">
@@ -177,62 +226,73 @@ $storeGroupId = $block->_storeManager->getGroup()->getId();
                             <?php
                         }
                     }
-                    }
-                    } ?>
-                </div>
-                <script type="text/javascript">
-                    require(['jquery', 'Magento_Ui/js/modal/alert', 'NitroPack_NitroPack/js/overlay'], function ($, magentoAlert, cardOverlay) {
+                }
+            } ?>
+        </div>
+        <script type="text/javascript">
+            require(['jquery', 'Magento_Ui/js/modal/alert', 'NitroPack_NitroPack/js/overlay'], function ($, magentoAlert, cardOverlay) {
 
-                        $(document).ready(function () {
-                            window.dismissVarnishNotice = function(){
-                                $.ajax({
-                                    url: '<?= /* @noEscape */  $dismissUrl; ?>',
-                                    method: 'POST',
-                                    dataType: 'json',
-                                    data: {'message_code': '<?= /* @noEscape */ $block->varnishMismatchNotification->getIdentity()?>' },
-                                    success: function (response) {
+                $(document).ready(function () {
 
-                                    }
-                                });
-                            }
-                            $('#enable-caches').click(function (event) {
-                                $('#enable-caches').addClass('disabled');
-                                event.preventDefault();
-                                $.ajax({
-                                    url: '<?= /* @noEscape */ $enableCachesUrl ?>',
-                                    method: 'POST',
-                                    dataType: 'json',
-                                    data: {run: 1},
-                                    success: function (response) {
-                                        if (response.enabled) { // we expect disabled to be true if we have successfully disabled the system caches
-                                            $('#nitroPackDisabled').remove();
-                                            <?php if (!empty($enabledMagentoCaches) && !$nitroPackConfigHelper->getFullPageCacheValue()) { ?>
-                                            Notification.success('Successfully Enabled system caches and The Caching application successfully set to NitroPack');
-                                            <?php }else {if (!empty($enabledMagentoCaches) ){?>
-                                            Notification.success('Successfully Enabled system caches ');
-                                            <?php }else {if (!$nitroPackConfigHelper->getFullPageCacheValue() ){ ?>
-                                            Notification.success('The Caching application successfully set to NitroPack');
-                                            <?php }}} ?>
-                                            $('#system-caches-warning').remove();
-                                            $('#config-caches-warning').remove();
-                                            $('#system-config-caches-warning').remove();
-                                            $('#status').removeAttr('disabled');
-                                            $('#enabledMagentoCachesWarning').remove();
-                                            if (response.extension_enabled) {
-                                                if ($('#status').val() == 0) {
-                                                    $('#status').val(1);
-                                                }
-                                            }
-                                            $('#status').click();
-                                            $('#system_messages').remove();
-                                         //   window.location.reload();
-
-                                        } else {
-                                            Notification.danger('Failed disabling the system caches');
+                    $('#enable-caches').click(function (event) {
+                        $('#enable-caches').addClass('disabled');
+                        event.preventDefault();
+                        $.ajax({
+                            url: '<?= /* @noEscape */ $enableCachesUrl ?>',
+                            method: 'POST',
+                            dataType: 'json',
+                            data: {run: 1},
+                            success: function (response) {
+                                if (response.enabled) { // we expect disabled to be true if we have successfully disabled the system caches
+                                    $('#nitroPackDisabled').remove();
+                                    <?php if (!empty($enabledMagentoCaches) && !$nitroPackConfigHelper->getFullPageCacheValue()) { ?>
+                                    Notification.success('Successfully Enabled system caches and The Caching application successfully set to NitroPack');
+                                    <?php }else {if (!empty($enabledMagentoCaches) ){?>
+                                    Notification.success('Successfully Enabled system caches ');
+                                    <?php }else {if (!$nitroPackConfigHelper->getFullPageCacheValue() ){ ?>
+                                    Notification.success('The Caching application successfully set to NitroPack');
+                                    <?php }}} ?>
+                                    $('#system-caches-warning').remove();
+                                    $('#config-caches-warning').remove();
+                                    $('#system-config-caches-warning').remove();
+                                    $('#status').removeAttr('disabled');
+                                    $('#enabledMagentoCachesWarning').remove();
+                                    if (response.extension_enabled) {
+                                        if ($('#status').val() == 0) {
+                                            $('#status').val(1);
                                         }
                                     }
-                                });
-                            })
+                                    $('#status').click();
+                                    $('#system_messages').remove();
+                                    //   window.location.reload();
+
+                                } else {
+                                    Notification.danger('Failed disabling the system caches');
+                                }
+                            }
                         });
+                    })
+                });
+                window.enableRedisPageCache = function () {
+                    $.ajax({
+                        url: '<?= $enableRedisPageCacheUrl; ?>',
+                        method: 'POST',
+                        dataType: 'json',
+                        success: function (response) {
+
+                        }
                     });
-                </script>
+                }
+
+                window.dismissNotice = function (message_code, flag) {
+                    $.ajax({
+                        url: '<?= $dismissUrl; ?>',
+                        method: 'POST',
+                        dataType: 'json',
+                        data: {'message_code': message_code, flag: flag},
+                        success: function (response) {
+                        }
+                    });
+                }
+            });
+        </script>

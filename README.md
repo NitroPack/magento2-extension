@@ -8,6 +8,20 @@ Installation Instructions: https://support.nitropack.io/hc/en-us/articles/127062
 
 # Release Notes
 
+### 3.3.0:
+#### Compatible with Magento Open Source : 2.4
+#### Stability: Stable Build
+#### Description:
+- Improvement: Added the option to include additional Varnish headers specific to certain hosting providers.
+- Improvement: Use multiple Varnish instances on one Magento website.
+- Improvement: Added a flag in system config to stop the invalidation process for each product, category, CMS page, and CMS block update.
+- Improvement: Created a warning message for users with locked configuration for caching application.
+- Improvement: Added DocBlocks in all PHP classes for better code documentation.
+- Improvement: NitroPack now automatically connects to Redis if the Magento environment file contains specific cache settings.
+- Improvement: Pre-select website on redirect from Magento plugin to the NitroPack App.
+- Bug Fix: “Apply Automatic Fix” extension disable modal no longer appears.
+- Bug Fix: Popup no longer appears when clicking on the selected mode.
+
 ### 3.2.1:
 #### Compatible with Magento Open Source : 2.4
 #### Stability: Stable Build

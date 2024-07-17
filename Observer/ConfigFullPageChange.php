@@ -1,10 +1,31 @@
 <?php
-
+/**
+ * NitroPack
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the nitropack.io license that is
+ * available through the world-wide-web at this URL:
+ * https://github.com/NitroPack/magento2-extension/blob/716247d40d2de7b84f222c6a93761d87b6fe5b7b/LICENSE
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Site Optimization
+ * @subcategory Performance
+ * @package     NitroPack_NitroPack
+ * @author      NitroPack Inc.
+ * @copyright   Copyright (c) NitroPack (https://www.nitropack.io/)
+ * @license     https://github.com/NitroPack/magento2-extension/blob/716247d40d2de7b84f222c6a93761d87b6fe5b7b/LICENSE
+ */
 namespace NitroPack\NitroPack\Observer;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Event\Observer as EventObserver;
+use Magento\Framework\Event\ObserverInterface;
 use NitroPack\NitroPack\Api\NitroService;
 use NitroPack\NitroPack\Api\NitroServiceInterface;
 use NitroPack\NitroPack\Helper\InvalidationHelper;
@@ -12,7 +33,14 @@ use Magento\Framework\App\Config\Storage\WriterInterface;
 use NitroPack\NitroPack\Helper\ApiHelper;
 use NitroPack\NitroPack\Model\FullPageCache\PurgeInterface;
 use NitroPack\SDK\HealthStatus;
+use Magento\Framework\Message\ManagerInterface;
 
+/**
+ * Class ConfigFullPageChange - Full Page Cache Config Change Observer
+ * @implements ObserverInterface
+ * @package NitroPack\NitroPack\Observer
+ * @since 2.0.0
+ * */
 class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
 {
     public const XML_VARNISH_PAGECACHE_NITRO_ENABLED = 'system/full_page_cache/varnish_enable';
@@ -69,6 +97,12 @@ class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
      * @var \Magento\Store\Api\GroupRepositoryInterface
      * */
     protected $storeRepository;
+
+    /**
+     * @var ManagerInterface
+     */
+    protected $messageManager;
+
     /**
      * ConfigChange constructor.
      * @param RequestInterface $request
@@ -94,7 +128,8 @@ class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
         WriterInterface $configWriter,
         NitroServiceInterface $nitro,
         \Magento\Store\Api\GroupRepositoryInterface $storeRepository,
-        \Magento\Framework\App\Cache\Frontend\Pool $cacheFrontendPool
+        \Magento\Framework\App\Cache\Frontend\Pool $cacheFrontendPool,
+        ManagerInterface $messageManager
     ) {
         $this->request = $request;
         $this->nitro = $nitro;
@@ -107,11 +142,17 @@ class ConfigFullPageChange implements \Magento\Framework\Event\ObserverInterface
         $this->configWriter = $configWriter;
         $this->_cacheFrontendPool = $cacheFrontendPool;
         $this->storeRepository = $storeRepository;
+        $this->messageManager = $messageManager;
     }
 
     public function execute(EventObserver $observer)
     {
         $groupParams = $this->request->getParam('groups');
+        if(!isset($groupParams['full_page_cache']['fields']['caching_application']['value'])) {
+            $this->messageManager->addWarningMessage('Your site’s caching configuration is locked, which stops NitroPack from working properly. Please unlock it so our extension can work correctly.');
+            return;
+        }
+
         if(!is_null($groupParams)){
             if(isset($groupParams['full_page_cache']) && isset($groupParams['full_page_cache']['fields']) && isset($groupParams['full_page_cache']['fields']['varnish_enable'])) {
                 $varnishEnableKey = $groupParams['full_page_cache']['fields']['varnish_enable']['value'];
